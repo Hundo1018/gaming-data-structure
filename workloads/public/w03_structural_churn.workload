@@ -1,0 +1,23 @@
+# Components are added and removed constantly. This is the operation an
+# archetype layout has to pay for and a sparse set does not.
+id: w03_structural_churn
+visibility: public
+track: ecs
+seed: 1003
+initial_entities: 30000
+max_entities: 60000
+frames: 300
+ops_per_frame: 3000
+w_create: 0.5
+w_destroy: 0.5
+w_add: 4.0
+w_remove: 4.0
+w_get: 1.0
+w_set: 1.0
+access: uniform
+integrate_per_frame: true
+query_masks: position+velocity
+p_position: 1.0
+p_velocity: 0.5
+p_health: 0.3
+p_tag: 0.2

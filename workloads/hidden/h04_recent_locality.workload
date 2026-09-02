@@ -1,0 +1,24 @@
+# Held out. Access is confined to entities created in the last few frames, the
+# access pattern of projectiles, particles and effects.
+id: h04_recent_locality
+visibility: hidden
+track: ecs
+seed: 7004
+initial_entities: 40000
+max_entities: 120000
+frames: 300
+ops_per_frame: 5000
+w_create: 3.0
+w_destroy: 3.0
+w_add: 0.5
+w_remove: 0.5
+w_get: 5.0
+w_set: 4.0
+access: recent
+recency_window: 512
+integrate_per_frame: true
+query_masks: position+velocity
+p_position: 1.0
+p_velocity: 0.9
+p_health: 0.3
+p_tag: 0.2

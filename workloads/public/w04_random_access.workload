@@ -1,0 +1,23 @@
+# Almost pure random point access with no locality. Tests handle resolution
+# and the cost of one indirection more or less.
+id: w04_random_access
+visibility: public
+track: ecs
+seed: 1004
+initial_entities: 200000
+max_entities: 200000
+frames: 200
+ops_per_frame: 20000
+w_create: 0.0
+w_destroy: 0.0
+w_add: 0.0
+w_remove: 0.0
+w_get: 6.0
+w_set: 4.0
+access: uniform
+integrate_per_frame: false
+query_masks: position+velocity
+p_position: 1.0
+p_velocity: 0.8
+p_health: 0.5
+p_tag: 0.3

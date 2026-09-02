@@ -1,0 +1,39 @@
+id: ecs_broken_recycle
+name: broken_recycle
+track: ecs
+binary: gds_ecs_broken_recycle
+island: -1
+parents: [ecs_aos]
+origin: negative_control
+novelty_status: EXACT_REDISCOVERY
+# `fail` means the gate must reject this candidate, not that every workload
+# must reject it: a workload that never destroys an entity cannot expose a
+# handle-recycling bug and will legitimately pass.
+expect_verify: fail
+
+hypothesis: >
+  Not a research hypothesis. The claim under test is about the harness, not the
+  structure: that the correctness gate rejects a structure which is fast
+  because it answers incorrectly. Removing the generation counter from aos
+  makes handle resolution one comparison cheaper and makes recycled slots
+  answer for destroyed entities.
+
+representation: >
+  aos with the generation counter deleted. The handle is a bare slot index.
+
+operations: same as aos, minus the generation check on every resolve
+
+assumptions:
+  - deliberately violates the contract that a destroyed handle is never alive again
+
+expected_advantages:
+  - one comparison and four bytes per entity cheaper than aos
+
+expected_disadvantages:
+  - returns another entity's data through a stale handle
+
+complexity: same as aos
+
+notes: >
+  Expected to be rejected. If every workload ever passes it, the harness is
+  broken and every result in the archive is suspect.

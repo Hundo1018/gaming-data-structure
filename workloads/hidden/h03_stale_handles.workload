@@ -1,0 +1,25 @@
+# Held out. One access in five targets a handle whose entity is already gone.
+# A structure that recycles storage without invalidating old handles fails
+# verification here rather than quietly returning another entity's data.
+id: h03_stale_handles
+visibility: hidden
+track: ecs
+seed: 7003
+initial_entities: 60000
+max_entities: 90000
+frames: 250
+ops_per_frame: 4000
+w_create: 2.0
+w_destroy: 2.0
+w_add: 1.0
+w_remove: 1.0
+w_get: 5.0
+w_set: 3.0
+access: uniform
+stale_access_ratio: 0.2
+integrate_per_frame: true
+query_masks: position+velocity
+p_position: 1.0
+p_velocity: 0.8
+p_health: 0.5
+p_tag: 0.3

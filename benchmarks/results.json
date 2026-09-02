@@ -1,0 +1,2756 @@
+{
+  "build_flags": "-O2 -DNDEBUG -fno-omit-frame-pointer -Wall -Wextra -march=native",
+  "candidates": {
+    "aos": {
+      "compiled": true,
+      "expect_verify": "pass",
+      "island": 0,
+      "novelty_status": "EXACT_REDISCOVERY",
+      "origin": "baseline",
+      "parents": [],
+      "track": "ecs"
+    },
+    "archetype": {
+      "compiled": true,
+      "expect_verify": "pass",
+      "island": 2,
+      "novelty_status": "EXACT_REDISCOVERY",
+      "origin": "baseline",
+      "parents": [],
+      "track": "ecs"
+    },
+    "broken_recycle": {
+      "compiled": true,
+      "expect_verify": "fail",
+      "island": -1,
+      "novelty_status": "EXACT_REDISCOVERY",
+      "origin": "negative_control",
+      "parents": [
+        "ecs_aos"
+      ],
+      "track": "ecs"
+    },
+    "reference": {
+      "compiled": true,
+      "expect_verify": "pass",
+      "island": -1,
+      "novelty_status": "EXACT_REDISCOVERY",
+      "origin": "oracle",
+      "parents": [],
+      "track": "ecs"
+    },
+    "soa": {
+      "compiled": true,
+      "expect_verify": "pass",
+      "island": 0,
+      "novelty_status": "EXACT_REDISCOVERY",
+      "origin": "baseline",
+      "parents": [
+        "ecs_aos"
+      ],
+      "track": "ecs"
+    },
+    "sparse_set": {
+      "compiled": true,
+      "expect_verify": "pass",
+      "island": 1,
+      "novelty_status": "EXACT_REDISCOVERY",
+      "origin": "baseline",
+      "parents": [],
+      "track": "ecs"
+    }
+  },
+  "checksum_anchor": "reference",
+  "compiler": "c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "generalization": {
+    "aos": {
+      "generalization_gap": 0.0,
+      "mean_p99_rank_hidden": 2.2,
+      "mean_p99_rank_public": 2.2
+    },
+    "archetype": {
+      "generalization_gap": -0.6,
+      "mean_p99_rank_hidden": 0.0,
+      "mean_p99_rank_public": 0.6
+    },
+    "reference": {
+      "generalization_gap": 0.0,
+      "mean_p99_rank_hidden": 4.0,
+      "mean_p99_rank_public": 4.0
+    },
+    "soa": {
+      "generalization_gap": 0.6,
+      "mean_p99_rank_hidden": 1.6,
+      "mean_p99_rank_public": 1.0
+    },
+    "sparse_set": {
+      "generalization_gap": 0.0,
+      "mean_p99_rank_hidden": 2.2,
+      "mean_p99_rank_public": 2.2
+    }
+  },
+  "git_commit": "06a287429df285e685f94c685c83fe1ee4f59e9d",
+  "measurements": {
+    "aos": {
+      "h01_zipf_hotspot": {
+        "alloc_count": 29,
+        "alloc_total_bytes": 29364164,
+        "bytes_per_entity": 98.07,
+        "candidate": "aos",
+        "checksum": "423951039401401223",
+        "checksum_matches_anchor": true,
+        "final_entities": 149709,
+        "frame_ns_max": 8425652,
+        "frame_ns_p50": 2594334,
+        "frame_ns_p95": 2876975,
+        "frame_ns_p99": 3038309,
+        "frames": 250,
+        "free_count": 27,
+        "live_bytes": 14682112,
+        "mode": "bench",
+        "ops_per_second": 1742892.8,
+        "peak_bytes": 22020096,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          765133861,
+          657527536,
+          647722387,
+          652243915,
+          762776190
+        ],
+        "reported_bytes": 14682112,
+        "slots": 191516,
+        "status": "ok",
+        "total_ns": 657527536,
+        "total_ops": 1146000,
+        "visibility": "hidden",
+        "workload": "h01_zipf_hotspot"
+      },
+      "h02_bursty_spawn": {
+        "alloc_count": 24,
+        "alloc_total_bytes": 58720260,
+        "bytes_per_entity": 110.97,
+        "candidate": "aos",
+        "checksum": "4691360029406275791",
+        "checksum_matches_anchor": true,
+        "final_entities": 264586,
+        "frame_ns_max": 14940945,
+        "frame_ns_p50": 2767305,
+        "frame_ns_p95": 5031992,
+        "frame_ns_p99": 5576677,
+        "frames": 300,
+        "free_count": 22,
+        "live_bytes": 29360160,
+        "mode": "bench",
+        "ops_per_second": 824467.3,
+        "peak_bytes": 44040224,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          697780512,
+          796878173,
+          875712801,
+          805032971,
+          706263641
+        ],
+        "reported_bytes": 29360160,
+        "slots": 313896,
+        "status": "ok",
+        "total_ns": 796878173,
+        "total_ops": 657000,
+        "visibility": "hidden",
+        "workload": "h02_bursty_spawn"
+      },
+      "h03_stale_handles": {
+        "alloc_count": 27,
+        "alloc_total_bytes": 7344068,
+        "bytes_per_entity": 60.82,
+        "candidate": "aos",
+        "checksum": "14097276146769806109",
+        "checksum_matches_anchor": true,
+        "final_entities": 60376,
+        "frame_ns_max": 2365558,
+        "frame_ns_p50": 1014292,
+        "frame_ns_p95": 1174315,
+        "frame_ns_p99": 1524186,
+        "frames": 250,
+        "free_count": 25,
+        "live_bytes": 3672064,
+        "mode": "bench",
+        "ops_per_second": 4062924.5,
+        "peak_bytes": 5505024,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          278565332,
+          285199487,
+          242581921,
+          243593803,
+          259911300
+        ],
+        "reported_bytes": 3672064,
+        "slots": 202766,
+        "status": "ok",
+        "total_ns": 259911300,
+        "total_ops": 1056000,
+        "visibility": "hidden",
+        "workload": "h03_stale_handles"
+      },
+      "h04_recent_locality": {
+        "alloc_count": 29,
+        "alloc_total_bytes": 7356356,
+        "bytes_per_entity": 92.42,
+        "candidate": "aos",
+        "checksum": "17705641624240767960",
+        "checksum_matches_anchor": true,
+        "final_entities": 39797,
+        "frame_ns_max": 2140212,
+        "frame_ns_p50": 704853,
+        "frame_ns_p95": 902578,
+        "frame_ns_p99": 1155299,
+        "frames": 300,
+        "free_count": 27,
+        "live_bytes": 3678208,
+        "mode": "bench",
+        "ops_per_second": 6897746.5,
+        "peak_bytes": 5505024,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          252278480,
+          249665835,
+          222536446,
+          202663393,
+          201258638
+        ],
+        "reported_bytes": 3678208,
+        "slots": 320448,
+        "status": "ok",
+        "total_ns": 222536446,
+        "total_ops": 1535000,
+        "visibility": "hidden",
+        "workload": "h04_recent_locality"
+      },
+      "h05_sparse_component": {
+        "alloc_count": 29,
+        "alloc_total_bytes": 29364164,
+        "bytes_per_entity": 73.47,
+        "candidate": "aos",
+        "checksum": "6783564805181817868",
+        "checksum_matches_anchor": true,
+        "final_entities": 199833,
+        "frame_ns_max": 15287850,
+        "frame_ns_p50": 1545643,
+        "frame_ns_p95": 1645807,
+        "frame_ns_p99": 2146270,
+        "frames": 200,
+        "free_count": 27,
+        "live_bytes": 14682112,
+        "mode": "bench",
+        "ops_per_second": 931637.2,
+        "peak_bytes": 22020096,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          309094660,
+          327556922,
+          321377536,
+          321477083,
+          322161403
+        ],
+        "reported_bytes": 14682112,
+        "slots": 215020,
+        "status": "ok",
+        "total_ns": 321477083,
+        "total_ops": 299500,
+        "visibility": "hidden",
+        "workload": "h05_sparse_component"
+      },
+      "w01_steady_uniform": {
+        "alloc_count": 26,
+        "alloc_total_bytes": 7342020,
+        "bytes_per_entity": 72.84,
+        "candidate": "aos",
+        "checksum": "16228116635718144136",
+        "checksum_matches_anchor": true,
+        "final_entities": 50398,
+        "frame_ns_max": 2147004,
+        "frame_ns_p50": 882324,
+        "frame_ns_p95": 1148103,
+        "frame_ns_p99": 1255309,
+        "frames": 300,
+        "free_count": 24,
+        "live_bytes": 3671040,
+        "mode": "bench",
+        "ops_per_second": 2376926.4,
+        "peak_bytes": 5505024,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          295434078,
+          284907230,
+          255333152,
+          272620974,
+          270823017
+        ],
+        "reported_bytes": 3671040,
+        "slots": 110052,
+        "status": "ok",
+        "total_ns": 272620974,
+        "total_ops": 648000,
+        "visibility": "public",
+        "workload": "w01_steady_uniform"
+      },
+      "w02_query_heavy": {
+        "alloc_count": 26,
+        "alloc_total_bytes": 14681028,
+        "bytes_per_entity": 73.4,
+        "candidate": "aos",
+        "checksum": "2554782350736989489",
+        "checksum_matches_anchor": true,
+        "final_entities": 100001,
+        "frame_ns_max": 12515957,
+        "frame_ns_p50": 4845138,
+        "frame_ns_p95": 5147384,
+        "frame_ns_p99": 5750839,
+        "frames": 200,
+        "free_count": 24,
+        "live_bytes": 7340544,
+        "mode": "bench",
+        "ops_per_second": 142445.9,
+        "peak_bytes": 11010048,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          981425046,
+          1012560175,
+          996559100,
+          884585050,
+          820712415
+        ],
+        "reported_bytes": 7340544,
+        "slots": 106203,
+        "status": "ok",
+        "total_ns": 981425046,
+        "total_ops": 139800,
+        "visibility": "public",
+        "workload": "w02_query_heavy"
+      },
+      "w03_structural_churn": {
+        "alloc_count": 26,
+        "alloc_total_bytes": 3674052,
+        "bytes_per_entity": 61.1,
+        "candidate": "aos",
+        "checksum": "12388448366631572111",
+        "checksum_matches_anchor": true,
+        "final_entities": 30068,
+        "frame_ns_max": 1164334,
+        "frame_ns_p50": 354017,
+        "frame_ns_p95": 529783,
+        "frame_ns_p99": 638383,
+        "frames": 300,
+        "free_count": 24,
+        "live_bytes": 1837056,
+        "mode": "bench",
+        "ops_per_second": 8194540.5,
+        "peak_bytes": 2752512,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          137837516,
+          135353631,
+          109715688,
+          113124098,
+          110304725
+        ],
+        "reported_bytes": 1837056,
+        "slots": 70924,
+        "status": "ok",
+        "total_ns": 113124098,
+        "total_ops": 927000,
+        "visibility": "public",
+        "workload": "w03_structural_churn"
+      },
+      "w04_random_access": {
+        "alloc_count": 19,
+        "alloc_total_bytes": 29360072,
+        "bytes_per_entity": 73.4,
+        "candidate": "aos",
+        "checksum": "11873868177109860483",
+        "checksum_matches_anchor": true,
+        "final_entities": 200000,
+        "frame_ns_max": 9726710,
+        "frame_ns_p50": 4258445,
+        "frame_ns_p95": 4607523,
+        "frame_ns_p99": 5235744,
+        "frames": 200,
+        "free_count": 18,
+        "live_bytes": 14680064,
+        "mode": "bench",
+        "ops_per_second": 4836562.4,
+        "peak_bytes": 22020096,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          859509007,
+          864662122,
+          864250188,
+          851121152,
+          865993136
+        ],
+        "reported_bytes": 14680064,
+        "slots": 200000,
+        "status": "ok",
+        "total_ns": 864250188,
+        "total_ops": 4180000,
+        "visibility": "public",
+        "workload": "w04_random_access"
+      },
+      "w05_small_world": {
+        "alloc_count": 23,
+        "alloc_total_bytes": 462788,
+        "bytes_per_entity": 85.9,
+        "candidate": "aos",
+        "checksum": "18140062616316246866",
+        "checksum_matches_anchor": true,
+        "final_entities": 2694,
+        "frame_ns_max": 146393,
+        "frame_ns_p50": 65726,
+        "frame_ns_p95": 78786,
+        "frame_ns_p99": 92917,
+        "frames": 400,
+        "free_count": 21,
+        "live_bytes": 231424,
+        "mode": "bench",
+        "ops_per_second": 30619024.4,
+        "peak_bytes": 345088,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          25413523,
+          26101755,
+          26127547,
+          26588425,
+          26308225
+        ],
+        "reported_bytes": 231424,
+        "slots": 74844,
+        "status": "ok",
+        "total_ns": 26127547,
+        "total_ops": 800000,
+        "visibility": "public",
+        "workload": "w05_small_world"
+      }
+    },
+    "archetype": {
+      "h01_zipf_hotspot": {
+        "alloc_count": 641,
+        "alloc_total_bytes": 21321228,
+        "bytes_per_entity": 71.21,
+        "candidate": "archetype",
+        "checksum": "423951039401401223",
+        "checksum_matches_anchor": true,
+        "final_entities": 149709,
+        "frame_ns_max": 7149486,
+        "frame_ns_p50": 1925903,
+        "frame_ns_p95": 2041677,
+        "frame_ns_p99": 2396576,
+        "frames": 250,
+        "free_count": 590,
+        "live_bytes": 10660864,
+        "mode": "bench",
+        "ops_per_second": 2344320.5,
+        "peak_bytes": 11011072,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          491088164,
+          459200921,
+          523208547,
+          488841001,
+          445553763
+        ],
+        "reported_bytes": 10658880,
+        "slots": 191516,
+        "status": "ok",
+        "total_ns": 488841001,
+        "total_ops": 1146000,
+        "visibility": "hidden",
+        "workload": "h01_zipf_hotspot"
+      },
+      "h02_bursty_spawn": {
+        "alloc_count": 699,
+        "alloc_total_bytes": 37490252,
+        "bytes_per_entity": 70.85,
+        "candidate": "archetype",
+        "checksum": "4691360029406275791",
+        "checksum_matches_anchor": true,
+        "final_entities": 264586,
+        "frame_ns_max": 6575466,
+        "frame_ns_p50": 1844714,
+        "frame_ns_p95": 3224979,
+        "frame_ns_p99": 3936651,
+        "frames": 300,
+        "free_count": 648,
+        "live_bytes": 18745376,
+        "mode": "bench",
+        "ops_per_second": 1183174.6,
+        "peak_bytes": 22939680,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          564028322,
+          559288946,
+          529502291,
+          542911576,
+          555285741
+        ],
+        "reported_bytes": 18743392,
+        "slots": 313896,
+        "status": "ok",
+        "total_ns": 555285741,
+        "total_ops": 657000,
+        "visibility": "hidden",
+        "workload": "h02_bursty_spawn"
+      },
+      "h03_stale_handles": {
+        "alloc_count": 643,
+        "alloc_total_bytes": 8818188,
+        "bytes_per_entity": 73.03,
+        "candidate": "archetype",
+        "checksum": "14097276146769806109",
+        "checksum_matches_anchor": true,
+        "final_entities": 60376,
+        "frame_ns_max": 2378252,
+        "frame_ns_p50": 848919,
+        "frame_ns_p95": 941393,
+        "frame_ns_p99": 1105331,
+        "frames": 250,
+        "free_count": 592,
+        "live_bytes": 4409344,
+        "mode": "bench",
+        "ops_per_second": 4907180.5,
+        "peak_bytes": 4417536,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          215677732,
+          215194854,
+          220553965,
+          213786514,
+          209490414
+        ],
+        "reported_bytes": 4407360,
+        "slots": 202766,
+        "status": "ok",
+        "total_ns": 215194854,
+        "total_ops": 1056000,
+        "visibility": "hidden",
+        "workload": "h03_stale_handles"
+      },
+      "h04_recent_locality": {
+        "alloc_count": 489,
+        "alloc_total_bytes": 6238988,
+        "bytes_per_entity": 78.39,
+        "candidate": "archetype",
+        "checksum": "17705641624240767960",
+        "checksum_matches_anchor": true,
+        "final_entities": 39797,
+        "frame_ns_max": 1774136,
+        "frame_ns_p50": 653039,
+        "frame_ns_p95": 732645,
+        "frame_ns_p99": 802832,
+        "frames": 300,
+        "free_count": 438,
+        "live_bytes": 3119744,
+        "mode": "bench",
+        "ops_per_second": 7829625.9,
+        "peak_bytes": 3120768,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          193682482,
+          183831379,
+          210083006,
+          216732454,
+          196050236
+        ],
+        "reported_bytes": 3117760,
+        "slots": 320448,
+        "status": "ok",
+        "total_ns": 196050236,
+        "total_ops": 1535000,
+        "visibility": "hidden",
+        "workload": "h04_recent_locality"
+      },
+      "h05_sparse_component": {
+        "alloc_count": 470,
+        "alloc_total_bytes": 26477012,
+        "bytes_per_entity": 66.25,
+        "candidate": "archetype",
+        "checksum": "6783564805181817868",
+        "checksum_matches_anchor": true,
+        "final_entities": 199833,
+        "frame_ns_max": 9531870,
+        "frame_ns_p50": 367282,
+        "frame_ns_p95": 434951,
+        "frame_ns_p99": 494591,
+        "frames": 200,
+        "free_count": 419,
+        "live_bytes": 13238756,
+        "mode": "bench",
+        "ops_per_second": 3580925.1,
+        "peak_bytes": 13958592,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          86206462,
+          82789174,
+          88526455,
+          83637605,
+          82635374
+        ],
+        "reported_bytes": 13236772,
+        "slots": 215020,
+        "status": "ok",
+        "total_ns": 83637605,
+        "total_ops": 299500,
+        "visibility": "hidden",
+        "workload": "h05_sparse_component"
+      },
+      "w01_steady_uniform": {
+        "alloc_count": 611,
+        "alloc_total_bytes": 6063628,
+        "bytes_per_entity": 60.16,
+        "candidate": "archetype",
+        "checksum": "16228116635718144136",
+        "checksum_matches_anchor": true,
+        "final_entities": 50398,
+        "frame_ns_max": 2231966,
+        "frame_ns_p50": 726500,
+        "frame_ns_p95": 950539,
+        "frame_ns_p99": 1008675,
+        "frames": 300,
+        "free_count": 560,
+        "live_bytes": 3032064,
+        "mode": "bench",
+        "ops_per_second": 2930783.7,
+        "peak_bytes": 3130368,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          216889161,
+          245119150,
+          221131543,
+          221101274,
+          198599520
+        ],
+        "reported_bytes": 3030080,
+        "slots": 110052,
+        "status": "ok",
+        "total_ns": 221101274,
+        "total_ops": 648000,
+        "visibility": "public",
+        "workload": "w01_steady_uniform"
+      },
+      "w02_query_heavy": {
+        "alloc_count": 560,
+        "alloc_total_bytes": 12717644,
+        "bytes_per_entity": 63.59,
+        "candidate": "archetype",
+        "checksum": "2554782350736989489",
+        "checksum_matches_anchor": true,
+        "final_entities": 100001,
+        "frame_ns_max": 8620129,
+        "frame_ns_p50": 3377752,
+        "frame_ns_p95": 3484307,
+        "frame_ns_p99": 3588089,
+        "frames": 200,
+        "free_count": 509,
+        "live_bytes": 6359072,
+        "mode": "bench",
+        "ops_per_second": 205917.9,
+        "peak_bytes": 6456320,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          554143677,
+          616825465,
+          691809549,
+          678911423,
+          682795682
+        ],
+        "reported_bytes": 6357088,
+        "slots": 106203,
+        "status": "ok",
+        "total_ns": 678911423,
+        "total_ops": 139800,
+        "visibility": "public",
+        "workload": "w02_query_heavy"
+      },
+      "w03_structural_churn": {
+        "alloc_count": 636,
+        "alloc_total_bytes": 4218380,
+        "bytes_per_entity": 70.16,
+        "candidate": "archetype",
+        "checksum": "12388448366631572111",
+        "checksum_matches_anchor": true,
+        "final_entities": 30068,
+        "frame_ns_max": 1198566,
+        "frame_ns_p50": 277990,
+        "frame_ns_p95": 348462,
+        "frame_ns_p99": 406345,
+        "frames": 300,
+        "free_count": 585,
+        "live_bytes": 2109440,
+        "mode": "bench",
+        "ops_per_second": 10681947.5,
+        "peak_bytes": 2113536,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          73361142,
+          81296749,
+          92923710,
+          89978504,
+          86781928
+        ],
+        "reported_bytes": 2107456,
+        "slots": 70924,
+        "status": "ok",
+        "total_ns": 86781928,
+        "total_ops": 927000,
+        "visibility": "public",
+        "workload": "w03_structural_churn"
+      },
+      "w04_random_access": {
+        "alloc_count": 459,
+        "alloc_total_bytes": 23594640,
+        "bytes_per_entity": 58.99,
+        "candidate": "archetype",
+        "checksum": "11873868177109860483",
+        "checksum_matches_anchor": true,
+        "final_entities": 200000,
+        "frame_ns_max": 7444673,
+        "frame_ns_p50": 3193623,
+        "frame_ns_p95": 3451473,
+        "frame_ns_p99": 4543150,
+        "frames": 200,
+        "free_count": 429,
+        "live_bytes": 11797504,
+        "mode": "bench",
+        "ops_per_second": 6517361.7,
+        "peak_bytes": 12518400,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          641363817,
+          645337423,
+          626270588,
+          643878033,
+          618680979
+        ],
+        "reported_bytes": 11796544,
+        "slots": 200000,
+        "status": "ok",
+        "total_ns": 641363817,
+        "total_ops": 4180000,
+        "visibility": "public",
+        "workload": "w04_random_access"
+      },
+      "w05_small_world": {
+        "alloc_count": 457,
+        "alloc_total_bytes": 417804,
+        "bytes_per_entity": 77.64,
+        "candidate": "archetype",
+        "checksum": "18140062616316246866",
+        "checksum_matches_anchor": true,
+        "final_entities": 2694,
+        "frame_ns_max": 117744,
+        "frame_ns_p50": 79543,
+        "frame_ns_p95": 96367,
+        "frame_ns_p99": 110629,
+        "frames": 400,
+        "free_count": 406,
+        "live_bytes": 209152,
+        "mode": "bench",
+        "ops_per_second": 24597993.5,
+        "peak_bytes": 221824,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          32885247,
+          32453538,
+          32513249,
+          32681475,
+          32522978
+        ],
+        "reported_bytes": 207168,
+        "slots": 74844,
+        "status": "ok",
+        "total_ns": 32522978,
+        "total_ops": 800000,
+        "visibility": "public",
+        "workload": "w05_small_world"
+      }
+    },
+    "reference": {
+      "h01_zipf_hotspot": {
+        "alloc_count": 191530,
+        "alloc_total_bytes": 16515632,
+        "bytes_per_entity": 81.24,
+        "candidate": "reference",
+        "checksum": "423951039401401223",
+        "checksum_matches_anchor": true,
+        "final_entities": 149709,
+        "frame_ns_max": 9835014,
+        "frame_ns_p50": 4139168,
+        "frame_ns_p95": 4570738,
+        "frame_ns_p99": 4786412,
+        "frames": 250,
+        "free_count": 41820,
+        "live_bytes": 12162512,
+        "mode": "bench",
+        "ops_per_second": 1099846.7,
+        "peak_bytes": 12184976,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          1027320004,
+          1053149202,
+          1041963381,
+          1025854950,
+          1044696121
+        ],
+        "reported_bytes": 11377884,
+        "slots": 191516,
+        "status": "ok",
+        "total_ns": 1041963381,
+        "total_ops": 1146000,
+        "visibility": "hidden",
+        "workload": "h01_zipf_hotspot"
+      },
+      "h02_bursty_spawn": {
+        "alloc_count": 313911,
+        "alloc_total_bytes": 28135480,
+        "bytes_per_entity": 82.61,
+        "candidate": "reference",
+        "checksum": "4691360029406275791",
+        "checksum_matches_anchor": true,
+        "final_entities": 264586,
+        "frame_ns_max": 13068779,
+        "frame_ns_p50": 6559894,
+        "frame_ns_p95": 11673063,
+        "frame_ns_p99": 12457012,
+        "frames": 300,
+        "free_count": 49324,
+        "live_bytes": 21858680,
+        "mode": "bench",
+        "ops_per_second": 351688.5,
+        "peak_bytes": 21858680,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          1832088434,
+          1868130357,
+          1878523336,
+          1866811986,
+          1878563664
+        ],
+        "reported_bytes": 20108536,
+        "slots": 313896,
+        "status": "ok",
+        "total_ns": 1868130357,
+        "total_ops": 657000,
+        "visibility": "hidden",
+        "workload": "h02_bursty_spawn"
+      },
+      "h03_stale_handles": {
+        "alloc_count": 202779,
+        "alloc_total_bytes": 15942168,
+        "bytes_per_entity": 83.29,
+        "candidate": "reference",
+        "checksum": "14097276146769806109",
+        "checksum_matches_anchor": true,
+        "final_entities": 60376,
+        "frame_ns_max": 7910345,
+        "frame_ns_p50": 6230505,
+        "frame_ns_p95": 7520106,
+        "frame_ns_p99": 7817012,
+        "frames": 250,
+        "free_count": 142402,
+        "live_bytes": 5028904,
+        "mode": "bench",
+        "ops_per_second": 739108.4,
+        "peak_bytes": 5037976,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          1330669385,
+          1228762056,
+          1428748409,
+          1530062568,
+          1536270145
+        ],
+        "reported_bytes": 4588576,
+        "slots": 202766,
+        "status": "ok",
+        "total_ns": 1428748409,
+        "total_ops": 1056000,
+        "visibility": "hidden",
+        "workload": "h03_stale_handles"
+      },
+      "h04_recent_locality": {
+        "alloc_count": 320460,
+        "alloc_total_bytes": 23733440,
+        "bytes_per_entity": 80.45,
+        "candidate": "reference",
+        "checksum": "17705641624240767960",
+        "checksum_matches_anchor": true,
+        "final_entities": 39797,
+        "frame_ns_max": 2610375,
+        "frame_ns_p50": 1121410,
+        "frame_ns_p95": 1323476,
+        "frame_ns_p99": 1834642,
+        "frames": 300,
+        "free_count": 280662,
+        "live_bytes": 3201728,
+        "mode": "bench",
+        "ops_per_second": 4419965.8,
+        "peak_bytes": 3247808,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          359165912,
+          357745803,
+          347287754,
+          339807579,
+          336343741
+        ],
+        "reported_bytes": 3024572,
+        "slots": 320448,
+        "status": "ok",
+        "total_ns": 347287754,
+        "total_ops": 1535000,
+        "visibility": "hidden",
+        "workload": "h04_recent_locality"
+      },
+      "h05_sparse_component": {
+        "alloc_count": 215035,
+        "alloc_total_bytes": 21016408,
+        "bytes_per_entity": 86.05,
+        "candidate": "reference",
+        "checksum": "6783564805181817868",
+        "checksum_matches_anchor": true,
+        "final_entities": 199833,
+        "frame_ns_max": 15283517,
+        "frame_ns_p50": 6576140,
+        "frame_ns_p95": 7991994,
+        "frame_ns_p99": 8194167,
+        "frames": 200,
+        "free_count": 15201,
+        "live_bytes": 17196464,
+        "mode": "bench",
+        "ops_per_second": 226077.7,
+        "peak_bytes": 17217416,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          1343805498,
+          1324765804,
+          1345082283,
+          1322789967,
+          1307995863
+        ],
+        "reported_bytes": 15187308,
+        "slots": 215020,
+        "status": "ok",
+        "total_ns": 1324765804,
+        "total_ops": 299500,
+        "visibility": "hidden",
+        "workload": "h05_sparse_component"
+      },
+      "w01_steady_uniform": {
+        "alloc_count": 110065,
+        "alloc_total_bytes": 9266760,
+        "bytes_per_entity": 85.53,
+        "candidate": "reference",
+        "checksum": "16228116635718144136",
+        "checksum_matches_anchor": true,
+        "final_entities": 50398,
+        "frame_ns_max": 7051964,
+        "frame_ns_p50": 3727553,
+        "frame_ns_p95": 4874644,
+        "frame_ns_p99": 6222233,
+        "frames": 300,
+        "free_count": 59666,
+        "live_bytes": 4310488,
+        "mode": "bench",
+        "ops_per_second": 612988.3,
+        "peak_bytes": 4311208,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          992519802,
+          1057116412,
+          1100832334,
+          1045289412,
+          1079790543
+        ],
+        "reported_bytes": 3830248,
+        "slots": 110052,
+        "status": "ok",
+        "total_ns": 1057116412,
+        "total_ops": 648000,
+        "visibility": "public",
+        "workload": "w01_steady_uniform"
+      },
+      "w02_query_heavy": {
+        "alloc_count": 106217,
+        "alloc_total_bytes": 10373096,
+        "bytes_per_entity": 85.83,
+        "candidate": "reference",
+        "checksum": "2554782350736989489",
+        "checksum_matches_anchor": true,
+        "final_entities": 100001,
+        "frame_ns_max": 9495376,
+        "frame_ns_p50": 5673982,
+        "frame_ns_p95": 6451907,
+        "frame_ns_p99": 7491384,
+        "frames": 200,
+        "free_count": 6215,
+        "live_bytes": 8583536,
+        "mode": "bench",
+        "ops_per_second": 122097.1,
+        "peak_bytes": 8590592,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          1138303517,
+          1144990379,
+          1130852180,
+          1155734829,
+          1196888941
+        ],
+        "reported_bytes": 7600076,
+        "slots": 106203,
+        "status": "ok",
+        "total_ns": 1144990379,
+        "total_ops": 139800,
+        "visibility": "public",
+        "workload": "w02_query_heavy"
+      },
+      "w03_structural_churn": {
+        "alloc_count": 70936,
+        "alloc_total_bytes": 5767712,
+        "bytes_per_entity": 83.19,
+        "candidate": "reference",
+        "checksum": "12388448366631572111",
+        "checksum_matches_anchor": true,
+        "final_entities": 30068,
+        "frame_ns_max": 3645469,
+        "frame_ns_p50": 2216470,
+        "frame_ns_p95": 2969156,
+        "frame_ns_p99": 3150176,
+        "frames": 300,
+        "free_count": 40867,
+        "live_bytes": 2501240,
+        "mode": "bench",
+        "ops_per_second": 1493277.5,
+        "peak_bytes": 2504624,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          579989712,
+          585048275,
+          622372399,
+          620915088,
+          620782125
+        ],
+        "reported_bytes": 2285168,
+        "slots": 70924,
+        "status": "ok",
+        "total_ns": 620782125,
+        "total_ops": 927000,
+        "visibility": "public",
+        "workload": "w03_structural_churn"
+      },
+      "w04_random_access": {
+        "alloc_count": 200015,
+        "alloc_total_bytes": 19934968,
+        "bytes_per_entity": 86.04,
+        "candidate": "reference",
+        "checksum": "11873868177109860483",
+        "checksum_matches_anchor": true,
+        "final_entities": 200000,
+        "frame_ns_max": 11290484,
+        "frame_ns_p50": 5162059,
+        "frame_ns_p95": 6394875,
+        "frame_ns_p99": 7113262,
+        "frames": 200,
+        "free_count": 14,
+        "live_bytes": 17208488,
+        "mode": "bench",
+        "ops_per_second": 3975758.3,
+        "peak_bytes": 17208488,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          1064165386,
+          1063565117,
+          1015648685,
+          1051371749,
+          1034856434
+        ],
+        "reported_bytes": 15200000,
+        "slots": 200000,
+        "status": "ok",
+        "total_ns": 1051371749,
+        "total_ops": 4180000,
+        "visibility": "public",
+        "workload": "w04_random_access"
+      },
+      "w05_small_world": {
+        "alloc_count": 74853,
+        "alloc_total_bytes": 5465400,
+        "bytes_per_entity": 87.11,
+        "candidate": "reference",
+        "checksum": "18140062616316246866",
+        "checksum_matches_anchor": true,
+        "final_entities": 2694,
+        "frame_ns_max": 154359,
+        "frame_ns_p50": 115767,
+        "frame_ns_p95": 134357,
+        "frame_ns_p99": 146674,
+        "frames": 400,
+        "free_count": 72158,
+        "live_bytes": 234664,
+        "mode": "bench",
+        "ops_per_second": 17005980.6,
+        "peak_bytes": 240136,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          47179854,
+          46846538,
+          50973158,
+          47042274,
+          47007172
+        ],
+        "reported_bytes": 204744,
+        "slots": 74844,
+        "status": "ok",
+        "total_ns": 47042274,
+        "total_ops": 800000,
+        "visibility": "public",
+        "workload": "w05_small_world"
+      }
+    },
+    "soa": {
+      "h01_zipf_hotspot": {
+        "alloc_count": 143,
+        "alloc_total_bytes": 22024146,
+        "bytes_per_entity": 73.56,
+        "candidate": "soa",
+        "checksum": "423951039401401223",
+        "checksum_matches_anchor": true,
+        "final_entities": 149709,
+        "frame_ns_max": 7974151,
+        "frame_ns_p50": 2737259,
+        "frame_ns_p95": 2985513,
+        "frame_ns_p99": 3438994,
+        "frames": 250,
+        "free_count": 135,
+        "live_bytes": 11012096,
+        "mode": "bench",
+        "ops_per_second": 1655100.4,
+        "peak_bytes": 11534336,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          696431656,
+          707397896,
+          692405105,
+          684650863,
+          689091805
+        ],
+        "reported_bytes": 11012096,
+        "slots": 191516,
+        "status": "ok",
+        "total_ns": 692405105,
+        "total_ops": 1146000,
+        "visibility": "hidden",
+        "workload": "h01_zipf_hotspot"
+      },
+      "h02_bursty_spawn": {
+        "alloc_count": 144,
+        "alloc_total_bytes": 44040210,
+        "bytes_per_entity": 83.22,
+        "candidate": "soa",
+        "checksum": "4691360029406275791",
+        "checksum_matches_anchor": true,
+        "final_entities": 264586,
+        "frame_ns_max": 9758097,
+        "frame_ns_p50": 2083771,
+        "frame_ns_p95": 4490889,
+        "frame_ns_p99": 4902017,
+        "frames": 300,
+        "free_count": 136,
+        "live_bytes": 22020128,
+        "mode": "bench",
+        "ops_per_second": 947454.4,
+        "peak_bytes": 23068704,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          769532068,
+          749913425,
+          608687456,
+          600592105,
+          693437055
+        ],
+        "reported_bytes": 22020128,
+        "slots": 313896,
+        "status": "ok",
+        "total_ns": 693437055,
+        "total_ops": 657000,
+        "visibility": "hidden",
+        "workload": "h02_bursty_spawn"
+      },
+      "h03_stale_handles": {
+        "alloc_count": 129,
+        "alloc_total_bytes": 5509074,
+        "bytes_per_entity": 45.62,
+        "candidate": "soa",
+        "checksum": "14097276146769806109",
+        "checksum_matches_anchor": true,
+        "final_entities": 60376,
+        "frame_ns_max": 2357010,
+        "frame_ns_p50": 1001527,
+        "frame_ns_p95": 1114720,
+        "frame_ns_p99": 1300944,
+        "frames": 250,
+        "free_count": 121,
+        "live_bytes": 2754560,
+        "mode": "bench",
+        "ops_per_second": 4126891.1,
+        "peak_bytes": 2883584,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          248932656,
+          255882688,
+          247120978,
+          261563875,
+          257957977
+        ],
+        "reported_bytes": 2754560,
+        "slots": 202766,
+        "status": "ok",
+        "total_ns": 255882688,
+        "total_ops": 1056000,
+        "visibility": "hidden",
+        "workload": "h03_stale_handles"
+      },
+      "h04_recent_locality": {
+        "alloc_count": 131,
+        "alloc_total_bytes": 5521362,
+        "bytes_per_entity": 69.37,
+        "candidate": "soa",
+        "checksum": "17705641624240767960",
+        "checksum_matches_anchor": true,
+        "final_entities": 39797,
+        "frame_ns_max": 1682143,
+        "frame_ns_p50": 634372,
+        "frame_ns_p95": 711046,
+        "frame_ns_p99": 832618,
+        "frames": 300,
+        "free_count": 123,
+        "live_bytes": 2760704,
+        "mode": "bench",
+        "ops_per_second": 7883865.8,
+        "peak_bytes": 2883584,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          204595939,
+          207592770,
+          194701437,
+          184343116,
+          182929758
+        ],
+        "reported_bytes": 2760704,
+        "slots": 320448,
+        "status": "ok",
+        "total_ns": 194701437,
+        "total_ops": 1535000,
+        "visibility": "hidden",
+        "workload": "h04_recent_locality"
+      },
+      "h05_sparse_component": {
+        "alloc_count": 143,
+        "alloc_total_bytes": 22024146,
+        "bytes_per_entity": 55.11,
+        "candidate": "soa",
+        "checksum": "6783564805181817868",
+        "checksum_matches_anchor": true,
+        "final_entities": 199833,
+        "frame_ns_max": 9606211,
+        "frame_ns_p50": 1143633,
+        "frame_ns_p95": 1371692,
+        "frame_ns_p99": 1720183,
+        "frames": 200,
+        "free_count": 135,
+        "live_bytes": 11012096,
+        "mode": "bench",
+        "ops_per_second": 1236059.3,
+        "peak_bytes": 11534336,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          240804062,
+          242302293,
+          242560619,
+          237832355,
+          271667855
+        ],
+        "reported_bytes": 11012096,
+        "slots": 215020,
+        "status": "ok",
+        "total_ns": 242302293,
+        "total_ops": 299500,
+        "visibility": "hidden",
+        "workload": "h05_sparse_component"
+      },
+      "w01_steady_uniform": {
+        "alloc_count": 128,
+        "alloc_total_bytes": 5507026,
+        "bytes_per_entity": 54.64,
+        "candidate": "soa",
+        "checksum": "16228116635718144136",
+        "checksum_matches_anchor": true,
+        "final_entities": 50398,
+        "frame_ns_max": 1768821,
+        "frame_ns_p50": 743196,
+        "frame_ns_p95": 949928,
+        "frame_ns_p99": 976770,
+        "frames": 300,
+        "free_count": 120,
+        "live_bytes": 2753536,
+        "mode": "bench",
+        "ops_per_second": 2734617.8,
+        "peak_bytes": 2883584,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          236961817,
+          279161601,
+          287869293,
+          222471409,
+          222936822
+        ],
+        "reported_bytes": 2753536,
+        "slots": 110052,
+        "status": "ok",
+        "total_ns": 236961817,
+        "total_ops": 648000,
+        "visibility": "public",
+        "workload": "w01_steady_uniform"
+      },
+      "w02_query_heavy": {
+        "alloc_count": 134,
+        "alloc_total_bytes": 11011026,
+        "bytes_per_entity": 55.05,
+        "candidate": "soa",
+        "checksum": "2554782350736989489",
+        "checksum_matches_anchor": true,
+        "final_entities": 100001,
+        "frame_ns_max": 9300680,
+        "frame_ns_p50": 4004705,
+        "frame_ns_p95": 4324223,
+        "frame_ns_p99": 4618685,
+        "frames": 200,
+        "free_count": 126,
+        "live_bytes": 5505536,
+        "mode": "bench",
+        "ops_per_second": 174414.5,
+        "peak_bytes": 5767168,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          731901075,
+          752969937,
+          845200207,
+          801538912,
+          808593976
+        ],
+        "reported_bytes": 5505536,
+        "slots": 106203,
+        "status": "ok",
+        "total_ns": 801538912,
+        "total_ops": 139800,
+        "visibility": "public",
+        "workload": "w02_query_heavy"
+      },
+      "w03_structural_churn": {
+        "alloc_count": 122,
+        "alloc_total_bytes": 2756562,
+        "bytes_per_entity": 45.84,
+        "candidate": "soa",
+        "checksum": "12388448366631572111",
+        "checksum_matches_anchor": true,
+        "final_entities": 30068,
+        "frame_ns_max": 1276645,
+        "frame_ns_p50": 405563,
+        "frame_ns_p95": 513435,
+        "frame_ns_p99": 570192,
+        "frames": 300,
+        "free_count": 114,
+        "live_bytes": 1378304,
+        "mode": "bench",
+        "ops_per_second": 7346796.1,
+        "peak_bytes": 1441792,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          127071771,
+          127745633,
+          123420286,
+          126177450,
+          121381372
+        ],
+        "reported_bytes": 1378304,
+        "slots": 70924,
+        "status": "ok",
+        "total_ns": 126177450,
+        "total_ops": 927000,
+        "visibility": "public",
+        "workload": "w03_structural_churn"
+      },
+      "w04_random_access": {
+        "alloc_count": 133,
+        "alloc_total_bytes": 22020054,
+        "bytes_per_entity": 55.05,
+        "candidate": "soa",
+        "checksum": "11873868177109860483",
+        "checksum_matches_anchor": true,
+        "final_entities": 200000,
+        "frame_ns_max": 7371105,
+        "frame_ns_p50": 3451642,
+        "frame_ns_p95": 3672969,
+        "frame_ns_p99": 4579240,
+        "frames": 200,
+        "free_count": 126,
+        "live_bytes": 11010048,
+        "mode": "bench",
+        "ops_per_second": 6026146.7,
+        "peak_bytes": 11534336,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          634451405,
+          684749996,
+          726043970,
+          693643922,
+          778639551
+        ],
+        "reported_bytes": 11010048,
+        "slots": 200000,
+        "status": "ok",
+        "total_ns": 693643922,
+        "total_ops": 4180000,
+        "visibility": "public",
+        "workload": "w04_random_access"
+      },
+      "w05_small_world": {
+        "alloc_count": 101,
+        "alloc_total_bytes": 348114,
+        "bytes_per_entity": 64.62,
+        "candidate": "soa",
+        "checksum": "18140062616316246866",
+        "checksum_matches_anchor": true,
+        "final_entities": 2694,
+        "frame_ns_max": 190407,
+        "frame_ns_p50": 76530,
+        "frame_ns_p95": 95903,
+        "frame_ns_p99": 109296,
+        "frames": 400,
+        "free_count": 93,
+        "live_bytes": 174080,
+        "mode": "bench",
+        "ops_per_second": 25912395.7,
+        "peak_bytes": 181248,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          32356046,
+          31536739,
+          30873255,
+          30704126,
+          29604196
+        ],
+        "reported_bytes": 174080,
+        "slots": 74844,
+        "status": "ok",
+        "total_ns": 30873255,
+        "total_ops": 800000,
+        "visibility": "public",
+        "workload": "w05_small_world"
+      }
+    },
+    "sparse_set": {
+      "h01_zipf_hotspot": {
+        "alloc_count": 287,
+        "alloc_total_bytes": 30412710,
+        "bytes_per_entity": 101.57,
+        "candidate": "sparse_set",
+        "checksum": "423951039401401223",
+        "checksum_matches_anchor": true,
+        "final_entities": 149709,
+        "frame_ns_max": 10663585,
+        "frame_ns_p50": 2193566,
+        "frame_ns_p95": 2594878,
+        "frame_ns_p99": 3189352,
+        "frames": 250,
+        "free_count": 271,
+        "live_bytes": 15206400,
+        "mode": "bench",
+        "ops_per_second": 1994604.4,
+        "peak_bytes": 15990784,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          578056442,
+          574550027,
+          532674488,
+          573089322,
+          637908807
+        ],
+        "reported_bytes": 15206400,
+        "slots": 191516,
+        "status": "ok",
+        "total_ns": 574550027,
+        "total_ops": 1146000,
+        "visibility": "hidden",
+        "workload": "h01_zipf_hotspot"
+      },
+      "h02_bursty_spawn": {
+        "alloc_count": 290,
+        "alloc_total_bytes": 46137318,
+        "bytes_per_entity": 87.19,
+        "candidate": "sparse_set",
+        "checksum": "4691360029406275791",
+        "checksum_matches_anchor": true,
+        "final_entities": 264586,
+        "frame_ns_max": 10333146,
+        "frame_ns_p50": 2770171,
+        "frame_ns_p95": 5336626,
+        "frame_ns_p99": 6145989,
+        "frames": 300,
+        "free_count": 274,
+        "live_bytes": 23068704,
+        "mode": "bench",
+        "ops_per_second": 771027.6,
+        "peak_bytes": 24117280,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          852109524,
+          867432223,
+          831480654,
+          854049913,
+          836134020
+        ],
+        "reported_bytes": 23068704,
+        "slots": 313896,
+        "status": "ok",
+        "total_ns": 852109524,
+        "total_ops": 657000,
+        "visibility": "hidden",
+        "workload": "h02_bursty_spawn"
+      },
+      "h03_stale_handles": {
+        "alloc_count": 261,
+        "alloc_total_bytes": 9179046,
+        "bytes_per_entity": 76.02,
+        "candidate": "sparse_set",
+        "checksum": "14097276146769806109",
+        "checksum_matches_anchor": true,
+        "final_entities": 60376,
+        "frame_ns_max": 2922475,
+        "frame_ns_p50": 1712883,
+        "frame_ns_p95": 2004197,
+        "frame_ns_p99": 2530930,
+        "frames": 250,
+        "free_count": 245,
+        "live_bytes": 4589568,
+        "mode": "bench",
+        "ops_per_second": 2557193.3,
+        "peak_bytes": 4784128,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          465546117,
+          438515832,
+          354604654,
+          412952751,
+          401140750
+        ],
+        "reported_bytes": 4589568,
+        "slots": 202766,
+        "status": "ok",
+        "total_ns": 412952751,
+        "total_ops": 1056000,
+        "visibility": "hidden",
+        "workload": "h03_stale_handles"
+      },
+      "h04_recent_locality": {
+        "alloc_count": 257,
+        "alloc_total_bytes": 7880614,
+        "bytes_per_entity": 99.01,
+        "candidate": "sparse_set",
+        "checksum": "17705641624240767960",
+        "checksum_matches_anchor": true,
+        "final_entities": 39797,
+        "frame_ns_max": 2615670,
+        "frame_ns_p50": 768931,
+        "frame_ns_p95": 842177,
+        "frame_ns_p99": 986020,
+        "frames": 300,
+        "free_count": 241,
+        "live_bytes": 3940352,
+        "mode": "bench",
+        "ops_per_second": 6593889.2,
+        "peak_bytes": 4325376,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          209107100,
+          210166314,
+          257631140,
+          261551320,
+          232791295
+        ],
+        "reported_bytes": 3940352,
+        "slots": 320448,
+        "status": "ok",
+        "total_ns": 232791295,
+        "total_ops": 1535000,
+        "visibility": "hidden",
+        "workload": "h04_recent_locality"
+      },
+      "h05_sparse_component": {
+        "alloc_count": 279,
+        "alloc_total_bytes": 29626278,
+        "bytes_per_entity": 74.13,
+        "candidate": "sparse_set",
+        "checksum": "6783564805181817868",
+        "checksum_matches_anchor": true,
+        "final_entities": 199833,
+        "frame_ns_max": 13921562,
+        "frame_ns_p50": 1317105,
+        "frame_ns_p95": 1517148,
+        "frame_ns_p99": 1687295,
+        "frames": 200,
+        "free_count": 263,
+        "live_bytes": 14813184,
+        "mode": "bench",
+        "ops_per_second": 1090307.6,
+        "peak_bytes": 16056320,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          286236356,
+          274693122,
+          265265577,
+          266250543,
+          279608580
+        ],
+        "reported_bytes": 14813184,
+        "slots": 215020,
+        "status": "ok",
+        "total_ns": 274693122,
+        "total_ops": 299500,
+        "visibility": "hidden",
+        "workload": "h05_sparse_component"
+      },
+      "w01_steady_uniform": {
+        "alloc_count": 260,
+        "alloc_total_bytes": 9176998,
+        "bytes_per_entity": 91.05,
+        "candidate": "sparse_set",
+        "checksum": "16228116635718144136",
+        "checksum_matches_anchor": true,
+        "final_entities": 50398,
+        "frame_ns_max": 2403755,
+        "frame_ns_p50": 885451,
+        "frame_ns_p95": 1074046,
+        "frame_ns_p99": 1908079,
+        "frames": 300,
+        "free_count": 244,
+        "live_bytes": 4588544,
+        "mode": "bench",
+        "ops_per_second": 2375073.0,
+        "peak_bytes": 4785152,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          287649967,
+          279447591,
+          268378612,
+          272833722,
+          268307211
+        ],
+        "reported_bytes": 4588544,
+        "slots": 110052,
+        "status": "ok",
+        "total_ns": 272833722,
+        "total_ops": 648000,
+        "visibility": "public",
+        "workload": "w01_steady_uniform"
+      },
+      "w02_query_heavy": {
+        "alloc_count": 274,
+        "alloc_total_bytes": 18351014,
+        "bytes_per_entity": 91.75,
+        "candidate": "sparse_set",
+        "checksum": "2554782350736989489",
+        "checksum_matches_anchor": true,
+        "final_entities": 100001,
+        "frame_ns_max": 11035485,
+        "frame_ns_p50": 4847690,
+        "frame_ns_p95": 5225235,
+        "frame_ns_p99": 5663133,
+        "frames": 200,
+        "free_count": 258,
+        "live_bytes": 9175552,
+        "mode": "bench",
+        "ops_per_second": 144793.1,
+        "peak_bytes": 9568256,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          952449764,
+          978717611,
+          993431250,
+          847100297,
+          965515803
+        ],
+        "reported_bytes": 9175552,
+        "slots": 106203,
+        "status": "ok",
+        "total_ns": 965515803,
+        "total_ops": 139800,
+        "visibility": "public",
+        "workload": "w02_query_heavy"
+      },
+      "w03_structural_churn": {
+        "alloc_count": 244,
+        "alloc_total_bytes": 4067238,
+        "bytes_per_entity": 67.64,
+        "candidate": "sparse_set",
+        "checksum": "12388448366631572111",
+        "checksum_matches_anchor": true,
+        "final_entities": 30068,
+        "frame_ns_max": 1197719,
+        "frame_ns_p50": 355566,
+        "frame_ns_p95": 412491,
+        "frame_ns_p99": 486732,
+        "frames": 300,
+        "free_count": 228,
+        "live_bytes": 2033664,
+        "mode": "bench",
+        "ops_per_second": 8479241.1,
+        "peak_bytes": 2130176,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          111461655,
+          109050043,
+          113547739,
+          109178695,
+          109325822
+        ],
+        "reported_bytes": 2033664,
+        "slots": 70924,
+        "status": "ok",
+        "total_ns": 109325822,
+        "total_ops": 927000,
+        "visibility": "public",
+        "workload": "w03_structural_churn"
+      },
+      "w04_random_access": {
+        "alloc_count": 279,
+        "alloc_total_bytes": 34602922,
+        "bytes_per_entity": 86.51,
+        "candidate": "sparse_set",
+        "checksum": "11873868177109860483",
+        "checksum_matches_anchor": true,
+        "final_entities": 200000,
+        "frame_ns_max": 12159959,
+        "frame_ns_p50": 4265383,
+        "frame_ns_p95": 4536026,
+        "frame_ns_p99": 5036589,
+        "frames": 200,
+        "free_count": 264,
+        "live_bytes": 17301504,
+        "mode": "bench",
+        "ops_per_second": 4852196.0,
+        "peak_bytes": 18874368,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          858110637,
+          876143590,
+          871678775,
+          861465611,
+          844008249
+        ],
+        "reported_bytes": 17301504,
+        "slots": 200000,
+        "status": "ok",
+        "total_ns": 861465611,
+        "total_ops": 4180000,
+        "visibility": "public",
+        "workload": "w04_random_access"
+      },
+      "w05_small_world": {
+        "alloc_count": 199,
+        "alloc_total_bytes": 511910,
+        "bytes_per_entity": 95.03,
+        "candidate": "sparse_set",
+        "checksum": "18140062616316246866",
+        "checksum_matches_anchor": true,
+        "final_entities": 2694,
+        "frame_ns_max": 164257,
+        "frame_ns_p50": 76943,
+        "frame_ns_p95": 100751,
+        "frame_ns_p99": 115336,
+        "frames": 400,
+        "free_count": 183,
+        "live_bytes": 256000,
+        "mode": "bench",
+        "ops_per_second": 25156530.2,
+        "peak_bytes": 267264,
+        "pmu": null,
+        "pmu_available": false,
+        "pmu_unavailable_reason": "perf_event_open(cycles) failed: No such file or directory",
+        "repeats": 5,
+        "repetition_total_ns": [
+          31765925,
+          31970479,
+          31874587,
+          31594906,
+          31800888
+        ],
+        "reported_bytes": 256000,
+        "slots": 74844,
+        "status": "ok",
+        "total_ns": 31800888,
+        "total_ops": 800000,
+        "visibility": "public",
+        "workload": "w05_small_world"
+      }
+    }
+  },
+  "notes": [
+    "broken_recycle is a negative control; it is excluded from measurement."
+  ],
+  "objectives": [
+    "frame_ns_p50",
+    "frame_ns_p99",
+    "peak_bytes"
+  ],
+  "pareto": {
+    "h01_zipf_hotspot": {
+      "front": [
+        "archetype"
+      ],
+      "points": {
+        "aos": [
+          2594334,
+          3038309,
+          22020096
+        ],
+        "archetype": [
+          1925903,
+          2396576,
+          11011072
+        ],
+        "reference": [
+          4139168,
+          4786412,
+          12184976
+        ],
+        "soa": [
+          2737259,
+          3438994,
+          11534336
+        ],
+        "sparse_set": [
+          2193566,
+          3189352,
+          15990784
+        ]
+      }
+    },
+    "h02_bursty_spawn": {
+      "front": [
+        "archetype",
+        "reference"
+      ],
+      "points": {
+        "aos": [
+          2767305,
+          5576677,
+          44040224
+        ],
+        "archetype": [
+          1844714,
+          3936651,
+          22939680
+        ],
+        "reference": [
+          6559894,
+          12457012,
+          21858680
+        ],
+        "soa": [
+          2083771,
+          4902017,
+          23068704
+        ],
+        "sparse_set": [
+          2770171,
+          6145989,
+          24117280
+        ]
+      }
+    },
+    "h03_stale_handles": {
+      "front": [
+        "archetype",
+        "soa"
+      ],
+      "points": {
+        "aos": [
+          1014292,
+          1524186,
+          5505024
+        ],
+        "archetype": [
+          848919,
+          1105331,
+          4417536
+        ],
+        "reference": [
+          6230505,
+          7817012,
+          5037976
+        ],
+        "soa": [
+          1001527,
+          1300944,
+          2883584
+        ],
+        "sparse_set": [
+          1712883,
+          2530930,
+          4784128
+        ]
+      }
+    },
+    "h04_recent_locality": {
+      "front": [
+        "archetype",
+        "soa"
+      ],
+      "points": {
+        "aos": [
+          704853,
+          1155299,
+          5505024
+        ],
+        "archetype": [
+          653039,
+          802832,
+          3120768
+        ],
+        "reference": [
+          1121410,
+          1834642,
+          3247808
+        ],
+        "soa": [
+          634372,
+          832618,
+          2883584
+        ],
+        "sparse_set": [
+          768931,
+          986020,
+          4325376
+        ]
+      }
+    },
+    "h05_sparse_component": {
+      "front": [
+        "archetype",
+        "soa"
+      ],
+      "points": {
+        "aos": [
+          1545643,
+          2146270,
+          22020096
+        ],
+        "archetype": [
+          367282,
+          494591,
+          13958592
+        ],
+        "reference": [
+          6576140,
+          8194167,
+          17217416
+        ],
+        "soa": [
+          1143633,
+          1720183,
+          11534336
+        ],
+        "sparse_set": [
+          1317105,
+          1687295,
+          16056320
+        ]
+      }
+    },
+    "w01_steady_uniform": {
+      "front": [
+        "archetype",
+        "soa"
+      ],
+      "points": {
+        "aos": [
+          882324,
+          1255309,
+          5505024
+        ],
+        "archetype": [
+          726500,
+          1008675,
+          3130368
+        ],
+        "reference": [
+          3727553,
+          6222233,
+          4311208
+        ],
+        "soa": [
+          743196,
+          976770,
+          2883584
+        ],
+        "sparse_set": [
+          885451,
+          1908079,
+          4785152
+        ]
+      }
+    },
+    "w02_query_heavy": {
+      "front": [
+        "archetype",
+        "soa"
+      ],
+      "points": {
+        "aos": [
+          4845138,
+          5750839,
+          11010048
+        ],
+        "archetype": [
+          3377752,
+          3588089,
+          6456320
+        ],
+        "reference": [
+          5673982,
+          7491384,
+          8590592
+        ],
+        "soa": [
+          4004705,
+          4618685,
+          5767168
+        ],
+        "sparse_set": [
+          4847690,
+          5663133,
+          9568256
+        ]
+      }
+    },
+    "w03_structural_churn": {
+      "front": [
+        "archetype",
+        "soa"
+      ],
+      "points": {
+        "aos": [
+          354017,
+          638383,
+          2752512
+        ],
+        "archetype": [
+          277990,
+          406345,
+          2113536
+        ],
+        "reference": [
+          2216470,
+          3150176,
+          2504624
+        ],
+        "soa": [
+          405563,
+          570192,
+          1441792
+        ],
+        "sparse_set": [
+          355566,
+          486732,
+          2130176
+        ]
+      }
+    },
+    "w04_random_access": {
+      "front": [
+        "archetype",
+        "soa"
+      ],
+      "points": {
+        "aos": [
+          4258445,
+          5235744,
+          22020096
+        ],
+        "archetype": [
+          3193623,
+          4543150,
+          12518400
+        ],
+        "reference": [
+          5162059,
+          7113262,
+          17208488
+        ],
+        "soa": [
+          3451642,
+          4579240,
+          11534336
+        ],
+        "sparse_set": [
+          4265383,
+          5036589,
+          18874368
+        ]
+      }
+    },
+    "w05_small_world": {
+      "front": [
+        "aos",
+        "soa"
+      ],
+      "points": {
+        "aos": [
+          65726,
+          92917,
+          345088
+        ],
+        "archetype": [
+          79543,
+          110629,
+          221824
+        ],
+        "reference": [
+          115767,
+          146674,
+          240136
+        ],
+        "soa": [
+          76530,
+          109296,
+          181248
+        ],
+        "sparse_set": [
+          76943,
+          115336,
+          267264
+        ]
+      }
+    }
+  },
+  "repeats": 5,
+  "run_id": "20260902T092528Z",
+  "verification": {
+    "aos": {
+      "all_agree_with_expectation": true,
+      "expected": "pass",
+      "workloads": {
+        "h01_zipf_hotspot": {
+          "agreed_with_expectation": true,
+          "checksum": "423951039401401223",
+          "failure": "",
+          "ops_checked": 1146000,
+          "status": "passed"
+        },
+        "h02_bursty_spawn": {
+          "agreed_with_expectation": true,
+          "checksum": "4691360029406275791",
+          "failure": "",
+          "ops_checked": 657000,
+          "status": "passed"
+        },
+        "h03_stale_handles": {
+          "agreed_with_expectation": true,
+          "checksum": "14097276146769806109",
+          "failure": "",
+          "ops_checked": 1056000,
+          "status": "passed"
+        },
+        "h04_recent_locality": {
+          "agreed_with_expectation": true,
+          "checksum": "17705641624240767960",
+          "failure": "",
+          "ops_checked": 1535000,
+          "status": "passed"
+        },
+        "h05_sparse_component": {
+          "agreed_with_expectation": true,
+          "checksum": "6783564805181817868",
+          "failure": "",
+          "ops_checked": 299500,
+          "status": "passed"
+        },
+        "w01_steady_uniform": {
+          "agreed_with_expectation": true,
+          "checksum": "16228116635718144136",
+          "failure": "",
+          "ops_checked": 648000,
+          "status": "passed"
+        },
+        "w02_query_heavy": {
+          "agreed_with_expectation": true,
+          "checksum": "2554782350736989489",
+          "failure": "",
+          "ops_checked": 139800,
+          "status": "passed"
+        },
+        "w03_structural_churn": {
+          "agreed_with_expectation": true,
+          "checksum": "12388448366631572111",
+          "failure": "",
+          "ops_checked": 927000,
+          "status": "passed"
+        },
+        "w04_random_access": {
+          "agreed_with_expectation": true,
+          "checksum": "11873868177109860483",
+          "failure": "",
+          "ops_checked": 4180000,
+          "status": "passed"
+        },
+        "w05_small_world": {
+          "agreed_with_expectation": true,
+          "checksum": "18140062616316246866",
+          "failure": "",
+          "ops_checked": 800000,
+          "status": "passed"
+        }
+      }
+    },
+    "archetype": {
+      "all_agree_with_expectation": true,
+      "expected": "pass",
+      "workloads": {
+        "h01_zipf_hotspot": {
+          "agreed_with_expectation": true,
+          "checksum": "423951039401401223",
+          "failure": "",
+          "ops_checked": 1146000,
+          "status": "passed"
+        },
+        "h02_bursty_spawn": {
+          "agreed_with_expectation": true,
+          "checksum": "4691360029406275791",
+          "failure": "",
+          "ops_checked": 657000,
+          "status": "passed"
+        },
+        "h03_stale_handles": {
+          "agreed_with_expectation": true,
+          "checksum": "14097276146769806109",
+          "failure": "",
+          "ops_checked": 1056000,
+          "status": "passed"
+        },
+        "h04_recent_locality": {
+          "agreed_with_expectation": true,
+          "checksum": "17705641624240767960",
+          "failure": "",
+          "ops_checked": 1535000,
+          "status": "passed"
+        },
+        "h05_sparse_component": {
+          "agreed_with_expectation": true,
+          "checksum": "6783564805181817868",
+          "failure": "",
+          "ops_checked": 299500,
+          "status": "passed"
+        },
+        "w01_steady_uniform": {
+          "agreed_with_expectation": true,
+          "checksum": "16228116635718144136",
+          "failure": "",
+          "ops_checked": 648000,
+          "status": "passed"
+        },
+        "w02_query_heavy": {
+          "agreed_with_expectation": true,
+          "checksum": "2554782350736989489",
+          "failure": "",
+          "ops_checked": 139800,
+          "status": "passed"
+        },
+        "w03_structural_churn": {
+          "agreed_with_expectation": true,
+          "checksum": "12388448366631572111",
+          "failure": "",
+          "ops_checked": 927000,
+          "status": "passed"
+        },
+        "w04_random_access": {
+          "agreed_with_expectation": true,
+          "checksum": "11873868177109860483",
+          "failure": "",
+          "ops_checked": 4180000,
+          "status": "passed"
+        },
+        "w05_small_world": {
+          "agreed_with_expectation": true,
+          "checksum": "18140062616316246866",
+          "failure": "",
+          "ops_checked": 800000,
+          "status": "passed"
+        }
+      }
+    },
+    "broken_recycle": {
+      "all_agree_with_expectation": true,
+      "expected": "fail",
+      "workloads": {
+        "h01_zipf_hotspot": {
+          "agreed_with_expectation": true,
+          "checksum": "0",
+          "failure": "frame 31, op 0: alive() disagrees for slot 0",
+          "ops_checked": 274000,
+          "status": "failed"
+        },
+        "h02_bursty_spawn": {
+          "agreed_with_expectation": true,
+          "checksum": "0",
+          "failure": "frame 31, op 0: alive() disagrees for slot 16049",
+          "ops_checked": 94000,
+          "status": "failed"
+        },
+        "h03_stale_handles": {
+          "agreed_with_expectation": true,
+          "checksum": "0",
+          "failure": "frame 1, op 28: observation mismatch on op kind 5 slot 28785 component 0 (candidate fold 11044416618384118680, oracle fold 12396900903251808339)",
+          "ops_checked": 60029,
+          "status": "failed"
+        },
+        "h04_recent_locality": {
+          "agreed_with_expectation": true,
+          "checksum": "0",
+          "failure": "frame 31, op 0: alive() disagrees for slot 39492",
+          "ops_checked": 195000,
+          "status": "failed"
+        },
+        "h05_sparse_component": {
+          "agreed_with_expectation": true,
+          "checksum": "0",
+          "failure": "frame 31, op 0: alive() disagrees for slot 213",
+          "ops_checked": 215500,
+          "status": "failed"
+        },
+        "w01_steady_uniform": {
+          "agreed_with_expectation": true,
+          "checksum": "0",
+          "failure": "frame 31, op 0: alive() disagrees for slot 10",
+          "ops_checked": 112000,
+          "status": "failed"
+        },
+        "w02_query_heavy": {
+          "agreed_with_expectation": true,
+          "checksum": "0",
+          "failure": "frame 31, op 0: alive() disagrees for slot 31",
+          "ops_checked": 106200,
+          "status": "failed"
+        },
+        "w03_structural_churn": {
+          "agreed_with_expectation": true,
+          "checksum": "0",
+          "failure": "frame 31, op 0: alive() disagrees for slot 2",
+          "ops_checked": 123000,
+          "status": "failed"
+        },
+        "w04_random_access": {
+          "agreed_with_expectation": true,
+          "checksum": "11873868177109860483",
+          "failure": "",
+          "ops_checked": 4180000,
+          "status": "passed"
+        },
+        "w05_small_world": {
+          "agreed_with_expectation": true,
+          "checksum": "0",
+          "failure": "frame 31, op 0: alive() disagrees for slot 0",
+          "ops_checked": 64000,
+          "status": "failed"
+        }
+      }
+    },
+    "reference": {
+      "all_agree_with_expectation": true,
+      "expected": "pass",
+      "workloads": {
+        "h01_zipf_hotspot": {
+          "agreed_with_expectation": true,
+          "checksum": "423951039401401223",
+          "failure": "",
+          "ops_checked": 1146000,
+          "status": "passed"
+        },
+        "h02_bursty_spawn": {
+          "agreed_with_expectation": true,
+          "checksum": "4691360029406275791",
+          "failure": "",
+          "ops_checked": 657000,
+          "status": "passed"
+        },
+        "h03_stale_handles": {
+          "agreed_with_expectation": true,
+          "checksum": "14097276146769806109",
+          "failure": "",
+          "ops_checked": 1056000,
+          "status": "passed"
+        },
+        "h04_recent_locality": {
+          "agreed_with_expectation": true,
+          "checksum": "17705641624240767960",
+          "failure": "",
+          "ops_checked": 1535000,
+          "status": "passed"
+        },
+        "h05_sparse_component": {
+          "agreed_with_expectation": true,
+          "checksum": "6783564805181817868",
+          "failure": "",
+          "ops_checked": 299500,
+          "status": "passed"
+        },
+        "w01_steady_uniform": {
+          "agreed_with_expectation": true,
+          "checksum": "16228116635718144136",
+          "failure": "",
+          "ops_checked": 648000,
+          "status": "passed"
+        },
+        "w02_query_heavy": {
+          "agreed_with_expectation": true,
+          "checksum": "2554782350736989489",
+          "failure": "",
+          "ops_checked": 139800,
+          "status": "passed"
+        },
+        "w03_structural_churn": {
+          "agreed_with_expectation": true,
+          "checksum": "12388448366631572111",
+          "failure": "",
+          "ops_checked": 927000,
+          "status": "passed"
+        },
+        "w04_random_access": {
+          "agreed_with_expectation": true,
+          "checksum": "11873868177109860483",
+          "failure": "",
+          "ops_checked": 4180000,
+          "status": "passed"
+        },
+        "w05_small_world": {
+          "agreed_with_expectation": true,
+          "checksum": "18140062616316246866",
+          "failure": "",
+          "ops_checked": 800000,
+          "status": "passed"
+        }
+      }
+    },
+    "soa": {
+      "all_agree_with_expectation": true,
+      "expected": "pass",
+      "workloads": {
+        "h01_zipf_hotspot": {
+          "agreed_with_expectation": true,
+          "checksum": "423951039401401223",
+          "failure": "",
+          "ops_checked": 1146000,
+          "status": "passed"
+        },
+        "h02_bursty_spawn": {
+          "agreed_with_expectation": true,
+          "checksum": "4691360029406275791",
+          "failure": "",
+          "ops_checked": 657000,
+          "status": "passed"
+        },
+        "h03_stale_handles": {
+          "agreed_with_expectation": true,
+          "checksum": "14097276146769806109",
+          "failure": "",
+          "ops_checked": 1056000,
+          "status": "passed"
+        },
+        "h04_recent_locality": {
+          "agreed_with_expectation": true,
+          "checksum": "17705641624240767960",
+          "failure": "",
+          "ops_checked": 1535000,
+          "status": "passed"
+        },
+        "h05_sparse_component": {
+          "agreed_with_expectation": true,
+          "checksum": "6783564805181817868",
+          "failure": "",
+          "ops_checked": 299500,
+          "status": "passed"
+        },
+        "w01_steady_uniform": {
+          "agreed_with_expectation": true,
+          "checksum": "16228116635718144136",
+          "failure": "",
+          "ops_checked": 648000,
+          "status": "passed"
+        },
+        "w02_query_heavy": {
+          "agreed_with_expectation": true,
+          "checksum": "2554782350736989489",
+          "failure": "",
+          "ops_checked": 139800,
+          "status": "passed"
+        },
+        "w03_structural_churn": {
+          "agreed_with_expectation": true,
+          "checksum": "12388448366631572111",
+          "failure": "",
+          "ops_checked": 927000,
+          "status": "passed"
+        },
+        "w04_random_access": {
+          "agreed_with_expectation": true,
+          "checksum": "11873868177109860483",
+          "failure": "",
+          "ops_checked": 4180000,
+          "status": "passed"
+        },
+        "w05_small_world": {
+          "agreed_with_expectation": true,
+          "checksum": "18140062616316246866",
+          "failure": "",
+          "ops_checked": 800000,
+          "status": "passed"
+        }
+      }
+    },
+    "sparse_set": {
+      "all_agree_with_expectation": true,
+      "expected": "pass",
+      "workloads": {
+        "h01_zipf_hotspot": {
+          "agreed_with_expectation": true,
+          "checksum": "423951039401401223",
+          "failure": "",
+          "ops_checked": 1146000,
+          "status": "passed"
+        },
+        "h02_bursty_spawn": {
+          "agreed_with_expectation": true,
+          "checksum": "4691360029406275791",
+          "failure": "",
+          "ops_checked": 657000,
+          "status": "passed"
+        },
+        "h03_stale_handles": {
+          "agreed_with_expectation": true,
+          "checksum": "14097276146769806109",
+          "failure": "",
+          "ops_checked": 1056000,
+          "status": "passed"
+        },
+        "h04_recent_locality": {
+          "agreed_with_expectation": true,
+          "checksum": "17705641624240767960",
+          "failure": "",
+          "ops_checked": 1535000,
+          "status": "passed"
+        },
+        "h05_sparse_component": {
+          "agreed_with_expectation": true,
+          "checksum": "6783564805181817868",
+          "failure": "",
+          "ops_checked": 299500,
+          "status": "passed"
+        },
+        "w01_steady_uniform": {
+          "agreed_with_expectation": true,
+          "checksum": "16228116635718144136",
+          "failure": "",
+          "ops_checked": 648000,
+          "status": "passed"
+        },
+        "w02_query_heavy": {
+          "agreed_with_expectation": true,
+          "checksum": "2554782350736989489",
+          "failure": "",
+          "ops_checked": 139800,
+          "status": "passed"
+        },
+        "w03_structural_churn": {
+          "agreed_with_expectation": true,
+          "checksum": "12388448366631572111",
+          "failure": "",
+          "ops_checked": 927000,
+          "status": "passed"
+        },
+        "w04_random_access": {
+          "agreed_with_expectation": true,
+          "checksum": "11873868177109860483",
+          "failure": "",
+          "ops_checked": 4180000,
+          "status": "passed"
+        },
+        "w05_small_world": {
+          "agreed_with_expectation": true,
+          "checksum": "18140062616316246866",
+          "failure": "",
+          "ops_checked": 800000,
+          "status": "passed"
+        }
+      }
+    }
+  },
+  "warmup": 1
+}

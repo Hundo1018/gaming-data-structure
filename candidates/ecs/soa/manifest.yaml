@@ -1,0 +1,52 @@
+id: ecs_soa
+name: soa
+track: ecs
+binary: gds_ecs_soa
+island: 0
+parents: [ecs_aos]
+origin: baseline
+novelty_status: EXACT_REDISCOVERY
+expect_verify: pass
+
+hypothesis: >
+  Splitting the record into one array per component means a query loads only
+  the components it names, so iteration cost falls in proportion to the bytes
+  the query actually needs, at the price of one stream per component.
+
+representation: >
+  The same index space as aos, but generation, mask, liveness and each of the
+  four components live in separate parallel vectors. Slot i of every array
+  belongs to the same entity. Free list and generation counters as in aos.
+
+operations:
+  create: append to every array, or reuse a free slot
+  destroy: clear mask and liveness, bump generation, push slot
+  get_set: one generation check, then a single-component load from one array
+  add_remove: flip a mask bit, write in place, no relocation
+  query: walk the mask array, gather only the named component arrays
+  integrate: walk mask, position and velocity arrays together
+
+assumptions:
+  - queries name a proper subset of the components
+  - the hardware sustains several concurrent sequential streams
+
+expected_advantages:
+  - a narrow query moves far fewer bytes than aos
+  - components with small values pack tightly instead of being padded to the widest
+  - vectorisable inner loops for value-only passes
+
+expected_disadvantages:
+  - touching several components of one entity costs one cache line per component
+  - still scans dead and non-matching slots, exactly like aos
+  - more independent allocations, more growth events
+
+complexity:
+  create: amortised O(1)
+  destroy: O(1)
+  get_set: O(1)
+  add_remove: O(1)
+  query: O(slots)
+
+notes: >
+  Differs from aos only in layout, not in algorithm. The pair isolates the
+  effect of layout with everything else held constant.

@@ -1,0 +1,56 @@
+id: ecs_sparse_set
+name: sparse_set
+track: ecs
+binary: gds_ecs_sparse_set
+island: 1
+parents: []
+origin: baseline
+novelty_status: EXACT_REDISCOVERY
+expect_verify: pass
+
+hypothesis: >
+  If each component keeps its own packed array with no holes, iteration cost
+  becomes proportional to how many entities hold that component rather than to
+  how many entities exist, and a query can be driven from the rarest component
+  in the set.
+
+representation: >
+  One sparse set per component: a dense array of entity indices, a values array
+  parallel to it, and a sparse array mapping entity index to dense position.
+  A separate registry holds generation, liveness and mask per entity index.
+  Removing a component swaps the last dense element into the hole.
+
+operations:
+  create: registry write plus one dense append per component in the mask
+  destroy: one swap-erase per component held, then bump the generation
+  get_set: registry check, sparse lookup, one dense load
+  add_remove: append to or swap-erase from one component's dense array
+  query: iterate the smallest matching dense array, probe the rest
+  integrate: iterate the velocity dense array, probe positions
+
+assumptions:
+  - component ownership is skewed, so choosing the driving set matters
+  - the extra indirection through the sparse array is cheaper than scanning holes
+
+expected_advantages:
+  - iteration cost tracks component population, not entity count
+  - a rare component makes its queries cheap regardless of world size
+  - structural change touches one component and never relocates the entity
+
+expected_disadvantages:
+  - every component access pays one extra indirection
+  - the multi-component query probes non-driving sets in dense order, which is
+    random with respect to their storage
+  - one sparse array per component sized by the index space, not by membership
+
+complexity:
+  create: amortised O(components in mask)
+  destroy: O(components held)
+  get_set: O(1) with two dependent loads
+  add_remove: amortised O(1)
+  query: O(size of the smallest matching set)
+
+notes: >
+  The layout used by several production ECS libraries. Included because it is
+  the strongest thing a new representation has to argue against on mixed
+  workloads.

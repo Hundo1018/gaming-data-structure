@@ -1,0 +1,23 @@
+# A small population that fits comfortably in cache. Layout advantages that
+# only exist at memory-bandwidth scale should disappear here.
+id: w05_small_world
+visibility: public
+track: ecs
+seed: 1005
+initial_entities: 2000
+max_entities: 4000
+frames: 400
+ops_per_frame: 2000
+w_create: 1.0
+w_destroy: 1.0
+w_add: 1.0
+w_remove: 1.0
+w_get: 4.0
+w_set: 3.0
+access: uniform
+integrate_per_frame: true
+query_masks: position+velocity
+p_position: 1.0
+p_velocity: 0.8
+p_health: 0.5
+p_tag: 0.3
