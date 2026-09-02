@@ -1,0 +1,54 @@
+id: ecs_aos
+name: aos
+track: ecs
+binary: gds_ecs_aos
+island: 0
+parents: []
+origin: baseline
+novelty_status: EXACT_REDISCOVERY
+expect_verify: pass
+
+hypothesis: >
+  Keeping every component of an entity in one record maximises locality for
+  code that touches several components of one entity, and pays for it during
+  iteration by loading components the query did not ask for.
+
+representation: >
+  A flat vector of fixed-size records indexed by the handle's index field. Each
+  record holds a generation counter, a liveness bit, a component mask and an
+  inline slot for all four components whether present or not. Destroyed slots
+  go on a free list; the generation counter invalidates outstanding handles.
+
+operations:
+  create: append or reuse a free slot, write the record
+  destroy: clear the mask, bump the generation, push the slot on the free list
+  get_set: one bounds check, one generation check, one record load
+  add_remove: flip a mask bit, write in place, no relocation
+  query: linear scan of all records including dead and non-matching ones
+  integrate: linear scan with a mask test per record
+
+assumptions:
+  - the component set is small and fixed, so reserving space for all of it is affordable
+  - entities are never relocated, so handles stay valid without indirection
+  - iteration is not the dominant cost
+
+expected_advantages:
+  - cheapest possible random access to several components of one entity
+  - structural change costs nothing beyond a mask write
+  - one allocation family, so growth is predictable
+
+expected_disadvantages:
+  - a query streams the whole record array including components it ignores
+  - dead slots are scanned forever unless the array is compacted
+  - bytes per entity is set by the widest possible entity, not the actual one
+
+complexity:
+  create: amortised O(1)
+  destroy: O(1)
+  get_set: O(1)
+  add_remove: O(1)
+  query: O(slots)
+
+notes: >
+  The reference point every other layout is argued against. Present so that a
+  claimed improvement has to beat something, not nothing.

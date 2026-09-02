@@ -1,0 +1,49 @@
+id: ecs_reference
+name: reference
+track: ecs
+binary: gds_ecs_reference
+island: -1
+parents: []
+origin: oracle
+novelty_status: EXACT_REDISCOVERY
+expect_verify: pass
+
+hypothesis: >
+  Not a hypothesis. This is the oracle every candidate is checked against,
+  measured on the same terms so that the cost of the obvious implementation is
+  on the record.
+
+representation: >
+  A hash map from a monotonically increasing entity id to a record holding a
+  mask and all four component values. Ids are never reused, so handle validity
+  is trivially correct by construction.
+
+operations:
+  create: one hash insert
+  destroy: one hash erase
+  get_set: one hash lookup
+  add_remove: one hash lookup, mask write
+  query: iterate the hash map in bucket order
+  integrate: iterate the hash map in bucket order
+
+assumptions:
+  - correctness is worth any amount of performance
+
+expected_advantages:
+  - obviously correct by inspection
+  - handle validity needs no generation counter
+
+expected_disadvantages:
+  - a pointer chase per entity on every operation
+  - iteration order follows the hash table, not memory
+
+complexity:
+  create: amortised O(1)
+  destroy: O(1)
+  get_set: O(1) expected, with a dependent chain of loads
+  add_remove: O(1) expected
+  query: O(entities), in scattered memory
+
+notes: >
+  Verifying this candidate compares it against itself and proves nothing. It is
+  in the population as a performance floor.

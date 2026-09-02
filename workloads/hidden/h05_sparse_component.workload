@@ -1,0 +1,23 @@
+# Held out. Almost every entity has Position, very few have Health, and the
+# query asks for Health. Rewards driving iteration from the rarest component.
+id: h05_sparse_component
+visibility: hidden
+track: ecs
+seed: 7005
+initial_entities: 200000
+max_entities: 220000
+frames: 200
+ops_per_frame: 500
+w_create: 1.0
+w_destroy: 1.0
+w_add: 0.3
+w_remove: 0.3
+w_get: 2.0
+w_set: 2.0
+access: uniform
+integrate_per_frame: true
+query_masks: position+health, position+velocity+health
+p_position: 1.0
+p_velocity: 0.95
+p_health: 0.02
+p_tag: 0.1

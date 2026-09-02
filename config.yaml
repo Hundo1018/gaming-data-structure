@@ -1,0 +1,20 @@
+project: game-ds-agent
+first_track: ecs
+population:
+  islands: 10
+  candidates_per_island: 20
+  keep_per_generation: 50
+metrics:
+  - latency_ns
+  - throughput
+  - memory_bytes
+  - cycles
+  - instructions
+  - cache_references
+  - cache_misses
+  - branch_instructions
+  - branch_misses
+literature:
+  discovery_enabled: false
+  post_experiment_enabled: true
+hidden_workloads: true

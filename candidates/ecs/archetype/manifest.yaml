@@ -1,0 +1,58 @@
+id: ecs_archetype
+name: archetype
+track: ecs
+binary: gds_ecs_archetype
+island: 2
+parents: []
+origin: baseline
+novelty_status: EXACT_REDISCOVERY
+expect_verify: pass
+
+hypothesis: >
+  If entities are grouped by their exact component set, a query becomes a
+  straight walk over dense typed columns with no per-entity test at all, and
+  the entire cost of the design moves onto structural change.
+
+representation: >
+  Entities are partitioned into groups keyed by exact component mask. Each
+  group holds one densely packed typed column per component it carries plus a
+  row-to-entity array. The registry maps an entity index to (group, row).
+  Adding or removing a component copies the entity into another group and
+  swap-removes it from the old one.
+
+operations:
+  create: append one row to the group for the mask
+  destroy: swap-remove the row, patch the moved entity's row index
+  get_set: registry check, group lookup, one column load
+  add_remove: copy every held component into another group, then swap-remove
+  query: for each matching group, walk its columns with no mask test
+  integrate: contiguous position and velocity columns per matching group
+
+assumptions:
+  - structural change is rare relative to iteration
+  - the number of distinct component sets stays small
+  - no code holds a pointer into a column across a structural change
+
+expected_advantages:
+  - the tightest iteration of the four: no holes, no mask test, no indirection
+  - integrate reduces to a straight loop over two contiguous arrays
+  - no space wasted on components an entity does not hold
+
+expected_disadvantages:
+  - every add or remove of a component moves the whole entity
+  - many distinct component sets fragment the population into small groups
+  - row indices move under the entity, so the registry is written on every
+    structural change
+
+complexity:
+  create: amortised O(components in mask)
+  destroy: O(components in mask)
+  get_set: O(1)
+  add_remove: O(components held), with a copy of the whole entity
+  query: O(matching entities)
+
+notes: >
+  With four component types the group lookup is a sixteen-entry direct table.
+  A production archetype store hashes an unbounded component set, so this
+  implementation understates lookup cost and should not be read as a measure of
+  archetype ECS libraries in general.

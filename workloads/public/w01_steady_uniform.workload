@@ -1,0 +1,23 @@
+# Baseline: a stable population, uniform access, one integrate and one query
+# per frame. Nothing here is adversarial; it is the control.
+id: w01_steady_uniform
+visibility: public
+track: ecs
+seed: 1001
+initial_entities: 50000
+max_entities: 80000
+frames: 300
+ops_per_frame: 2000
+w_create: 1.0
+w_destroy: 1.0
+w_add: 0.5
+w_remove: 0.5
+w_get: 4.0
+w_set: 3.0
+access: uniform
+integrate_per_frame: true
+query_masks: position+velocity
+p_position: 1.0
+p_velocity: 0.8
+p_health: 0.5
+p_tag: 0.3

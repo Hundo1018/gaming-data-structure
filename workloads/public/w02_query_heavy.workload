@@ -1,0 +1,23 @@
+# Iteration dominates: few mutations, three queries of different width per
+# frame. Rewards packed layouts, punishes anything that scans holes.
+id: w02_query_heavy
+visibility: public
+track: ecs
+seed: 1002
+initial_entities: 100000
+max_entities: 120000
+frames: 200
+ops_per_frame: 200
+w_create: 1.0
+w_destroy: 1.0
+w_add: 0.2
+w_remove: 0.2
+w_get: 2.0
+w_set: 2.0
+access: uniform
+integrate_per_frame: true
+query_masks: position, position+velocity, position+velocity+health
+p_position: 1.0
+p_velocity: 0.9
+p_health: 0.6
+p_tag: 0.4

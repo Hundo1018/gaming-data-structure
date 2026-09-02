@@ -1,0 +1,26 @@
+# Held out. Quiet frames punctuated by spawn storms. Targets amortised growth:
+# a structure with good average cost and a bad rebuild shows it in p99.
+id: h02_bursty_spawn
+visibility: hidden
+track: ecs
+seed: 7002
+initial_entities: 20000
+max_entities: 400000
+frames: 300
+ops_per_frame: 500
+w_create: 6.0
+w_destroy: 1.0
+w_add: 1.0
+w_remove: 1.0
+w_get: 2.0
+w_set: 2.0
+access: recent
+recency_window: 4096
+burst_frame_ratio: 0.08
+burst_multiplier: 40
+integrate_per_frame: true
+query_masks: position+velocity
+p_position: 1.0
+p_velocity: 0.8
+p_health: 0.4
+p_tag: 0.2
