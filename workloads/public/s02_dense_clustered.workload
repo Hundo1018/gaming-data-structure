@@ -1,0 +1,24 @@
+# Density is the grid's assumption. Eight tight clumps hold the whole
+# population and the queries are aimed into them, so the cells that matter each
+# hold hundreds of entities and a cell walk stops being short.
+id: s02_dense_clustered
+visibility: public
+track: spatial
+seed: 2002
+world_size: 1024
+world_height: 256
+initial_entities: 40000
+ticks: 150
+move_fraction: 1.0
+speed_min: 0.2
+speed_max: 1.5
+placement: clustered
+clusters: 8
+cluster_radius: 8
+radius_queries_per_tick: 64
+entity_radius_queries_per_tick: 64
+knn_queries_per_tick: 16
+query_radius_min: 4
+query_radius_max: 8
+knn_k: 8
+query_focus: clustered

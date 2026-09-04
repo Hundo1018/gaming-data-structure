@@ -1,31 +1,49 @@
 # soa — observed
 
-Run `20260902T092528Z`, Intel Xeon @ 2.10GHz, GCC 13.3.0,
-`-O2 -DNDEBUG -march=native`, 5 repetitions, median repetition reported.
+Run `20260904T064132Z`, Intel Xeon @ 2.10GHz, GCC 13.3.0,
+`-O2 -DNDEBUG -ffp-contract=off -march=native`, 3 repetitions, median repetition
+reported. All figures are median frame time unless stated.
 
-## The prediction held
+## The footprint prediction held, firmly
 
-Against `aos`, on the same index space and the same algorithm:
+Against `aos`, on the same index space and the same algorithm, the footprint is
+about half everywhere:
 
-| workload | soa p50 | aos p50 | soa peak | aos peak |
-|---|---:|---:|---:|---:|
-| `w02_query_heavy` | 4004.7 us | 4845.1 us | 5.50 MB | 10.50 MB |
-| `w01_steady_uniform` | 743.2 us | 882.3 us | 2.75 MB | 5.25 MB |
-| `h05_sparse_component` | 1143.6 us | 1545.6 us | 11.00 MB | 21.00 MB |
-| `w05_small_world` | 76.5 us | **65.7 us** | 0.17 MB | 0.33 MB |
+| workload | soa peak | aos peak |
+|---|---:|---:|
+| `w02_query_heavy` | 5.50 MB | 10.50 MB |
+| `w04_random_access` | 11.00 MB | 21.00 MB |
+| `h01_zipf_hotspot` | 11.00 MB | 21.00 MB |
+| `h02_bursty_spawn` | 22.00 MB | 42.00 MB |
 
-Narrow queries are faster, the footprint is consistently about half, and the
-one workload `aos` wins is the one small enough to sit in cache, where moving
-fewer bytes buys nothing and the extra streams are pure overhead. That is the
-predicted crossover and it appears where predicted.
+This is structural, not incidental, and memory is measured rather than timed so
+there is no noise in it. `aos` reserves 48 bytes of component space per slot
+whether or not the entity holds those components; `soa` stores `Health` in 8
+bytes and `Tag` in 4.
 
-The footprint difference is structural, not incidental: `aos` reserves 48 bytes
-of component space per slot whether or not the entity holds those components,
-while `soa` stores `Health` in 8 bytes and `Tag` in 4.
+## The speed prediction is unresolved, and an earlier claim here was wrong
 
-## On the Pareto front nine times out of ten
+An earlier run of this suite had `soa` ahead of `aos` on
+`w02_query_heavy` by 21%, and these notes recorded the narrow-query prediction
+as confirmed. This run has `aos` ahead by 6.8% (5596.9 us against 5979.9 us).
 
-`soa` is non-dominated on every workload except `h01_zipf_hotspot`, almost
-always because it is the smallest of the fast candidates rather than the
-fastest. `archetype` beats it on time nearly everywhere; it stays on the front
-because beating it on time costs memory.
+The two runs are two days apart on a shared machine and absolute times moved by
+about 40% across the whole population between them, so the machine is the
+obvious suspect and the reversal cannot be attributed to the code. Within this
+run, repetition spread for these two candidates on that workload is 1.2% to
+3.9%, which is close enough to a 6.8% margin that the ordering is not something
+this run establishes either.
+
+What can be said: the layout difference does not produce a speed effect large
+enough to survive a change of machine at these populations. The prediction is
+not confirmed and not falsified; it is untested, and calling it confirmed
+earlier was reading a single run too hard.
+
+The experiment that would settle it needs many more repetitions, a machine that
+is not shared, and a query narrow enough that the bytes not loaded are most of
+the record — the current queries name two components of four.
+
+## Where it stands
+
+On the Pareto front of six of the ten ECS workloads, almost always because it is
+the smallest of the fast candidates rather than the fastest.

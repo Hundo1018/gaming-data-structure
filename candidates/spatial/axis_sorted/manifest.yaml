@@ -1,0 +1,47 @@
+id: spatial_axis_sorted
+name: axis_sorted
+track: spatial
+binary: gds_spatial_axis_sorted
+island: 2
+parents: []
+origin: baseline
+novelty_status: EXACT_REDISCOVERY
+expect_verify: pass
+
+hypothesis: >
+  Partitioning one axis may be most of the benefit for a fraction of the
+  machinery. A query becomes one binary search and one sequential run, with no
+  cell size to choose, no world bounds to configure and no pointer chasing.
+
+representation: >
+  Entities sorted by x, rebuilt on demand into parallel arrays of x, id and
+  position. A radius query binary searches the slab between the query's x bounds
+  and tests everything inside it.
+
+operations:
+  insert_remove_move: one array write and a stale flag
+  query_radius: two binary searches, then one contiguous run
+  rewind: not supported natively; measured wrapped in snapshot-and-rebuild
+
+assumptions:
+  - the population is spread widely enough along x for the slab to exclude most of it
+
+expected_advantages:
+  - the simplest query path of any candidate here: search, then walk forwards
+  - nothing to configure and nothing to size
+  - unaffected by world shape or by clustering in y and z
+
+expected_disadvantages:
+  - the slab spans the whole world in the other two axes, so the number of
+    entities examined grows with the world's cross-section rather than with the
+    query volume
+  - a full sort every tick that anything moves
+
+complexity:
+  insert_remove_move: O(1), plus a deferred O(n log n)
+  query_radius: O(log n + entities in the slab)
+
+notes: >
+  Present as the middle of the range. The size of the gap on both sides — to
+  scanning everything, and to partitioning all three axes — is the result worth
+  having.

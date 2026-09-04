@@ -11,7 +11,7 @@ def mb(b):
     return f"{b / 1048576.0:.2f}"
 
 
-def write_report(results, workloads, path):
+def write_report(results, workloads, path):  # noqa: C901
     L = []
     a = L.append
 
@@ -24,6 +24,11 @@ def write_report(results, workloads, path):
     a(f"- build flags: `{results['build_flags']}`")
     a(f"- repetitions per measurement: {results['repeats']} (plus {results['warmup']} warmup), "
       "the median repetition is reported")
+    a("")
+    a("Compare within this report, not against an earlier one. Every number here was "
+      "taken on one machine in one sitting under one set of flags, and the machine is "
+      "shared. Absolute times move between runs; the orderings and the ratios inside a "
+      "single workload are what the run establishes.")
     a("")
 
     pmu_seen = False
@@ -81,15 +86,17 @@ def write_report(results, workloads, path):
 
     a("## Measurements")
     a("")
-    a("Timing is per frame. Frame 0 carries the initial population load, which is why the "
-      "`max` column sits far above `p99` on the larger workloads: that column is almost "
-      "always the load frame, not steady state.")
+    a("Timing is per step, where a step is a frame in the ECS track and a tick in the "
+      "spatial track. Step 0 carries the initial population load, which is why the `max` "
+      "column sits far above `p99` on the larger workloads: that column is almost always "
+      "the load step, not steady state.")
     a("")
     a("`bytes/entity` is the allocated footprint standing at the end of the run divided by "
       "the live population at the end of the run. `peak` is the high-water mark of live "
       "allocated bytes during the run, which on a bursty workload occurs at a different "
       "moment and a different population.")
     a("")
+    seen_tracks = set()
     for w in workloads:
         name = w["name"]
         rows = []
@@ -99,54 +106,89 @@ def write_report(results, workloads, path):
                 rows.append((cand, m))
         if not rows:
             continue
-        rows.sort(key=lambda r: r[1]["frame_ns_p50"])
+        rows.sort(key=lambda r: r[1]["step_ns_p50"])
         front = set(results.get("pareto", {}).get(name, {}).get("front", []))
-        a(f"### `{name}` ({w['visibility']})")
+        if w["track"] not in seen_tracks:
+            seen_tracks.add(w["track"])
+            a(f"### Track: {w['track']}")
+            a("")
+        a(f"#### `{name}` ({w['visibility']})")
         a("")
         note = w["spec"].get("note")
         if note:
             a(f"{note}")
             a("")
-        a(f"entities {w['spec'].get('initial_entities')} initial / "
-          f"{w['spec'].get('max_entities')} cap, {w['spec'].get('frames')} frames, "
-          f"{w['spec'].get('ops_per_frame')} ops per frame, "
-          f"access {w['spec'].get('access', 'uniform')}")
+        sp = w["spec"]
+        if w["track"] == "spatial":
+            bits = [f"{sp.get('initial_entities')} entities",
+                    f"world {sp.get('world_size')}x{sp.get('world_size')}x"
+                    f"{sp.get('world_height')}",
+                    f"{sp.get('ticks')} ticks",
+                    f"{sp.get('move_fraction', '1.0')} of them moving per tick at speed "
+                    f"{sp.get('speed_min', 0)}-{sp.get('speed_max', 0)}",
+                    f"query radius {sp.get('query_radius_min')}-{sp.get('query_radius_max')}",
+                    f"placement {sp.get('placement', 'uniform')}"]
+            if float(sp.get("teleport_ratio", 0) or 0) > 0:
+                bits.append(f"teleport ratio {sp['teleport_ratio']}")
+            if int(sp.get("rewind_every", 0) or 0) > 0:
+                bits.append(f"rewind every {sp['rewind_every']} ticks by "
+                            f"{sp.get('rewind_depth')}")
+            a(", ".join(bits))
+        else:
+            a(f"entities {sp.get('initial_entities')} initial / "
+              f"{sp.get('max_entities')} cap, {sp.get('frames')} frames, "
+              f"{sp.get('ops_per_frame')} ops per frame, "
+              f"access {sp.get('access', 'uniform')}")
         a("")
-        a("| candidate | frame p50 (us) | p95 | p99 | max | peak (MB) | bytes/entity | "
-          "allocs | Pareto |")
-        a("|---|---:|---:|---:|---:|---:|---:|---:|:--:|")
+        unit = rows[0][1].get("step_label", "step")
+        temporal = any(r[1].get("rewind_strategy", "none") not in ("none", None)
+                       for r in rows)
+        head = f"| candidate | {unit} p50 (us) | p95 | p99 | max | peak (MB) | bytes/entity | allocs |"
+        rule = "|---|---:|---:|---:|---:|---:|---:|---:|"
+        if temporal:
+            head += " rewind |"
+            rule += "---|"
+        a(head + " Pareto |")
+        a(rule + ":--:|")
         for cand, m in rows:
-            a(
-                f"| `{cand}` | {us(m['frame_ns_p50'])} | {us(m['frame_ns_p95'])} | "
-                f"{us(m['frame_ns_p99'])} | {us(m['frame_ns_max'])} | {mb(m['peak_bytes'])} | "
-                f"{m['bytes_per_entity']:.1f} | {m['alloc_count']} | "
-                f"{'yes' if cand in front else ''} |"
+            line = (
+                f"| `{cand}` | {us(m['step_ns_p50'])} | {us(m['step_ns_p95'])} | "
+                f"{us(m['step_ns_p99'])} | {us(m['step_ns_max'])} | {mb(m['peak_bytes'])} | "
+                f"{m['bytes_per_entity']:.1f} | {m['alloc_count']} |"
             )
+            if temporal:
+                line += f" {m.get('rewind_strategy', '-')} |"
+            a(line + f" {'yes' if cand in front else ''} |")
         a("")
 
     a("## Pareto fronts")
     a("")
     a("Objectives, all minimised: " + ", ".join(results["objectives"]) + ".")
     a("")
-    a("| workload | non-dominated |")
-    a("|---|---|")
+    a("| track | workload | non-dominated |")
+    a("|---|---|---|")
     for w in workloads:
         p = results.get("pareto", {}).get(w["name"])
         if p:
-            a(f"| `{w['name']}` | " + ", ".join(f"`{c}`" for c in p["front"]) + " |")
+            a(f"| {w['track']} | `{w['name']}` | " +
+              ", ".join(f"`{c}`" for c in p["front"]) + " |")
     a("")
 
     a("## Public versus held-out standing")
     a("")
-    a("Mean rank by p99 frame time, 0 is best. A positive gap means the candidate ranks "
+    a("Mean rank by p99 step time, 0 is best. A positive gap means the candidate ranks "
       "worse on workloads it was not designed against.")
     a("")
-    a("| candidate | public | hidden | gap |")
-    a("|---|---:|---:|---:|")
+    a("Ranks are computed within a track: the two tracks ask different questions "
+      "of different structures and a rank across both would mean nothing.")
+    a("")
+    a("| track | candidate | public | hidden | gap |")
+    a("|---|---|---:|---:|---:|")
     for name, g in sorted(results.get("generalization", {}).items(),
-                          key=lambda kv: kv[1]["generalization_gap"]):
-        a(f"| `{name}` | {g['mean_p99_rank_public']} | {g['mean_p99_rank_hidden']} | "
-          f"{g['generalization_gap']:+.2f} |")
+                          key=lambda kv: (kv[1].get("track", ""),
+                                          kv[1]["generalization_gap"])):
+        a(f"| {g.get('track', '')} | `{name}` | {g['mean_p99_rank_public']} | "
+          f"{g['mean_p99_rank_hidden']} | {g['generalization_gap']:+.2f} |")
     a("")
 
     other = [n for n in results.get("notes", []) if "checksum disagreement" not in n]

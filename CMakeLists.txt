@@ -12,7 +12,12 @@ endif()
 option(GDS_NATIVE_ARCH "Compile for the host microarchitecture" ON)
 
 include(CheckCXXCompilerFlag)
-set(GDS_FLAGS -O2 -DNDEBUG -fno-omit-frame-pointer -Wall -Wextra)
+# -ffp-contract=off matters for the experiment, not for speed: with contraction
+# allowed the compiler may fuse a multiply and an add in one candidate and not
+# in another, and two structures would then disagree on a distance test at the
+# boundary of a query radius. Identical float results across candidates are what
+# makes their answers comparable at all.
+set(GDS_FLAGS -O2 -DNDEBUG -fno-omit-frame-pointer -ffp-contract=off -Wall -Wextra)
 if(GDS_NATIVE_ARCH)
   check_cxx_compiler_flag(-march=native GDS_HAS_MARCH_NATIVE)
   if(GDS_HAS_MARCH_NATIVE)
@@ -25,6 +30,7 @@ add_library(gds_substrate STATIC
   substrate/src/json.cpp
   substrate/src/pmu.cpp
   substrate/src/workload.cpp
+  substrate/src/spatial_workload.cpp
 )
 target_include_directories(gds_substrate PUBLIC substrate/include)
 target_compile_options(gds_substrate PUBLIC ${GDS_FLAGS})
@@ -44,7 +50,9 @@ foreach(src ${GDS_CANDIDATE_SOURCES})
   get_filename_component(track_name "${track_dir}" NAME)
   set(target "gds_${track_name}_${cand_name}")
   add_executable(${target} "${src}")
-  target_include_directories(${target} PRIVATE "${dir}")
+  # The candidate's own directory, and the candidates root so that a candidate
+  # descended from another can include its parent by path rather than by copy.
+  target_include_directories(${target} PRIVATE "${dir}" "${CMAKE_CURRENT_SOURCE_DIR}/candidates")
   target_link_libraries(${target} PRIVATE gds_substrate)
   list(APPEND GDS_CANDIDATE_TARGETS ${target})
 endforeach()

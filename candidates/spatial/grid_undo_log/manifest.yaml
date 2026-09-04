@@ -1,0 +1,48 @@
+id: spatial_grid_undo_log
+name: grid_undo_log
+track: spatial
+binary: gds_spatial_grid_undo_log
+island: 0
+parents: [spatial_uniform_grid]
+origin: mutation
+mutation_operator: change_ownership
+novelty_status: KNOWN_COMPONENTS_NEW_COMBINATION
+expect_verify: pass
+
+hypothesis: >
+  Rollback does not need a copy of the world. Recording the previous position
+  of each entity the first time it changes within a tick, and replaying those
+  records backwards, should cost a fraction of a snapshot whenever a fraction
+  of the world moved.
+
+representation: >
+  uniform_grid, unchanged, wrapped in a history strategy. Per tick, a vector of
+  records holding an id, its liveness and its position as they were before the
+  tick's first change to that entity. Rewinding replays the records of the
+  discarded ticks in reverse, restoring the index with a remove and an insert
+  per record.
+
+operations:
+  insert_remove_move: as uniform_grid, plus one record the first time an entity changes in a tick
+  rewind: replay the records of each discarded tick in reverse
+
+assumptions:
+  - most entities do not move on most ticks
+  - restoring an entity exactly is worth two index operations
+
+expected_advantages:
+  - history costs what changed rather than what exists
+  - a shallow rewind touches only the entities that actually moved
+
+expected_disadvantages:
+  - when everything moves every tick the log is a snapshot with extra bookkeeping
+  - unwinding costs two index operations per record against a rebuild's one insert
+  - a stamp array per entity to avoid logging the same entity twice in a tick
+
+complexity:
+  rewind: O(records in the discarded ticks), each costing a remove and an insert
+
+notes: >
+  Its index is its parent's code, included by path rather than copied, so the
+  pair differs in exactly one thing: where history lives. Whether that is worth
+  it is what hs01 and hs02 exist to decide.

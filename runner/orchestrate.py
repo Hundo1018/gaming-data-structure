@@ -26,8 +26,8 @@ ROOT = Path(__file__).resolve().parent.parent
 # structure can be good at one and bad at the other, and collapsing them would
 # hide exactly the candidates worth looking at.
 OBJECTIVES = [
-    ("frame_ns_p50", "median frame ns"),
-    ("frame_ns_p99", "p99 frame ns"),
+    ("step_ns_p50", "median step ns"),
+    ("step_ns_p99", "p99 step ns"),
     ("peak_bytes", "peak bytes"),
 ]
 
@@ -143,6 +143,18 @@ def discover_workloads():
     return out
 
 
+def workloads_for(candidate, workloads):
+    """A candidate only ever meets workloads of its own track.
+
+    Tracks ask different questions of different structures. Running one track's
+    workload against the other's candidate would not fail, it would simply
+    refuse to parse, and the refusal would show up as a gap rather than as the
+    category error it is.
+    """
+    track = candidate.get("track", "ecs")
+    return [w for w in workloads if w["track"] == track]
+
+
 def run_binary(binary, workload_path, mode, repeats, warmup, timeout):
     cmd = [str(binary), "--workload", str(workload_path), "--mode", mode]
     if mode == "bench":
@@ -251,7 +263,8 @@ def main():
         expected = c.get("expect_verify", "pass")
         per_workload = {}
         all_agree = True
-        for w in workloads:
+        my_workloads = workloads_for(c, workloads)
+        for w in my_workloads:
             r = run_binary(binary, w["path"], "verify", 0, 0, args.timeout)
             archive.add_verification(run_id, c["name"], w["name"], r, expected)
             status = r.get("status", "error")
@@ -299,8 +312,10 @@ def main():
     for w in workloads:
         seen = {}
         for c, _ in verified:
-            ck = results["verification"][c["name"]]["workloads"][w["name"]]["checksum"]
-            seen.setdefault(ck, []).append(c["name"])
+            entry = results["verification"][c["name"]]["workloads"].get(w["name"])
+            if entry is None:
+                continue
+            seen.setdefault(entry["checksum"], []).append(c["name"])
         if len(seen) > 1:
             results["notes"].append(
                 f"checksum disagreement on {w['name']}: " + json.dumps(seen)
@@ -316,7 +331,7 @@ def main():
     results["checksum_anchor"] = anchor_name
     for c, binary in verified:
         results["measurements"][c["name"]] = {}
-        for w in workloads:
+        for w in workloads_for(c, workloads):
             m = run_binary(binary, w["path"], "bench", args.repeats, args.warmup, args.timeout)
             if m.get("status") != "ok":
                 print(f"[bench]  {c['name']:16s} {w['name']:22s} {m.get('status')}")
@@ -330,7 +345,7 @@ def main():
             results["measurements"][c["name"]][key] = m
             print(
                 f"[bench]  {c['name']:16s} {key:22s} "
-                f"p50={m['frame_ns_p50']/1000:9.1f}us  p99={m['frame_ns_p99']/1000:9.1f}us  "
+                f"p50={m['step_ns_p50']/1000:9.1f}us  p99={m['step_ns_p99']/1000:9.1f}us  "
                 f"peak={m['peak_bytes']/1048576:7.2f}MB"
                 + ("" if matches else "  <-- CHECKSUM MISMATCH")
             )
@@ -363,10 +378,13 @@ def main():
     # Overfitting check: a candidate whose standing on the held-out workloads is
     # worse than on the public ones was tuned, knowingly or not, to what it could
     # see.
-    public = [w["name"] for w in workloads if w["visibility"] == "public"]
-    hidden = [w["name"] for w in workloads if w["visibility"] == "hidden"]
     gap = {}
     for name, per_w in results["measurements"].items():
+        track = results["candidates"][name]["track"]
+        public = [w["name"] for w in workloads
+                  if w["visibility"] == "public" and w["track"] == track]
+        hidden = [w["name"] for w in workloads
+                  if w["visibility"] == "hidden" and w["track"] == track]
         def mean_rank(names):
             rs = []
             for wn in names:
@@ -384,6 +402,7 @@ def main():
         pr, hr = mean_rank(public), mean_rank(hidden)
         if pr is not None and hr is not None:
             gap[name] = {
+                "track": track,
                 "mean_p99_rank_public": round(pr, 2),
                 "mean_p99_rank_hidden": round(hr, 2),
                 "generalization_gap": round(hr - pr, 2),

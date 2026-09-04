@@ -1,0 +1,54 @@
+id: spatial_uniform_grid
+name: uniform_grid
+track: spatial
+binary: gds_spatial_uniform_grid
+island: 0
+parents: []
+origin: baseline
+novelty_status: EXACT_REDISCOVERY
+expect_verify: pass
+
+hypothesis: >
+  If cells are the size of a query, a radius query touches a fixed twenty-seven
+  cells no matter how large the world is, and movement between cells is two
+  unlinks and two links with no allocation and no search. Query cost then
+  follows local density rather than population.
+
+representation: >
+  A dense array of cells covering the world box, each cell holding the head of
+  an intrusive doubly-linked list threaded through per-entity next and prev
+  arrays. Cell size is the workload's typical query radius, floored so the grid
+  cannot exceed a few million cells.
+
+operations:
+  insert: compute cell, link at head
+  remove: unlink
+  move_by: recompute cell; relink only if it changed
+  query_radius: walk the cells overlapping the query box, exact test per entity
+  query_knn: widen a box geometrically until the kth neighbour is inside it
+  rewind: not supported natively; measured wrapped in snapshot-and-rebuild
+
+assumptions:
+  - the world has known bounds
+  - density is roughly even, so a cell holds a handful of entities
+  - a query's reach is known in advance, well enough to size a cell
+
+expected_advantages:
+  - movement is cheap and touches no allocator
+  - query cost is independent of world size
+  - four bytes per cell, whatever its contents
+
+expected_disadvantages:
+  - a cell costs its four bytes whether or not anything is in it
+  - clustering puts hundreds of entities in one cell and the walk stops being short
+  - the linked list scatters an entity's neighbours across memory
+  - a query much wider than a cell touches many cells
+
+complexity:
+  insert_remove_move: O(1)
+  query_radius: O(cells touched + entities in them)
+  query_knn: O(entities within the smallest sufficient box)
+
+notes: >
+  The structure a new spatial representation has to argue against. Cheap
+  everywhere the assumption of even density holds.

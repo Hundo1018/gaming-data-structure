@@ -1,0 +1,21 @@
+# Baseline for the spatial track: entities spread evenly, every one of them
+# moving a short distance every tick, queries aimed anywhere. The control.
+id: s01_steady_uniform
+visibility: public
+track: spatial
+seed: 2001
+world_size: 1024
+world_height: 256
+initial_entities: 20000
+ticks: 200
+move_fraction: 1.0
+speed_min: 0.5
+speed_max: 4.0
+placement: uniform
+radius_queries_per_tick: 128
+entity_radius_queries_per_tick: 128
+knn_queries_per_tick: 32
+query_radius_min: 8
+query_radius_max: 16
+knn_k: 8
+query_focus: uniform

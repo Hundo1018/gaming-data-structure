@@ -1,0 +1,48 @@
+id: spatial_spatial_hash
+name: spatial_hash
+track: spatial
+binary: gds_spatial_spatial_hash
+island: 1
+parents: [spatial_uniform_grid]
+origin: mutation
+mutation_operator: eliminate_information
+novelty_status: EXACT_REDISCOVERY
+expect_verify: pass
+
+hypothesis: >
+  The dense cell array is mostly empty and its size is set by the world rather
+  than by the population. Hashing cell coordinates should make memory follow
+  what is occupied, and remove the need for world bounds entirely, for the cost
+  of a probe per cell visited.
+
+representation: >
+  The same cell decomposition as uniform_grid, but cells live in an open
+  addressed hash table keyed by packed integer cell coordinates. Entities are
+  threaded through the same intrusive lists. A cell that empties keeps its slot.
+
+operations:
+  insert_remove_move: as uniform_grid, with a hash probe instead of an array index
+  query_radius: one probe per cell in the query box, then the same exact tests
+  rewind: not supported natively; measured wrapped in snapshot-and-rebuild
+
+assumptions:
+  - occupied cells are a small fraction of the world's cells
+  - a probe is cheap enough to pay twenty-seven times per query
+
+expected_advantages:
+  - memory follows occupancy, not world volume
+  - no world bounds needed: any coordinate hashes
+  - a sparse or unbounded world costs nothing extra
+
+expected_disadvantages:
+  - twenty-seven probes per query into a table the walk has not warmed
+  - a slot per cell ever touched, which movement makes grow toward the dense case
+  - the table doubles, so its high-water mark exceeds what it holds
+
+complexity:
+  insert_remove_move: O(1) expected
+  query_radius: O(cells touched probes + entities in them)
+
+notes: >
+  The mutation is removing information: the dense array's implicit
+  coordinate-to-slot mapping is gone and reconstructed by hashing.
