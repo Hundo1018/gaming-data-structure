@@ -1,0 +1,51 @@
+id: spatial_morton_sorted
+name: morton_sorted
+track: spatial
+binary: gds_spatial_morton_sorted
+island: 2
+parents: []
+origin: baseline
+mutation_operator: sacrifice_update_speed
+novelty_status: EXACT_REDISCOVERY
+expect_verify: pass
+
+hypothesis: >
+  Give up incremental update entirely. If the searchable form is rebuilt from
+  scratch whenever anything has changed, it can be laid out perfectly: entities
+  sorted by the Morton code of their cell, so neighbours in the world are
+  neighbours in memory and a cell is a contiguous run rather than a pointer
+  chase. The bet is that queries save more than the rebuild costs.
+
+representation: >
+  Positions in a flat array indexed by id, plus a rebuilt-on-demand set of three
+  parallel arrays holding Morton code, id and position, sorted by code. Any
+  mutation marks the form stale; the next query rebuilds it.
+
+operations:
+  insert_remove_move: one array write and a stale flag
+  query_radius: one binary search per cell in the query box, then a contiguous run
+  rewind: not supported natively; measured wrapped in snapshot-and-rebuild
+
+assumptions:
+  - queries per tick are numerous enough to amortise one rebuild per tick
+  - contiguous scanning beats pointer chasing by more than the sort costs
+
+expected_advantages:
+  - no pointer chasing anywhere in a query
+  - positions are read in the order they are stored
+  - teleports and ordinary movement cost exactly the same
+  - insensitive to how clustered the world is, since nothing is preallocated per cell
+
+expected_disadvantages:
+  - a full sort every tick that anything moves
+  - the cells of a query box are not contiguous in Morton order, so each needs its own search
+  - two copies of every position
+
+complexity:
+  insert_remove_move: O(1), plus a deferred O(n log n)
+  query_radius: O(cells touched * log n + entities in them)
+
+notes: >
+  The sort is std::sort on a nearly-sorted array. A radix sort, or one that
+  exploits the previous tick's order, is the obvious mutation and is not
+  implemented, so this candidate's rebuild cost is an upper bound on the family.

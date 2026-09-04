@@ -1,0 +1,21 @@
+# Fifteen hundred entities. Everything fits in cache and an index has to earn
+# its bookkeeping against a loop that just looks at all of them.
+id: s05_small_world
+visibility: public
+track: spatial
+seed: 2005
+world_size: 256
+world_height: 64
+initial_entities: 1500
+ticks: 400
+move_fraction: 1.0
+speed_min: 0.5
+speed_max: 3.0
+placement: uniform
+radius_queries_per_tick: 128
+entity_radius_queries_per_tick: 128
+knn_queries_per_tick: 32
+query_radius_min: 4
+query_radius_max: 12
+knn_k: 8
+query_focus: uniform

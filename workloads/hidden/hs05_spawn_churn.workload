@@ -1,0 +1,24 @@
+# Held out. Heavy creation and destruction on top of full movement: projectiles
+# and effects rather than a stable cast. Tests whether a structure's insert and
+# remove paths are as cheap as its move path.
+id: hs05_spawn_churn
+visibility: hidden
+track: spatial
+seed: 8005
+world_size: 1024
+world_height: 256
+initial_entities: 20000
+ticks: 150
+inserts_per_tick: 400
+removes_per_tick: 400
+move_fraction: 1.0
+speed_min: 0.5
+speed_max: 4.0
+placement: uniform
+radius_queries_per_tick: 64
+entity_radius_queries_per_tick: 64
+knn_queries_per_tick: 16
+query_radius_min: 8
+query_radius_max: 16
+knn_k: 8
+query_focus: uniform

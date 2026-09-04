@@ -1,6 +1,7 @@
 # broken_recycle — observed
 
-The gate rejected it on 9 of 10 workloads.
+The gate rejected it on 9 of the 10 ECS workloads, in this run as in every run
+since it was added.
 
 It passed `w04_random_access`, which is correct and expected: that workload sets
 `w_create: 0.0` and `w_destroy: 0.0`, so no slot is ever recycled and the

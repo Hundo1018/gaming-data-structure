@@ -1,0 +1,26 @@
+# Held out, and the mirror of hs01. The same rollback schedule, but only two
+# entities in a hundred move on a given tick, so a log of what changed is a
+# small fraction of a snapshot of everything.
+id: hs02_rewind_few_moving
+visibility: hidden
+track: spatial
+seed: 8002
+world_size: 1024
+world_height: 256
+initial_entities: 30000
+ticks: 200
+inserts_per_tick: 5
+removes_per_tick: 4
+move_fraction: 0.02
+speed_min: 0.5
+speed_max: 4.0
+placement: uniform
+radius_queries_per_tick: 48
+entity_radius_queries_per_tick: 48
+knn_queries_per_tick: 12
+query_radius_min: 8
+query_radius_max: 16
+knn_k: 8
+rewind_every: 10
+rewind_depth: 6
+history_ticks: 12

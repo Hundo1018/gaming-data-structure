@@ -16,17 +16,13 @@
 
 #include "gds/alloc_tracker.hpp"
 #include "gds/api.hpp"
+#include "gds/measure.hpp"
 #include "gds/pmu.hpp"
 #include "gds/reference.hpp"
 #include "gds/types.hpp"
 #include "gds/workload.hpp"
 
 namespace gds {
-
-template <class T>
-inline void keep(const T& value) {
-  asm volatile("" : : "r,m"(value) : "memory");
-}
 
 // Replays the op stream against one structure and folds every observation into
 // a checksum.
@@ -184,32 +180,10 @@ VerifyResult run_verify(const Workload& w) {
 // Measurement
 // ---------------------------------------------------------------------------
 
-struct RepetitionResult {
-  std::vector<std::uint64_t> frame_ns;
-  std::uint64_t total_ns = 0;
-  std::uint64_t checksum = 0;
-  AllocStats alloc{};
-  std::size_t reported_bytes = 0;
-  std::size_t final_entities = 0;
-  std::vector<std::uint64_t> pmu_values;
-  bool pmu_available = false;
-};
-
-inline std::uint64_t percentile(std::vector<std::uint64_t> v, double p) {
-  if (v.empty()) return 0;
-  std::sort(v.begin(), v.end());
-  double idx = p * (static_cast<double>(v.size()) - 1.0);
-  const std::size_t lo = static_cast<std::size_t>(idx);
-  const std::size_t hi = std::min(lo + 1, v.size() - 1);
-  const double frac = idx - static_cast<double>(lo);
-  return static_cast<std::uint64_t>(static_cast<double>(v[lo]) * (1.0 - frac) +
-                                    static_cast<double>(v[hi]) * frac);
-}
-
 template <class S>
 RepetitionResult run_one_repetition(const Workload& w, Pmu& pmu) {
   RepetitionResult rep;
-  rep.frame_ns.reserve(w.frames.size());
+  rep.step_ns.reserve(w.frames.size());
 
   // Everything the harness owns is allocated before the reset so that the
   // measured bytes belong to the candidate.
@@ -231,7 +205,7 @@ RepetitionResult run_one_repetition(const Workload& w, Pmu& pmu) {
       replay.end_of_frame(w.spec);
       const auto t1 = std::chrono::steady_clock::now();
       keep(replay.checksum);
-      rep.frame_ns.push_back(
+      rep.step_ns.push_back(
           static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0)
                                          .count()));
     }

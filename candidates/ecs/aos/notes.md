@@ -1,34 +1,34 @@
 # aos — observed
 
-Run `20260902T092528Z`, Intel Xeon @ 2.10GHz, GCC 13.3.0,
-`-O2 -DNDEBUG -march=native`, 5 repetitions, median repetition reported.
+Run `20260904T064132Z`, Intel Xeon @ 2.10GHz, GCC 13.3.0,
+`-O2 -DNDEBUG -ffp-contract=off -march=native`, 3 repetitions, median repetition
+reported. All figures are median frame time unless stated.
 
-## Half the hypothesis was tested; half was not
+## The claim this candidate exists to test is still untested
 
-The prediction that narrow iteration would punish `aos` held everywhere:
-`w02_query_heavy` 4845.1 us against `soa`'s 4004.7 us, at twice the footprint
-(10.50 MB against 5.50 MB).
+`aos` is built for code that touches several components of one entity at once.
+No workload in the suite does that: the generator names one randomly chosen
+component per `Get` or `Set`, so a point access reads 12 bytes and `aos`
+loads a 56-byte record to do it.
 
-The other half — that `aos` is within noise of a split layout when access is to
-whole entities — **was not tested by any workload in the suite**, and the
-workload named `w04_random_access` does not test it either. The generator emits
-one randomly chosen component per `Get` or `Set`, so a point access reads 12
-bytes and `aos` loads a 56-byte record to do it. That is the case `aos` is
-worst at, not the case it is designed for, and it duly lost:
+`w04_random_access` is the workload that sounds like the test and is not. All
+four real candidates finish within 2.7% of each other there
+(`soa` 6400.8 us, `aos` 6489.6 us, `archetype` 6570.6 us,
+`sparse_set` 7341.2 us), which is inside the repetition spread of 7.3% to 7.8%
+on that workload — it separates nothing.
 
-| candidate | w04_random_access p50 |
-|---|---:|
-| `archetype` | 3193.6 us |
-| `soa` | 3451.6 us |
-| `aos` | 4258.4 us |
-
-This is a gap in the workload set, not evidence against the layout. No workload
-here reads several components of one entity in one operation, which is the
-access pattern of most gameplay code touching an entity. Until such a workload
-exists, `aos` has one untested claim on the record.
+This is a gap in the workload set, not evidence about the layout, and it is
+recorded in `workloads/README.md` rather than left implicit.
 
 ## Where it wins
 
-`w05_small_world`, 2000 entities, 65.7 us against `archetype`'s 79.5 us. At
-that size nothing is bandwidth-bound and the winner is whichever structure does
-the least bookkeeping per operation, which is `aos`.
+`w05_small_world`, 2000 entities: 101.6 us, first, ahead of `sparse_set` at
+104.2 us and `archetype` at 113.3 us. At that size nothing is bandwidth-bound
+and the winner is whichever structure does the least bookkeeping per operation.
+
+## What it pays
+
+Twice the footprint of `soa` on every workload, for the reason the layout
+implies: space for all four components per slot whether or not the entity holds
+them. That difference is stable across runs; the speed difference between the
+two is not — see `candidates/ecs/soa/notes.md`.

@@ -1,0 +1,26 @@
+# A third of all movement is a jump to anywhere in the world. A structure that
+# updates incrementally pays a full relink for each one; a structure that throws
+# its index away every tick cannot tell the difference.
+#
+# Every field below matches s01_steady_uniform except teleport_ratio, so the
+# difference between the two runs is the teleports and nothing else.
+id: s04_teleport
+visibility: public
+track: spatial
+seed: 2001
+world_size: 1024
+world_height: 256
+initial_entities: 20000
+ticks: 200
+move_fraction: 1.0
+speed_min: 0.5
+speed_max: 4.0
+teleport_ratio: 0.33
+placement: uniform
+radius_queries_per_tick: 128
+entity_radius_queries_per_tick: 128
+knn_queries_per_tick: 32
+query_radius_min: 8
+query_radius_max: 16
+knn_k: 8
+query_focus: uniform

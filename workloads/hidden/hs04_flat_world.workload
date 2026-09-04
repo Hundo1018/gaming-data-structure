@@ -1,0 +1,22 @@
+# Held out. A world eight units thick and a thousand wide, which is what most
+# games actually are. Partitioning the third axis buys nothing here, and any
+# structure that spends memory on it is paying for nothing.
+id: hs04_flat_world
+visibility: hidden
+track: spatial
+seed: 8004
+world_size: 1024
+world_height: 8
+initial_entities: 25000
+ticks: 150
+move_fraction: 1.0
+speed_min: 0.5
+speed_max: 4.0
+placement: uniform
+radius_queries_per_tick: 64
+entity_radius_queries_per_tick: 64
+knn_queries_per_tick: 16
+query_radius_min: 8
+query_radius_max: 16
+knn_k: 8
+query_focus: uniform

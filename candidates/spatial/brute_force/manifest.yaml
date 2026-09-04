@@ -1,0 +1,49 @@
+id: spatial_brute_force
+name: brute_force
+track: spatial
+binary: gds_spatial_brute_force
+island: -1
+parents: []
+origin: oracle
+novelty_status: EXACT_REDISCOVERY
+expect_verify: pass
+
+hypothesis: >
+  Not a hypothesis. This is the oracle every spatial candidate is checked
+  against, measured on the same terms so that the cost of looking at everything
+  is on the record and "faster than an index-free loop" is never mistaken for a
+  result.
+
+representation: >
+  A flat array of positions indexed by entity id, a liveness byte per id, and a
+  vector of full copies of both for history. Every query is a linear scan.
+
+operations:
+  insert_remove: one array write
+  move_by: one array write
+  query_radius: scan every id, exact distance test on each
+  query_knn: scan every id, partial sort
+  end_tick: copy the whole world into a new history frame
+  rewind: restore a history frame by copying it back
+
+assumptions:
+  - correctness is worth any amount of performance
+
+expected_advantages:
+  - no structure to keep consistent, so movement costs one store
+  - unaffected by clustering, query radius, or world shape
+  - rewind is a copy, with no index to rebuild
+
+expected_disadvantages:
+  - every query touches every entity
+
+complexity:
+  insert_remove_move: O(1)
+  query_radius: O(entities)
+  query_knn: O(entities)
+  rewind: O(entities)
+
+notes: >
+  Verifying this candidate compares it against itself and proves nothing. It is
+  in the population as a performance floor and as the answer to the question of
+  where an index stops paying for itself.

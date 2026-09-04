@@ -1,0 +1,22 @@
+# Held out. Nearest-neighbour queries dominate and k is large, so a structure
+# has to widen its search until it can prove it has the k closest rather than
+# answering a fixed box.
+id: hs03_knn_heavy
+visibility: hidden
+track: spatial
+seed: 8003
+world_size: 1024
+world_height: 256
+initial_entities: 25000
+ticks: 150
+move_fraction: 1.0
+speed_min: 0.5
+speed_max: 4.0
+placement: uniform
+radius_queries_per_tick: 8
+entity_radius_queries_per_tick: 8
+knn_queries_per_tick: 128
+query_radius_min: 8
+query_radius_max: 16
+knn_k: 64
+query_focus: uniform

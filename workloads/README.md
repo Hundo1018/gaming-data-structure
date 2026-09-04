@@ -9,13 +9,20 @@ candidates are never compared on different work.
 the report ranks candidates on the two sets separately and prints the
 difference, which is how a candidate tuned to what it could see becomes visible.
 
+Each file names its `track`. A candidate only ever meets workloads of its own
+track: the two tracks ask different questions of different structures, and a
+category error would show up as a parse failure rather than as what it is.
+
 ## Format
 
 Flat `key: value`, one per line, `#` starts a comment. An unknown key is an
 error, not a warning: a silently ignored field would make two different
-experiments look like the same one. The C++ parser
-(`substrate/src/workload.cpp`) and the Python one (`runner/orchestrate.py`) read
-the same grammar.
+experiments look like the same one. The C++ parsers
+(`substrate/src/workload.cpp` for the ECS track,
+`substrate/src/spatial_workload.cpp` for the spatial track) and the Python one
+(`runner/orchestrate.py`) read the same grammar.
+
+## ECS track keys
 
 | key | meaning |
 |---|---|
@@ -38,6 +45,42 @@ the same grammar.
 | `query_masks` | comma-separated, each a `+`-joined component set, e.g. `position+velocity, position+health` |
 | `verify_sweep_frames` | how often verification re-checks every slot ever created |
 
+## Spatial track keys
+
+A spatial tick is: an optional rewind, then inserts, then removes, then moves,
+then queries. Everything is generated once from the seed into an op stream, and
+the oracle and every candidate replay it identically.
+
+| key | meaning |
+|---|---|
+| `world_size` | side of the world box in x and y; the world is centred on the origin |
+| `world_height` | z extent, so a flat world is expressible |
+| `initial_entities` | population created in tick 0 |
+| `ticks` | number of ticks, including the load tick |
+| `inserts_per_tick` `removes_per_tick` | churn |
+| `move_fraction` | share of live entities that move each tick |
+| `speed_min` `speed_max` | per-tick displacement in world units |
+| `teleport_ratio` | share of moves that jump anywhere in the world |
+| `placement` | `uniform` or `clustered` initial positions |
+| `clusters` `cluster_radius` | number of clumps and their spread |
+| `radius_queries_per_tick` | "what is near this point" |
+| `entity_radius_queries_per_tick` | "what is near this entity", excluding itself |
+| `knn_queries_per_tick` `knn_k` | "the k nearest to this point" |
+| `query_radius_min` `query_radius_max` | query reach; the mean is what a structure is told to expect |
+| `query_focus` | `uniform` or `clustered` query centres |
+| `rewind_every` `rewind_depth` | how often the world is rolled back and by how much |
+| `history_ticks` | history a structure is told it must retain |
+| `verify_sweep_ticks` | how often verification re-checks every id ever issued |
+
+Movement is a delta, not a destination, and the new position is
+`wrap_into(current + delta, bounds)` using the one shared wrap. That is what
+lets the generator hold no positions at all: a rewind restores them from the
+structure's own history, and nothing here needs to know where anything is.
+
+A rewind is a real branch, not a replay. After rolling back, the generator
+continues with fresh operations, and ids issued in the discarded ticks are never
+reissued.
+
 ## Dimensions the current set does not cover
 
 Recorded here rather than left implicit, because an uncovered dimension is a
@@ -53,4 +96,13 @@ claim nobody has tested:
 - **Spatial locality.** A workload dimension in `PROJECT.md`, but one that
   belongs to the spatial-query track. The ECS workloads vary temporal locality,
   skew and burstiness only.
-- **Concurrency.** Everything here is single-threaded.
+- **Concurrency.** Everything here is single-threaded, in both tracks.
+- **Spatial: non-uniform query reach.** Every structure is told one typical
+  query radius and sizes itself from it. Nothing tests a world where some
+  systems ask for two metres and others for two hundred.
+- **Spatial: correlated movement.** Entities move independently. Nothing tests
+  a crowd moving together, which is what would keep a cluster dense while it
+  travels rather than letting it diffuse.
+- **Spatial: rewind under churn shape.** `hs01` and `hs02` vary how much moves.
+  Nothing varies rewind depth against a fixed movement rate, which is the other
+  axis of the same trade.

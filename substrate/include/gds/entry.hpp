@@ -14,46 +14,23 @@
 
 #include "gds/api.hpp"
 #include "gds/harness.hpp"
+#include "gds/json.hpp"
+#include "gds/measure.hpp"
 #include "gds/workload.hpp"
 
 namespace gds {
-
-std::string json_escape(const std::string& s);
 
 template <class S>
 int candidate_main(int argc, char** argv) {
   static_assert(CandidateStructure<S>, "candidate does not satisfy the ECS candidate contract");
 
-  std::string workload_path;
-  std::string mode = "verify";
-  int repeats = 3;
-  int warmup = 1;
-
-  for (int i = 1; i < argc; ++i) {
-    const std::string a = argv[i];
-    auto next = [&](const char* what) -> std::string {
-      if (i + 1 >= argc) {
-        std::fprintf(stderr, "missing value for %s\n", what);
-        std::exit(2);
-      }
-      return argv[++i];
-    };
-    if (a == "--workload") workload_path = next("--workload");
-    else if (a == "--mode") mode = next("--mode");
-    else if (a == "--repeats") repeats = std::atoi(next("--repeats").c_str());
-    else if (a == "--warmup") warmup = std::atoi(next("--warmup").c_str());
-    else if (a == "--name") { std::printf("%s\n", S::name()); return 0; }
-    else {
-      std::fprintf(stderr, "unknown argument: %s\n", a.c_str());
-      return 2;
-    }
-  }
-
-  if (workload_path.empty()) {
-    std::fprintf(stderr, "usage: %s --workload FILE [--mode verify|bench] [--repeats N]\n",
-                 argv[0]);
-    return 2;
-  }
+  RunArgs args;
+  int exit_code = 0;
+  if (!parse_run_args(argc, argv, args, S::name(), exit_code)) return exit_code;
+  const std::string& workload_path = args.workload_path;
+  const std::string& mode = args.mode;
+  const int repeats = args.repeats;
+  const int warmup = args.warmup;
 
   WorkloadSpec spec;
   std::string error;
@@ -65,6 +42,7 @@ int candidate_main(int argc, char** argv) {
 
   std::printf("{\n");
   std::printf("  \"candidate\": \"%s\",\n", json_escape(S::name()).c_str());
+  std::printf("  \"track\": \"ecs\",\n");
   std::printf("  \"workload\": \"%s\",\n", json_escape(spec.id).c_str());
   std::printf("  \"visibility\": \"%s\",\n", json_escape(spec.visibility).c_str());
   std::printf("  \"mode\": \"%s\",\n", json_escape(mode).c_str());
@@ -100,63 +78,9 @@ int candidate_main(int argc, char** argv) {
     reps.push_back(run_one_repetition<S>(w, pmu));
   }
 
-  // The reported repetition is the one with the median total time: the fastest
-  // run flatters a structure whose cost is variable, the mean is dragged by
-  // scheduler noise.
-  std::vector<std::size_t> order(reps.size());
-  for (std::size_t i = 0; i < order.size(); ++i) order[i] = i;
-  std::sort(order.begin(), order.end(),
-            [&](std::size_t a, std::size_t b) { return reps[a].total_ns < reps[b].total_ns; });
-  const RepetitionResult& med = reps[order[order.size() / 2]];
-
-  const double total_s = static_cast<double>(med.total_ns) / 1e9;
-  const double throughput = total_s > 0 ? static_cast<double>(w.ops.size()) / total_s : 0.0;
-  // Divides the footprint standing at the end of the run by the population
-  // standing at the end of the run. Dividing the high-water mark by the final
-  // count would mix a peak from one moment with a population from another,
-  // which on a bursty workload is not a quantity that describes anything.
-  const double bytes_per_entity =
-      med.final_entities ? static_cast<double>(med.alloc.live_bytes) /
-                               static_cast<double>(med.final_entities)
-                         : 0.0;
-
-  std::printf("  \"status\": \"ok\",\n");
-  std::printf("  \"repeats\": %d,\n", repeats);
-  std::printf("  \"checksum\": \"%llu\",\n", (unsigned long long)med.checksum);
-  std::printf("  \"total_ns\": %llu,\n", (unsigned long long)med.total_ns);
-  std::printf("  \"ops_per_second\": %.1f,\n", throughput);
-  std::printf("  \"frame_ns_p50\": %llu,\n", (unsigned long long)percentile(med.frame_ns, 0.50));
-  std::printf("  \"frame_ns_p95\": %llu,\n", (unsigned long long)percentile(med.frame_ns, 0.95));
-  std::printf("  \"frame_ns_p99\": %llu,\n", (unsigned long long)percentile(med.frame_ns, 0.99));
-  std::printf("  \"frame_ns_max\": %llu,\n", (unsigned long long)percentile(med.frame_ns, 1.0));
-  std::printf("  \"peak_bytes\": %lld,\n", (long long)med.alloc.peak_bytes);
-  std::printf("  \"live_bytes\": %lld,\n", (long long)med.alloc.live_bytes);
-  std::printf("  \"reported_bytes\": %zu,\n", med.reported_bytes);
-  std::printf("  \"bytes_per_entity\": %.2f,\n", bytes_per_entity);
-  std::printf("  \"alloc_count\": %llu,\n", (unsigned long long)med.alloc.alloc_count);
-  std::printf("  \"free_count\": %llu,\n", (unsigned long long)med.alloc.free_count);
-  std::printf("  \"alloc_total_bytes\": %llu,\n", (unsigned long long)med.alloc.total_bytes);
-  std::printf("  \"final_entities\": %zu,\n", med.final_entities);
-
-  std::printf("  \"repetition_total_ns\": [");
-  for (std::size_t i = 0; i < reps.size(); ++i) {
-    std::printf("%s%llu", i ? ", " : "", (unsigned long long)reps[i].total_ns);
-  }
-  std::printf("],\n");
-
-  std::printf("  \"pmu_available\": %s,\n", med.pmu_available ? "true" : "false");
-  if (med.pmu_available) {
-    std::printf("  \"pmu\": {");
-    const auto& names = Pmu::counters();
-    for (std::size_t i = 0; i < names.size() && i < med.pmu_values.size(); ++i) {
-      std::printf("%s\"%s\": %llu", i ? ", " : "", pmu_counter_name(names[i]),
-                  (unsigned long long)med.pmu_values[i]);
-    }
-    std::printf("}\n");
-  } else {
-    std::printf("  \"pmu\": null,\n");
-    std::printf("  \"pmu_unavailable_reason\": \"%s\"\n", json_escape(pmu.unavailable_reason()).c_str());
-  }
+  const RepetitionResult& med = median_repetition(reps);
+  print_common_bench_json(med, reps, w.ops.size(), "frame");
+  print_pmu_json(med, pmu);
   std::printf("}\n");
   return 0;
 }

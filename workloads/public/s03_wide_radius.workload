@@ -1,0 +1,22 @@
+# Queries that reach a tenth of the world. The answer set is large, so the cost
+# of finding candidates matters less than the cost of touching them, and the
+# gap between an index and scanning everything should narrow.
+id: s03_wide_radius
+visibility: public
+track: spatial
+seed: 2003
+world_size: 1024
+world_height: 256
+initial_entities: 20000
+ticks: 150
+move_fraction: 1.0
+speed_min: 0.5
+speed_max: 4.0
+placement: uniform
+radius_queries_per_tick: 32
+entity_radius_queries_per_tick: 32
+knn_queries_per_tick: 8
+query_radius_min: 64
+query_radius_max: 128
+knn_k: 32
+query_focus: uniform
