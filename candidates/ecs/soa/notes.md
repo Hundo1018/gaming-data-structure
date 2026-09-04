@@ -47,3 +47,17 @@ the record — the current queries name two components of four.
 
 On the Pareto front of six of the ten ECS workloads, almost always because it is
 the smallest of the fast candidates rather than the fastest.
+
+## Scaling (run `sweep-20260904T081902Z`)
+
+Lowest point-operation exponent of the five, **n^0.059** with the per-frame
+passes switched off, against `aos`'s n^0.114 and the hash-map oracle's n^0.129.
+Its `O(1)` claim holds.
+
+This is the one place the layout difference between `soa` and `aos` appears as
+something stable rather than something that flips between runs: a point access
+touches one narrow array instead of a 56-byte record, so the working set per
+operation grows more slowly with the population. The effect is small in absolute
+terms and the two remain within noise of each other on frame time — see the
+machine-change correction above — but the growth rates separate where the levels
+did not.

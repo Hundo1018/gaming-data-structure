@@ -36,3 +36,29 @@ its full-copy history is the same size as anyone else's.
 It reaches the Pareto front five times, always on memory, never on speed. That
 is the front working: nothing was dropped for losing on the objective someone
 happened to care about most.
+
+## Scaling (run `sweep-20260904T081902Z`)
+
+The positive control for the whole scaling method: it looks at every entity for
+every query, so its query exponent has to come out at 1. It measures
+**n^1.01, r2 0.9999**. Nothing else in
+`benchmarks/scaling.md` is worth reading unless this came out right.
+
+**Its own `O(1)` claim for move is the one the automatic check rejected.** The
+manifest says insert, remove and move are O(1), which is true: each is one array
+write. Measured time is not.
+
+| population | ns per move |
+|---:|---:|
+| 1000 | 8.9 |
+| 128000 | 66.7 |
+
+n^0.361 after the move family's forcing query is subtracted out. The operation
+count is constant and the time is not, because 2000 random writes into an array
+growing from 16 KB to 2 MB stop hitting L1 and start reaching main memory.
+
+That is the argument for measuring rather than declaring, and it is why
+`complexity:` is now compared against a measurement instead of sitting in the
+manifest unread. The claim stays as written: it is a correct statement about
+operation counts, and editing it to match a machine would destroy the comparison
+that produced the finding.

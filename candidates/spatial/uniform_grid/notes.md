@@ -58,3 +58,27 @@ decisive.
 nearest-neighbour query with k of 64 widens its box until it can prove it has
 the k closest, and each widening step multiplies the cells walked. It is still
 first there by 2.7x.
+
+## Scaling (run `sweep-20260904T081902Z`)
+
+Every claim in its manifest that can be checked, checks out.
+
+| claim | field | measured | verdict |
+|---|---|---:|---|
+| `O(1)` | insert_remove_move | n^0.08 | agrees |
+| `O(cells touched + entities in them)` | query_radius | n^0.083 | consistent: constant density holds both the cells and their contents constant |
+| `O(entities within the smallest sufficient box)` | query_knn | n^0.04 | consistent |
+
+Memory is where the two regimes separate, and the difference is the design:
+
+| regime | memory exponent |
+|---|---:|
+| world fixed, density grows | n^0.347 |
+| density fixed, world grows | n^0.994 |
+
+The cell array is sized by the world, not by the population. Hold the world
+still and only the per-entity arrays grow; let the world grow with the
+population and the cells grow with it linearly. A game that keeps its map and
+adds entities pays almost nothing extra for the grid itself; one that streams a
+larger world pays for every cell of it, occupied or not. That is the trade
+`spatial_hash` exists to attack, and the sweep is where its size is visible.

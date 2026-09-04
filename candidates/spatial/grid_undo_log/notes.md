@@ -54,3 +54,16 @@ Find the crossover. The two workloads here are the endpoints; the experiment
 that is missing is a sweep of `move_fraction` at fixed rewind depth, and then
 the same sweep of `rewind_depth` at fixed movement, since the log's cost grows
 with both and the rebuild's grows with only one.
+
+## Scaling (run `sweep-20260904T081902Z`)
+
+Tracks its parent to within noise on every family, which is the check that the
+pair still differs only in history: query n^0.078 against `uniform_grid`'s
+n^0.083, move n^0.091 against n^0.08,
+memory n^0.994
+against n^0.994.
+
+The sweep does not exercise rewind — no family in it rewinds — so it says nothing
+about the history strategy itself. The experiment that would is a sweep of
+`move_fraction` at fixed rewind depth, and then of `rewind_depth` at fixed
+movement, which is the open question `hs01` and `hs02` leave at two points.

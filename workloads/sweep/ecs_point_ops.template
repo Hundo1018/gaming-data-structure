@@ -1,0 +1,27 @@
+# Sweep template. See sweeps.yaml.
+#
+# integrate and the per-frame query are both switched off. Each is a full pass
+# over the population, so leaving either on would mean a frame is a fixed number
+# of point operations plus an unavoidably linear pass, and the fitted exponent
+# would describe the pass rather than the operation.
+id: sweep_ecs_point_ops
+visibility: public
+track: ecs
+seed: 4005
+initial_entities: 8000
+max_entities: 9600
+frames: 60
+ops_per_frame: 2000
+w_create: 0.5
+w_destroy: 0.5
+w_add: 1.0
+w_remove: 1.0
+w_get: 4.0
+w_set: 3.0
+access: uniform
+integrate_per_frame: false
+query_masks:
+p_position: 1.0
+p_velocity: 0.8
+p_health: 0.5
+p_tag: 0.3

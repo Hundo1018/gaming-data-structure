@@ -1,0 +1,101 @@
+# Scaling experiments.
+#
+# The rest of the suite compares candidates at one population size. It cannot
+# say how anything grows, because no two workloads in it differ only in
+# population — s05_small_world changes the world size and the query radius too.
+# This file defines the experiments that do differ in exactly one thing.
+#
+# Each family isolates one operation and holds the number of those operations
+# per step constant while the population grows. That is what separates the cost
+# of one operation from the number of them: if the operation count grew with the
+# population, every candidate would look linear regardless of what it does.
+#
+# Read together with `runner/sweep.py`, which applies these rules, and with each
+# candidate's `manifest.yaml`, whose `complexity:` field is the claim these
+# experiments check.
+
+sizes: [1000, 2000, 4000, 8000, 16000, 32000, 64000, 128000]
+base_size: 8000
+repeats: 3
+warmup: 1
+
+regimes:
+  - id: fixed_world
+    scale: {}
+    describes: >
+      The world stays the same size, so density grows with the population and a
+      query of fixed radius returns proportionally more entities. The exponent
+      measured here includes the growth of the answer, not just the growth of
+      the search.
+
+  - id: fixed_density
+    scale:
+      world_size: cbrt
+      world_height: cbrt
+    describes: >
+      The world grows as the cube root of the population, so density and the
+      size of a query's answer stay constant. The exponent measured here is the
+      cost of finding the answer, which is what a complexity claim is about.
+
+  - id: population
+    scale:
+      max_entities: linear
+    describes: >
+      Population grows with the operation count per frame held fixed. The only
+      regime for a track with no world.
+
+families:
+  - id: spatial_query_radius
+    track: spatial
+    template: spatial_query_radius.template
+    regimes: [fixed_world, fixed_density]
+    measures: >
+      One radius query against a settled index. Nothing moves after the load
+      tick, so no candidate is paying to keep itself current and this is the
+      query path alone.
+    checks: the `query_radius` line of each spatial manifest's complexity field
+
+  - id: spatial_knn
+    track: spatial
+    template: spatial_knn.template
+    regimes: [fixed_world, fixed_density]
+    measures: >
+      One k-nearest query against a settled index. Separate from the radius
+      family because a k-nearest query has to widen its search until it can
+      prove it has the k closest, and that loop is where two candidates lost to
+      a linear scan in the main suite.
+    checks: the `query_knn` line of each spatial manifest's complexity field
+
+  - id: spatial_move
+    track: spatial
+    template: spatial_move.template
+    regimes: [fixed_world, fixed_density]
+    measures: >
+      The cost of keeping the structure current under a fixed number of moves
+      per tick. One radius query per tick is included on purpose: a candidate
+      that rebuilds lazily does its work on the first observation, so with no
+      query at all its rebuild would never happen and the family would measure
+      an array write.
+    checks: the `insert_remove_move` line of each spatial manifest's complexity field
+
+  - id: ecs_point_ops
+    track: ecs
+    template: ecs_point_ops.template
+    regimes: [population]
+    measures: >
+      A fixed number of point operations per frame — get, set, add, remove,
+      create, destroy — with integrate and the per-frame query switched off.
+      Both of those are a full pass over the population, so leaving either on
+      would make every candidate measure the pass rather than the operation.
+    checks: the `get_set` and `add_remove` lines of each ECS manifest
+
+  - id: ecs_mixed
+    track: ecs
+    template: ecs_mixed.template
+    regimes: [population]
+    measures: >
+      The same operation mix with integrate and one query per frame left on:
+      the realistic shape of a frame rather than an isolated operation. Its
+      exponent is expected to sit between the point-operation family's and 1,
+      because a frame is a fixed number of operations plus two linear passes.
+    checks: nothing directly; it is the curve a game would actually see
