@@ -1,0 +1,18 @@
+# Sweep template. See sweeps.yaml.
+id: sweep_spatial_knn
+visibility: public
+track: spatial
+seed: 4002
+world_size: 1024
+world_height: 256
+initial_entities: 8000
+ticks: 40
+move_fraction: 0.0
+placement: uniform
+radius_queries_per_tick: 0
+entity_radius_queries_per_tick: 0
+knn_queries_per_tick: 32
+knn_k: 8
+query_radius_min: 8
+query_radius_max: 16
+query_focus: uniform

@@ -1,0 +1,23 @@
+# Sweep template. See sweeps.yaml.
+#
+# moves_per_tick rather than move_fraction: the point is to hold the number of
+# operations fixed while the population grows. The single radius query per tick
+# is what forces a lazily rebuilt candidate to actually do its work.
+id: sweep_spatial_move
+visibility: public
+track: spatial
+seed: 4003
+world_size: 1024
+world_height: 256
+initial_entities: 8000
+ticks: 40
+moves_per_tick: 2000
+speed_min: 0.5
+speed_max: 4.0
+placement: uniform
+radius_queries_per_tick: 1
+entity_radius_queries_per_tick: 0
+knn_queries_per_tick: 0
+query_radius_min: 8
+query_radius_max: 16
+query_focus: uniform

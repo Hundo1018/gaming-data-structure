@@ -53,7 +53,12 @@ struct SpatialSpec {
   std::uint32_t inserts_per_tick = 0;
   std::uint32_t removes_per_tick = 0;
 
-  float move_fraction = 1.0f;       // share of live entities that move each tick
+  // How many entities move each tick, given either as a share of the live
+  // population or as an absolute count. A scaling experiment needs the absolute
+  // form: holding the operation count fixed while the population grows is what
+  // separates the cost of one operation from the number of them.
+  float move_fraction = 1.0f;
+  std::uint32_t moves_per_tick = 0;  // 0 leaves move_fraction in charge
   float speed_min = 0.0f;           // per-tick displacement, world units
   float speed_max = 2.0f;
   float teleport_ratio = 0.0f;      // share of moves that jump anywhere in the world

@@ -81,6 +81,28 @@ A rewind is a real branch, not a replay. After rolling back, the generator
 continues with fresh operations, and ids issued in the discarded ticks are never
 reissued.
 
+## Scaling experiments
+
+`sweep/` holds the workloads that differ in exactly one thing. Everything in
+`public/` and `hidden/` differs in several at once, which is right for comparing
+candidates and useless for measuring growth: `s05_small_world` changes the
+population, the world size and the query radius together, so no curve can be
+fitted through it and anything else.
+
+`sweep/sweeps.yaml` declares the families, the regimes and the populations;
+`runner/sweep.py` applies them. The rule that makes the numbers mean anything is
+that **the number of operations per step is held constant while the population
+grows** — with `moves_per_tick` rather than `move_fraction`, with a fixed count
+of queries per tick, and with `ops_per_frame` fixed on the ECS side. If the
+operation count grew with the population, every candidate would measure linear
+regardless of what it does.
+
+Two regimes exist because they answer different questions. Holding the world
+fixed lets density grow, so a query of fixed radius returns proportionally more
+and the exponent includes the growth of the answer. Growing the world as the
+cube root of the population holds density constant, so the exponent is the cost
+of finding the answer — which is what a complexity claim is about.
+
 ## Dimensions the current set does not cover
 
 Recorded here rather than left implicit, because an uncovered dimension is a
@@ -105,4 +127,5 @@ claim nobody has tested:
   travels rather than letting it diffuse.
 - **Spatial: rewind under churn shape.** `hs01` and `hs02` vary how much moves.
   Nothing varies rewind depth against a fixed movement rate, which is the other
-  axis of the same trade.
+  axis of the same trade. No sweep family rewinds at all, so the history
+  strategies have a comparison at two points and no curve.

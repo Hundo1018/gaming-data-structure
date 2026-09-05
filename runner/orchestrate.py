@@ -17,6 +17,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import manifest as manifest_schema  # noqa: E402
 import pareto  # noqa: E402
 from archive import Archive  # noqa: E402
 
@@ -117,12 +118,24 @@ def build_flags(build_dir):
     return "unknown"
 
 
-def discover_candidates():
+def discover_candidates(strict=True):
+    """Loads every candidate manifest, checking it against the declared schema.
+
+    A malformed manifest stops the run rather than being measured: a candidate
+    whose claims are not readable is not a research object, and silently
+    measuring it would put numbers in the archive with nothing to attach them to.
+    """
     out = []
+    problems = []
     for manifest_path in sorted(ROOT.glob("candidates/*/*/manifest.yaml")):
-        manifest = load_yaml(manifest_path)
-        manifest["_dir"] = manifest_path.parent
-        out.append(manifest)
+        m = load_yaml(manifest_path)
+        problems.extend(manifest_schema.validate(m, manifest_path.relative_to(ROOT)))
+        m["_dir"] = manifest_path.parent
+        out.append(m)
+    if problems and strict:
+        for p in problems:
+            print(p, file=sys.stderr)
+        sys.exit("manifest schema violations; nothing was measured")
     return out
 
 
@@ -249,6 +262,7 @@ def main():
             "parents": c.get("parents", []),
             "novelty_status": c.get("novelty_status"),
             "expect_verify": c.get("expect_verify", "pass"),
+            "complexity": c.get("complexity"),
             "compiled": binary.exists(),
         }
         results["candidates"][c["name"]] = entry

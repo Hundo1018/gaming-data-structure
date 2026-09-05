@@ -47,3 +47,11 @@ Implement the aligned-group variant as a child candidate and re-run
 `h05_sparse_component`. If it closes the gap to `archetype`, the
 falsification above is about the absence of grouping rather than about packed
 arrays.
+
+## Scaling (run `sweep-20260904T081902Z`)
+
+Point operations measure **n^0.115** with the per-frame passes removed. The
+manifest claims `O(1) with two dependent loads`, which the automatic check
+cannot verify because of the qualifier — but the exponent sits between `soa`'s
+n^0.059 and the hash map's n^0.129, which is where a design with one more
+indirection than a direct index and one fewer than a hash lookup belongs.

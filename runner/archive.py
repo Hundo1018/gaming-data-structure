@@ -9,7 +9,15 @@ import json
 import sqlite3
 from pathlib import Path
 
+# Bumped whenever a table's columns change. The archive is append-only research
+# evidence keyed by run id, so an older file is not migrated silently: a schema
+# that no longer matches the rows in it would make old and new runs look
+# comparable when they are not.
+SCHEMA_VERSION = 2
+
 SCHEMA = """
+CREATE TABLE IF NOT EXISTS schema_version (version INTEGER NOT NULL);
+
 CREATE TABLE IF NOT EXISTS runs (
     run_id      TEXT PRIMARY KEY,
     started_at  TEXT NOT NULL,
@@ -31,6 +39,7 @@ CREATE TABLE IF NOT EXISTS candidates (
     parents         TEXT,
     novelty_status  TEXT,
     expect_verify   TEXT,
+    complexity      TEXT,
     hypothesis      TEXT,
     representation  TEXT,
     path            TEXT,
@@ -92,6 +101,25 @@ CREATE TABLE IF NOT EXISTS measurements (
     PRIMARY KEY (run_id, candidate, workload)
 );
 
+-- One row per candidate per scaling experiment: the measured growth exponent
+-- beside the raw points it was fitted to, so a suspicious exponent can be
+-- checked against the curve rather than taken on faith.
+CREATE TABLE IF NOT EXISTS scaling (
+    run_id            TEXT NOT NULL,
+    candidate         TEXT NOT NULL,
+    family            TEXT NOT NULL,
+    regime            TEXT NOT NULL,
+    sizes             TEXT,
+    step_ns_p50       TEXT,
+    step_ns_p99       TEXT,
+    peak_bytes        TEXT,
+    time_exponent     REAL,
+    time_r_squared    REAL,
+    memory_exponent   REAL,
+    memory_r_squared  REAL,
+    PRIMARY KEY (run_id, candidate, family, regime)
+);
+
 CREATE TABLE IF NOT EXISTS pareto (
     run_id     TEXT NOT NULL,
     scope      TEXT NOT NULL,
@@ -109,6 +137,16 @@ class Archive:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.db = sqlite3.connect(str(self.path))
         self.db.executescript(SCHEMA)
+        row = self.db.execute("SELECT version FROM schema_version").fetchone()
+        if row is None:
+            self.db.execute("INSERT INTO schema_version VALUES (?)", (SCHEMA_VERSION,))
+        elif row[0] != SCHEMA_VERSION:
+            raise SystemExit(
+                f"{self.path} was written by schema version {row[0]}; this code writes "
+                f"version {SCHEMA_VERSION}. Delete the file to start a new archive, or "
+                f"keep it and point --archive somewhere else. It is not migrated: rows "
+                f"from two schemas in one file would look comparable when they are not."
+            )
         self.db.commit()
 
     def close(self):
@@ -124,7 +162,7 @@ class Archive:
 
     def add_candidate(self, run_id, manifest, path):
         self.db.execute(
-            "INSERT OR REPLACE INTO candidates VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT OR REPLACE INTO candidates VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 run_id,
                 manifest.get("name"),
@@ -134,6 +172,7 @@ class Archive:
                 json.dumps(manifest.get("parents", [])),
                 manifest.get("novelty_status"),
                 manifest.get("expect_verify", "pass"),
+                json.dumps(manifest.get("complexity")),
                 (manifest.get("hypothesis") or "").strip(),
                 (manifest.get("representation") or "").strip(),
                 str(path),
@@ -197,6 +236,22 @@ class Archive:
                 int(bool(m.get("pmu_available"))),
                 json.dumps(m.get("pmu")),
                 json.dumps(m.get("repetition_total_ns", [])),
+            ),
+        )
+
+    def add_scaling(self, run_id, candidate, family, regime, row):
+        tf = row.get("time_fit") or {}
+        mf = row.get("memory_fit") or {}
+        self.db.execute(
+            "INSERT OR REPLACE INTO scaling VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                run_id, candidate, family, regime,
+                json.dumps(row.get("size", [])),
+                json.dumps(row.get("step_ns_p50", [])),
+                json.dumps(row.get("step_ns_p99", [])),
+                json.dumps(row.get("peak_bytes", [])),
+                tf.get("exponent"), tf.get("r_squared"),
+                mf.get("exponent"), mf.get("r_squared"),
             ),
         )
 

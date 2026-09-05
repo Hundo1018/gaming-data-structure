@@ -49,3 +49,10 @@ Group lookup is a sixteen-entry direct table because there are four component
 types. A production archetype store hashes an unbounded component set. This
 implementation understates lookup cost, and the margins above should not be read
 as a measurement of archetype ECS libraries.
+
+## Scaling (run `sweep-20260904T081902Z`)
+
+`O(1)` for get and set is confirmed at **n^0.088** with the per-frame passes
+removed, and it has the lowest realistic-frame exponent of the five at n^0.696
+against the oracle's n^0.795. Its memory grows at n^0.887, which is the group
+bookkeeping: a row index stored per entity, and one column per component held.

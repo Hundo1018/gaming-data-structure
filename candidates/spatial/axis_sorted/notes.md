@@ -39,3 +39,30 @@ no cell size to choose and no world bounds to configure. It is the cheapest
 thing here that is not a linear scan, and its cost is predictable from two
 numbers — the population and the ratio of query radius to world size — which the
 structures with cells are not.
+
+## Scaling (run `sweep-20260904T081902Z`)
+
+**The predicted exponent shows up in the curve, not in the fit.**
+`hypothesis.md` says the slab holds about `n * 2r / world_size` entities, so
+under constant density — where the world grows as the cube root of the
+population — query cost should follow n^(2/3) = 0.667. The fitted exponent over
+the whole range is 0.538. The slope of each successive doubling is:
+
+```
+0.41  0.39  0.39  0.47  0.54  0.55  1.40
+```
+
+It climbs from 0.41 toward the predicted 2/3 exactly as the slab term
+takes over from the fixed cost of two binary searches, which is most of the work
+when a query examines about 47 entities. Then the final doubling jumps to
+1.40, which is a discontinuity rather than a trend: at 128000 entities
+the three sorted arrays hold about 2.6 MB, which is where this machine's cache
+hierarchy changes. That reading is a guess — settling it needs the hardware
+counters, and `perf_event_open` is unavailable in this container.
+
+So the prediction is neither confirmed nor refuted by the fitted number. The
+curve supports it over the range where a single power law describes the
+structure, and stops describing it at the top.
+
+Its move cost is the deferred sort the manifest claims: n^1.099,
+from 43.6 ns per move at 1000 entities to 8871 ns at 128000.

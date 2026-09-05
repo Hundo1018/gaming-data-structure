@@ -44,3 +44,24 @@ The claim that it needs no world bounds is untested here — every workload has 
 finite world because the shared wrap requires one. A workload with an unbounded
 or streamed world would be the one to run this against, and the substrate cannot
 express it yet.
+
+## Scaling (run `sweep-20260904T081902Z`)
+
+Query cost is flat, **n^0.04** under constant density, matching the
+dense grid it is a mutation of. Move cost is flat too, **n^0.086**.
+The probe per cell is a constant factor, not a growth term: how it scales was
+never its problem.
+
+Its k-nearest behaviour is the sharpest single finding in the sweep:
+
+| population (world held fixed) | median tick |
+|---:|---:|
+| 1000 | 6841.0 us |
+| 128000 | 268.2 us |
+
+**25.5x faster with 128x more entities.** The widening k-nearest
+search is driven by density, not by population: in a sparse world it doubles its
+radius many times before it can prove it has the k closest, and every doubling
+multiplies the cells visited by eight, each one a hash probe. This is the same
+effect that left it level with a linear scan on `hs03_knn_heavy`, and it puts
+the weakness in the search strategy rather than in hashing.

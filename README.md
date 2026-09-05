@@ -1,7 +1,10 @@
 # Game Data Structure Discovery Agent
 
 Read [`PROJECT.md`](PROJECT.md) for the research goal and the intended
-architecture. This file describes what is implemented and how to run it.
+architecture, and [`ARCHITECTURE.md`](ARCHITECTURE.md) for the map of the
+implementation: what each module is, what reads what, and where a new candidate,
+workload, scaling family or track goes. This file describes what is implemented
+and how to run it.
 
 ## What is here
 
@@ -9,15 +12,17 @@ Two of the six research domains in `PROJECT.md` have a working substrate,
 baselines and measured results.
 
 ```
+ARCHITECTURE.md                 module map, data flow, manifest schema, contracts
 substrate/include/gds/          shared: measurement, allocation tracking, counters
 substrate/include/gds/spatial/  the spatial track's contract, oracle and harness
 candidates/ecs/                 entity management candidates
 candidates/spatial/             proximity and rollback candidates
 workloads/public/               workloads a search may see
 workloads/hidden/               held-out workloads, used to detect overfitting
+workloads/sweep/                scaling experiment templates and sweeps.yaml
 runner/                         build, verify, measure, archive, report
 archive/                        SQLite archive of every run (git-ignored)
-benchmarks/                     results.json and report.md from the last run
+benchmarks/                     results.json, report.md, scaling.json, scaling.md
 ```
 
 ### Track: ecs
@@ -51,12 +56,18 @@ A candidate is only ever run against workloads of its own track.
 ## Running it
 
 ```
-python3 runner/orchestrate.py --repeats 5
+python3 runner/orchestrate.py --repeats 5     # compare candidates at one size
+python3 runner/sweep.py                       # measure how each one grows
 ```
 
-That configures and builds with CMake, verifies every candidate against the
+The first configures and builds with CMake, verifies every candidate against the
 oracle on every workload, measures the ones that pass, writes the archive, and
 regenerates `benchmarks/report.md`.
+
+The second is the scaling pass: it generates workloads that differ **only** in
+population, fits a growth exponent to each candidate's curve, and writes
+`benchmarks/scaling.md`. It exists because the first cannot answer "how does
+this grow" — no two of its workloads differ in one thing.
 
 Requirements: CMake 3.20+, a C++20 compiler, Python 3.9+ with PyYAML (used only
 to read candidate manifests). One run of the current population takes about four
@@ -134,6 +145,30 @@ the disagreement between a claim and a measurement is itself informative.
 Fitness is a Pareto front over median frame time, p99 frame time and peak bytes,
 all minimised. There is no weighted score: a weighting would decide in advance
 which trade-off matters.
+
+### Growth, and the claims about it
+
+Every `manifest.yaml` carries a `complexity:` field. For two tracks it sat there
+required by `PROJECT.md` and read by nothing, which makes a hand-written claim
+indistinguishable from a comment. `runner/sweep.py` now consumes it: each family
+holds the number of operations per step constant while the population grows,
+fits an exponent, and `benchmarks/scaling.md` prints the claim beside the
+measurement.
+
+`runner/manifest.py` declares every manifest field together with the code that
+reads it, and validation rejects an unknown key, so adding a field forces a
+decision about who consumes it. `documentation` is a legitimate answer; being
+one by accident is not.
+
+`brute_force` is the positive control: it looks at everything, so its query
+exponent has to be 1. It measures 1.009 with an r2 of 0.9999.
+
+A disagreement between a claim and a measurement has two possible causes and the
+report says so rather than picking one. `brute_force` declares `O(1)` for move,
+which is true — one array write — and measures n^0.358, because 2000 random
+writes into an array growing from 16 KB to 2 MB stop hitting L1. The claim is
+right about operations and wrong about time. Claims are not edited to match
+measurements.
 
 ### Hardware counters
 

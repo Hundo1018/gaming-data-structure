@@ -1,0 +1,22 @@
+# Sweep template. See sweeps.yaml.
+id: sweep_ecs_mixed
+visibility: public
+track: ecs
+seed: 4004
+initial_entities: 8000
+max_entities: 9600
+frames: 60
+ops_per_frame: 2000
+w_create: 1.0
+w_destroy: 1.0
+w_add: 0.5
+w_remove: 0.5
+w_get: 4.0
+w_set: 3.0
+access: uniform
+integrate_per_frame: true
+query_masks: position+velocity
+p_position: 1.0
+p_velocity: 0.8
+p_health: 0.5
+p_tag: 0.3

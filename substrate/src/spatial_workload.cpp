@@ -63,6 +63,8 @@ bool parse_spatial_text(const std::string& text, SpatialSpec& out, std::string& 
   std::stringstream ss(text);
   std::string line;
   int line_no = 0;
+  bool seen_move_fraction = false;
+  bool seen_moves_per_tick = false;
   while (std::getline(ss, line)) {
     ++line_no;
     const std::size_t hash = line.find('#');
@@ -108,7 +110,8 @@ bool parse_spatial_text(const std::string& text, SpatialSpec& out, std::string& 
     else if (key == "ticks") ok = need_u(out.ticks);
     else if (key == "inserts_per_tick") ok = need_u(out.inserts_per_tick);
     else if (key == "removes_per_tick") ok = need_u(out.removes_per_tick);
-    else if (key == "move_fraction") ok = need_f(out.move_fraction);
+    else if (key == "move_fraction") { seen_move_fraction = true; ok = need_f(out.move_fraction); }
+    else if (key == "moves_per_tick") { seen_moves_per_tick = true; ok = need_u(out.moves_per_tick); }
     else if (key == "speed_min") ok = need_f(out.speed_min);
     else if (key == "speed_max") ok = need_f(out.speed_max);
     else if (key == "teleport_ratio") ok = need_f(out.teleport_ratio);
@@ -131,6 +134,11 @@ bool parse_spatial_text(const std::string& text, SpatialSpec& out, std::string& 
       return false;
     }
     if (!ok) return false;
+  }
+  if (seen_move_fraction && seen_moves_per_tick) {
+    error = "set move_fraction or moves_per_tick, not both: they are two ways of "
+            "saying the same thing and a file that sets both does not say which it means";
+    return false;
   }
   if (out.rewind_every > 0 && out.history_ticks < out.rewind_depth) {
     out.history_ticks = out.rewind_depth;
@@ -265,8 +273,11 @@ SpatialWorkload generate_spatial_workload(const SpatialSpec& spec) {
     for (std::uint32_t i = 0; i < spec.removes_per_tick; ++i) do_remove(t, w.ops);
 
     const std::size_t n_live = live_list.size();
-    const std::uint32_t movers =
-        static_cast<std::uint32_t>(static_cast<double>(n_live) * spec.move_fraction);
+    std::uint32_t movers =
+        spec.moves_per_tick > 0
+            ? spec.moves_per_tick
+            : static_cast<std::uint32_t>(static_cast<double>(n_live) * spec.move_fraction);
+    if (n_live == 0) movers = 0;
     for (std::uint32_t i = 0; i < movers; ++i) {
       const EntityId id = live_list[rng.below(static_cast<std::uint32_t>(n_live))];
       Op op{};

@@ -32,3 +32,15 @@ Twice the footprint of `soa` on every workload, for the reason the layout
 implies: space for all four components per slot whether or not the entity holds
 them. That difference is stable across runs; the speed difference between the
 two is not — see `candidates/ecs/soa/notes.md`.
+
+## Scaling (run `sweep-20260904T081902Z`)
+
+Its `O(1)` claim for get and set is confirmed once the linear passes are taken
+out of the frame: **n^0.114** with integrate and the per-frame query switched
+off, against n^0.794 with them on. Both numbers cover the same operations; the
+difference is entirely the two full passes over the population that a normal
+frame also contains.
+
+That gap is why the point-operation family exists. The first version of this
+sweep measured only the realistic frame, and every ECS candidate came out
+between n^0.70 and n^0.81 — which describes the passes, not the structure.

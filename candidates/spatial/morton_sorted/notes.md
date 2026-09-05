@@ -45,3 +45,32 @@ the larger problem and needs a different fix — a cell directory, or walking a
 Morton range rather than searching each cell. Neither is implemented, so what is
 falsified is this implementation, and the honest reading is that the layout
 argument has not been given its best case.
+
+## Scaling (run `sweep-20260904T081902Z`)
+
+Query cost is flat — **n^0.073** under constant density, among the
+best here — which is the layout argument working. The search was never the
+problem.
+
+The cost is the rebuild, and the manifest's `O(1), plus a deferred O(n log n)` is
+confirmed: **n^1.056**, from 40.4 ns per move at 1000 entities
+to 6624 ns at 128000. One sort per tick is the entire candidate.
+
+## Why it lost the k-nearest workload
+
+The main suite had it beaten by a linear scan on `hs03_knn_heavy`. The sweep
+says why, and the answer is density rather than population:
+
+| population (world held fixed) | median tick |
+|---:|---:|
+| 1000 | 4073.9 us |
+| 128000 | 458.0 us |
+
+It gets **8.9x faster as the world fills up**. A k-nearest query
+widens its search until it can prove it has the k closest, and in a sparse world
+that means many doublings, each multiplying the cells searched by eight and each
+cell costing a binary search. `hs03_knn_heavy` runs 25000 entities in a
+1024x1024x256 world, which is the sparse end of that curve.
+
+The fix is not a faster sort. It is to stop paying a binary search per cell — a
+cell directory, or walking a Morton range instead of searching each cell.
