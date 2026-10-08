@@ -3,3 +3,4 @@ archive/*.db
 archive/*.db-journal
 __pycache__/
 *.pyc
+build-*/
