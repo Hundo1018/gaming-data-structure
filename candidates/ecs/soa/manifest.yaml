@@ -50,3 +50,27 @@ complexity:
 notes: >
   Differs from aos only in layout, not in algorithm. The pair isolates the
   effect of layout with everything else held constant.
+
+# Encoded from hypothesis.md after that candidate had been measured. Only the
+# predictions whose prose fixes a workload, a metric and a direction are here;
+# the prose remains the preregistration and these are its machine-readable form.
+# "Within noise" in the prose is encoded as within 10%.
+predictions:
+  - id: P1
+    claim: narrow queries faster than aos (w02_query_heavy)
+    metric: step_ns_p50
+    workloads: [w02_query_heavy]
+    against: aos
+    below: 1.0
+  - id: P2
+    claim: multi-component point access slower than aos (w07_point_wide)
+    metric: step_ns_p50
+    workloads: [w07_point_wide]
+    against: aos
+    above: 1.0
+  - id: P3
+    claim: smaller footprint than aos on every ECS workload
+    metric: peak_bytes
+    workloads: "*"
+    against: aos
+    below: 1.0
