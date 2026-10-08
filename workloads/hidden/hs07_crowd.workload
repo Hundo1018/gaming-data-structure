@@ -1,0 +1,29 @@
+# Held out. s02_dense_clustered with one change: the clumps travel. Every
+# entity takes its cluster's drift of three units a tick plus a small step of
+# its own, so a clump stays dense while it crosses the world, and the queries
+# follow it. Independent movement lets a clump diffuse and rest; this one keeps
+# the density a flat grid is worst at, moves it through every cell in its path,
+# and leaves each cell empty again behind it.
+id: hs07_crowd
+visibility: hidden
+track: spatial
+seed: 2002
+world_size: 1024
+world_height: 256
+initial_entities: 40000
+ticks: 150
+move_fraction: 1.0
+movement: flock
+flock_speed: 3.0
+speed_min: 0.2
+speed_max: 1.5
+placement: clustered
+clusters: 8
+cluster_radius: 8
+radius_queries_per_tick: 64
+entity_radius_queries_per_tick: 64
+knn_queries_per_tick: 16
+query_radius_min: 4
+query_radius_max: 8
+knn_k: 8
+query_focus: clustered

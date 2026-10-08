@@ -38,6 +38,12 @@ struct Tick {
 
 enum class Placement { Uniform, Clustered };
 
+// How movers choose their displacement. Independent movers each take their own
+// random step, so a clump diffuses. Flocking movers share their cluster's drift
+// and add a small step of their own, so a clump stays a clump while it travels:
+// the case of a crowd, a herd, an army on the march.
+enum class Movement { Independent, Flock };
+
 struct SpatialSpec {
   std::string id = "unnamed";
   std::string visibility = "public";
@@ -62,6 +68,8 @@ struct SpatialSpec {
   float speed_min = 0.0f;           // per-tick displacement, world units
   float speed_max = 2.0f;
   float teleport_ratio = 0.0f;      // share of moves that jump anywhere in the world
+  Movement movement = Movement::Independent;
+  float flock_speed = 0.0f;         // per-tick drift of each cluster under movement: flock
 
   Placement placement = Placement::Uniform;
   std::uint32_t clusters = 16;
@@ -96,5 +104,6 @@ bool parse_spatial_file(const std::string& path, SpatialSpec& out, std::string& 
 bool parse_spatial_text(const std::string& text, SpatialSpec& out, std::string& error);
 SpatialWorkload generate_spatial_workload(const SpatialSpec& spec);
 const char* placement_name(Placement p);
+const char* movement_name(Movement m);
 
 }  // namespace gds::spatial
