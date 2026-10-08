@@ -56,8 +56,12 @@ A candidate is only ever run against workloads of its own track.
 ## Running it
 
 ```
+python3 runner/run_all.py --repeats 5         # everything below, serially, in order
+
 python3 runner/orchestrate.py --repeats 5     # compare candidates at one size
+python3 runner/floor.py                       # how far each one is from the irreducible cost
 python3 runner/sweep.py                       # measure how each one grows
+python3 runner/predictions.py                 # judge every preregistered prediction
 ```
 
 The first configures and builds with CMake, verifies every candidate against the
@@ -68,6 +72,20 @@ The second is the scaling pass: it generates workloads that differ **only** in
 population, fits a growth exponent to each candidate's curve, and writes
 `benchmarks/scaling.md`. It exists because the first cannot answer "how does
 this grow" — no two of its workloads differ in one thing.
+
+The third measures the floor of each spatial workload: what a tick would cost
+if finding every answer were free, so a candidate's time can be read as a
+multiple of what is achievable rather than only against the other candidates.
+The fourth reads the `predictions:` each manifest carries and says, by code,
+which held; see *Predictions, judged by code* below.
+
+While a candidate is being written, two smaller tools avoid running the whole
+suite: `runner/verify.py <binary> [--extra files]` checks one binary against
+every workload of its track without reading any manifest, and `runner/ab.py
+<candidates> --workload <file>` measures a few candidates in interleaved
+rounds, so drift on a shared machine is spread across all of them instead of
+landing on whichever ran during a slow minute. `orchestrate.py --verify-only`
+runs the compile and correctness gates and stops.
 
 Requirements: CMake 3.20+, a C++20 compiler, Python 3.9+ with PyYAML (used only
 to read candidate manifests). One run of the current population takes about four
@@ -117,8 +135,27 @@ Three things are compared:
 
 `candidates/ecs/broken_recycle` is a negative control: `aos` with the generation
 counter deleted. It exists so the gate is known to have teeth. It is rejected by
-9 of the 10 ECS workloads; see its `notes.md` for why the tenth is expected to
-pass it.
+every ECS workload that recycles a slot; see its `notes.md` for why the others
+are expected to pass it.
+
+### An answer must be found, not computed
+
+Comparing answers is not enough on its own, and the suite once showed it. A
+query's digest was an order-independent sum of per-entity terms, and a sum can
+be kept as a running total: subtract an entity's term before it changes, add it
+back after. `candidates/ecs/query_memo` does exactly that on top of `soa`. Under
+that contract it passed every ECS workload and ran `w04_random_access` at 0.36x
+of `soa`'s frame time, 2.6x ahead of the best honest candidate, without ever
+enumerating a matching entity.
+
+Every query digest is now salted per call. An ECS query is `query(required,
+salt)`, the harness drawing a fresh salt for every call; a spatial radius query
+salts each hit with a value derived from the query's own centre and radius. An
+entity's term under one call says nothing about its term under the next, so a
+total carried between calls is worthless. Work may still be deferred or fused
+inside one call. `query_memo` is kept, unchanged in logic, as the negative
+control that the fix holds: it is rejected wherever it reuses a total
+(`w04_random_access`) and passes where it never does.
 
 Float results have to be bit-identical across candidates or two structures would
 disagree about a point sitting exactly on a query radius. Everything is built
@@ -170,6 +207,53 @@ writes into an array growing from 16 KB to 2 MB stop hitting L1. The claim is
 right about operations and wrong about time. Claims are not edited to match
 measurements.
 
+### Headroom
+
+Ranking candidates against each other says which is best, not whether anything
+better is possible. `gds_floor_spatial` replays each spatial workload and times,
+per tick, the two things no structure can avoid: applying the tick's mutations
+to flat position and liveness arrays, and digesting exactly the entities in
+every answer from packed buffers. Every answer it digests is checked against the
+oracle's. It also counts how many entities the reference grid's query box admits
+per entity actually in the answer, which is what a tighter broad phase could
+remove; the answer's own size is what nothing can remove.
+
+`benchmarks/floor.md` gives each candidate's median tick as a multiple of that
+floor. A workload where the best candidate is near 1x has little left to win;
+one where it is at 10x is where a new representation is worth proposing. The
+floor and the candidates are timed in separate processes, so a ratio is an
+estimate of headroom rather than a measurement of it.
+
+### Predictions, judged by code
+
+Each `hypothesis.md` states falsifiable predictions in prose, and for a long time
+a person read the report and wrote in `notes.md` whether each held. That leaves
+the verdict to whoever writes the notes. A manifest may now carry the same
+predictions as data:
+
+```yaml
+predictions:
+  - id: P1
+    claim: hs03_knn_heavy median tick at most 0.5x uniform_grid's
+    metric: step_ns_p50
+    workloads: [hs03_knn_heavy]
+    against: uniform_grid
+    at_most: 0.5
+```
+
+`runner/predictions.py` evaluates every one against `benchmarks/results.json`
+and `benchmarks/scaling.json` and writes `benchmarks/predictions.md`: HELD,
+FALSIFIED, or UNTESTED when a point it needs was not measured. A point closer to
+its bound than the spread between repetitions of the measurements it came from
+is marked *within noise*, because a verdict resting on it is weak whichever way
+it went. The prediction is written before the candidate is measured and is never
+edited to match a number.
+
+The first time the old prose predictions were judged this way, one verdict
+disagreed with the notes. `sparse_set` predicted it would beat the layouts that
+scan the whole index space on `h05_sparse_component`, which it did; its notes had
+recorded a falsification against a stronger paraphrase, "win `h05`".
+
 ### Hardware counters
 
 `substrate/src/pmu.cpp` opens cycles, instructions, cache references and misses,
@@ -195,6 +279,16 @@ Held-out workloads are not merely unused during development. The report ranks
 every candidate on public and hidden workloads separately and prints the
 difference, so a candidate that does better on what it could see than on what it
 could not is visible in the results.
+
+Workloads added after a generation of candidates was designed are held out by
+default, because the candidates could not have been tuned to them:
+`hs06_mixed_reach` asks for query radii from 2 to 128 when every structure sizes
+itself from the mean, and `hs07_crowd` is the clustered world with its clumps
+travelling across the map. A workload that tests an old prediction for the first
+time can be public, because the prediction was written before it existed:
+`w06_point_narrow` and `w07_point_wide` differ only in how many components one
+point access touches, which is the case `aos` was built for and no earlier
+workload had.
 
 ## Adding a candidate
 
