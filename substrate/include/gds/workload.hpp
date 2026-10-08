@@ -89,6 +89,14 @@ struct WorkloadSpec {
 
   float stale_access_ratio = 0.0f;   // fraction of accesses aimed at dead handles
 
+  // How many components one point access reads or writes. Gameplay code that
+  // touches an entity usually touches several of its components at once; with
+  // a width of N, a drawn Get or Set becomes N consecutive accesses of the same
+  // kind to the same entity, over N distinct components starting at the drawn
+  // one, and counts as N operations of the frame. 1 is a single component, the
+  // only shape the suite had before this field existed.
+  std::uint32_t access_width = 1;
+
   // Probability that a newly created entity carries each component.
   float p_position = 1.0f;
   float p_velocity = 0.8f;

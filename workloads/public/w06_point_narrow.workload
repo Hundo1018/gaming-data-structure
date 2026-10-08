@@ -1,0 +1,29 @@
+# One of a controlled pair: w06_point_narrow and w07_point_wide differ only in
+# access_width. Nothing but point access: no integrate, no query, no structural
+# change, every entity holding every component. With a width of 1 each drawn
+# access touches one component(s) of one entity. This is the shape of access
+# aos is built for and that no earlier workload had: see
+# candidates/ecs/aos/notes.md. What the pair isolates is how a layout's cost
+# changes when the components read together are stored together or apart.
+id: w06_point_narrow
+visibility: public
+track: ecs
+seed: 1006
+initial_entities: 200000
+max_entities: 200000
+frames: 150
+ops_per_frame: 30000
+w_create: 0.0
+w_destroy: 0.0
+w_add: 0.0
+w_remove: 0.0
+w_get: 6.0
+w_set: 4.0
+access: uniform
+access_width: 1
+integrate_per_frame: false
+query_masks:
+p_position: 1.0
+p_velocity: 1.0
+p_health: 1.0
+p_tag: 1.0

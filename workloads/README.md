@@ -39,6 +39,7 @@ experiments look like the same one. The C++ parsers
 | `recency_window` | how far back `access: recent` reaches |
 | `burst_frame_ratio` `burst_multiplier` | fraction of frames carrying a burst, and how much larger |
 | `stale_access_ratio` | fraction of accesses aimed at already-destroyed handles |
+| `access_width` | components one drawn `get` or `set` touches on the same entity, as consecutive operations over distinct components; counts as that many operations of the frame. Default 1 |
 | `p_position` `p_velocity` `p_health` `p_tag` | probability a new entity carries each component |
 | `integrate_per_frame` | run `p += v*dt` over matching entities each frame |
 | `dt` | timestep for integrate |
@@ -110,10 +111,11 @@ of finding the answer — which is what a complexity claim is about.
 Recorded here rather than left implicit, because an uncovered dimension is a
 claim nobody has tested:
 
-- **Multi-component point access.** Every `get` and `set` names one randomly
-  chosen component, so no workload reads several components of one entity in one
-  operation. That is the access pattern most gameplay code has, and it is the
-  case `aos` is built for; see `candidates/ecs/aos/notes.md`.
+- **Multi-component point access** is covered by one controlled pair,
+  `w06_point_narrow` and `w07_point_wide`, which differ only in `access_width`
+  (1 and 3) and hold the operation count fixed (4,670,000 operations each). Both
+  are pure point access: no integrate, no query, no structural change. The width
+  is not swept beyond those two points.
 - **Wide components.** The four component types total 36 bytes. Nothing here
   tests a layout whose cost hinges on a copy too large to stay in cache; see
   `candidates/ecs/archetype/notes.md`.
