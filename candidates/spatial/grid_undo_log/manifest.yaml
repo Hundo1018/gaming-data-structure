@@ -46,3 +46,26 @@ notes: >
   Its index is its parent's code, included by path rather than copied, so the
   pair differs in exactly one thing: where history lives. Whether that is worth
   it is what hs01 and hs02 exist to decide.
+
+# Encoded from hypothesis.md after that candidate had been measured. Only the
+# predictions whose prose fixes a workload, a metric and a direction are here;
+# the prose remains the preregistration and these are its machine-readable form.
+predictions:
+  - id: P1
+    claim: hs02_rewind_few_moving tail latency below uniform_grid under snapshot-and-rebuild
+    metric: step_ns_p99
+    workloads: [hs02_rewind_few_moving]
+    against: uniform_grid
+    below: 1.0
+  - id: P2
+    claim: hs02_rewind_few_moving memory below uniform_grid under snapshot-and-rebuild
+    metric: peak_bytes
+    workloads: [hs02_rewind_few_moving]
+    against: uniform_grid
+    below: 1.0
+  - id: P3
+    claim: hs01_rewind_all_moving tail latency above uniform_grid's (the log should lose)
+    metric: step_ns_p99
+    workloads: [hs01_rewind_all_moving]
+    against: uniform_grid
+    above: 1.0

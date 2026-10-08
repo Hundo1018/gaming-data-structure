@@ -46,3 +46,20 @@ complexity:
 notes: >
   The mutation is removing information: the dense array's implicit
   coordinate-to-slot mapping is gone and reconstructed by hashing.
+
+# Encoded from hypothesis.md after that candidate had been measured. Only the
+# predictions whose prose fixes a workload, a metric and a direction are here;
+# the prose remains the preregistration and these are its machine-readable form.
+predictions:
+  - id: P1
+    claim: slower than uniform_grid on every spatial workload
+    metric: step_ns_p50
+    workloads: "*"
+    against: uniform_grid
+    above: 1.0
+  - id: P2
+    claim: less memory than uniform_grid on s02_dense_clustered
+    metric: peak_bytes
+    workloads: [s02_dense_clustered]
+    against: uniform_grid
+    below: 1.0
