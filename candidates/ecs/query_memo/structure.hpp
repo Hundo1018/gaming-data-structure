@@ -60,10 +60,14 @@ class QueryMemo {
 
   ComponentMask mask(Entity e) const { return inner_.mask(e); }
 
-  std::uint64_t query(ComponentMask required) const {
+  // The running total is kept under the salt of the call that last computed
+  // it. Returning it for a later call is the whole idea, and since the salted
+  // contract it is also exactly what the gate rejects.
+  std::uint64_t query(ComponentMask required, std::uint64_t salt) const {
     Memo& m = memo_[required];
     if (!m.tracked || m.stale) {
-      m.sum = inner_.query(required);
+      m.sum = inner_.query(required, salt);
+      m.salt = salt;
       m.tracked = true;
       m.stale = false;
     }
@@ -88,6 +92,7 @@ class QueryMemo {
 
   struct Memo {
     std::uint64_t sum = 0;
+    std::uint64_t salt = 0;
     bool tracked = false;
     bool stale = false;
   };
@@ -106,7 +111,7 @@ class QueryMemo {
       for (int i = 0; i < kComponentCount; ++i) {
         if (req & (1u << i)) inner_.get(e, static_cast<ComponentId>(i), v[i]);
       }
-      const std::uint64_t d = digest_entity(req, v);
+      const std::uint64_t d = digest_entity(req, v, memo.salt);
       memo.sum = sign > 0 ? memo.sum + d : memo.sum - d;
     }
   }

@@ -85,7 +85,7 @@ class Soa {
     return i == kInvalid ? ComponentMask(0) : mask_[i];
   }
 
-  std::uint64_t query(ComponentMask required) const {
+  std::uint64_t query(ComponentMask required, std::uint64_t salt) const {
     std::uint64_t acc = 0;
     const std::size_t n = mask_.size();
     ComponentValue v[kComponentCount];
@@ -95,7 +95,7 @@ class Soa {
       if (required & kVelocity) v[1].velocity = velocity_[i];
       if (required & kHealth) v[2].health = health_[i];
       if (required & kTag) v[3].tag = tag_[i];
-      acc += digest_entity(required, v);
+      acc += digest_entity(required, v, salt);
     }
     return acc;
   }

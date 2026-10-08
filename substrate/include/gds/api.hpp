@@ -12,9 +12,11 @@
 //  3. get/set/add/remove on a dead handle are no-ops and report failure.
 //  4. add() on a component already present overwrites its value.
 //     remove() of an absent component is a no-op.
-//  5. query(required) returns the sum (mod 2^64) of digest_entity(required, v)
-//     over every live entity whose mask is a superset of `required`.
-//     Order of iteration is unconstrained.
+//  5. query(required, salt) returns the sum (mod 2^64) of
+//     digest_entity(required, v, salt) over every live entity whose mask is a
+//     superset of `required`. Order of iteration is unconstrained. The salt
+//     changes on every call, so an answer cannot be carried from one call to
+//     the next; work inside one call may still be deferred or fused.
 //  6. integrate(dt) applies p += v*dt for every live entity holding both
 //     Position and Velocity, in float arithmetic, per entity independently.
 //  7. Every observation (alive/get/mask/query/entity_count) must be correct at
@@ -36,7 +38,8 @@ namespace gds {
 
 template <class T>
 concept CandidateStructure = requires(T s, const T cs, Entity e, ComponentMask m, ComponentId c,
-                                      const ComponentValue& v, ComponentValue& out, float dt) {
+                                      const ComponentValue& v, ComponentValue& out, float dt,
+                                      std::uint64_t salt) {
   { s.create(m, static_cast<const ComponentValue*>(nullptr)) } -> std::same_as<Entity>;
   { s.destroy(e) };
   { cs.alive(e) } -> std::same_as<bool>;
@@ -45,7 +48,7 @@ concept CandidateStructure = requires(T s, const T cs, Entity e, ComponentMask m
   { cs.get(e, c, out) } -> std::same_as<bool>;
   { s.set(e, c, v) } -> std::same_as<bool>;
   { cs.mask(e) } -> std::same_as<ComponentMask>;
-  { cs.query(m) } -> std::same_as<std::uint64_t>;
+  { cs.query(m, salt) } -> std::same_as<std::uint64_t>;
   { s.integrate(dt) };
   { s.sync() };
   { cs.entity_count() } -> std::same_as<std::size_t>;

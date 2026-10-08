@@ -41,9 +41,32 @@ out to be about 64%: the one full query over 200000 slots costs more than the
 workload mostly measures one digest pass, which is the same work for every
 layout.
 
-## Fix
+## Fix, and the control that it holds
 
-Next commit: every query carries a salt that changes between calls and is
-folded into each entity's digest, so the answer to one call says nothing about
-the next, and a running total cannot be kept. `query_memo` stays in the
-population unchanged in logic as the control that the fix holds.
+Every query now carries a salt that changes between calls and is folded into
+each entity's digest (`digest_entity(required, v, salt)`; the harness derives it
+from the workload seed, the frame and the query's position in the frame). The
+answer to one call says nothing about the next, so a running total is worthless.
+The spatial track had the same hole in `query_radius` — a per-cell running total
+of hit digests would let a structure add up every cell a query swallows whole
+without visiting it — and its digest is now salted by the query's own centre and
+radius. k-nearest digests are ordered folds over a query-specific sequence and
+had nothing to precompute.
+
+`query_memo` keeps its logic unchanged: it still returns the total it computed
+under an earlier call's salt. It is now a negative control, `expect_verify:
+fail`, and the gate rejects it exactly where it reuses a total:
+
+| workload | integrates | result |
+|---|---|---|
+| `w04_random_access` | no | **rejected**, `frame 1, op 0: end-of-frame observation mismatch` |
+| the other nine | yes | passed |
+
+Frame 1 is the first frame at which it answers from memory. On the nine
+workloads that integrate it never does: every queried mask contains Position,
+`integrate` marks them all stale each frame, and it recomputes honestly. Passing
+there is correct, for the same reason `broken_recycle` passes the one workload
+that never recycles a slot.
+
+Every honest candidate in both tracks passed every workload under the salted
+contract, unchanged apart from passing the salt through.

@@ -105,7 +105,7 @@ class Archetype {
     return i == kInvalid ? ComponentMask(0) : groups_[entries_[i].group].mask;
   }
 
-  std::uint64_t query(ComponentMask required) const {
+  std::uint64_t query(ComponentMask required, std::uint64_t salt) const {
     std::uint64_t acc = 0;
     ComponentValue v[kComponentCount];
     for (const Group& g : groups_) {
@@ -116,7 +116,7 @@ class Archetype {
         if (required & kVelocity) v[1].velocity = g.velocity[r];
         if (required & kHealth) v[2].health = g.health[r];
         if (required & kTag) v[3].tag = g.tag[r];
-        acc += digest_entity(required, v);
+        acc += digest_entity(required, v, salt);
       }
     }
     return acc;

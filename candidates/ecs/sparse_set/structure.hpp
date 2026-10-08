@@ -95,7 +95,7 @@ class SparseSet {
   // Iterates the smallest participating set and probes the others. The choice
   // of driving set is what makes the cost proportional to the rarest component
   // rather than to the entity count.
-  std::uint64_t query(ComponentMask required) const {
+  std::uint64_t query(ComponentMask required, std::uint64_t salt) const {
     if (required == 0) return 0;
     int driver = -1;
     std::size_t best = ~std::size_t(0);
@@ -115,7 +115,7 @@ class SparseSet {
       for (int c = 0; c < kComponentCount; ++c) {
         if (required & (1u << c)) v[c] = sets_[c].values[sets_[c].sparse[i]];
       }
-      acc += digest_entity(required, v);
+      acc += digest_entity(required, v, salt);
     }
     return acc;
   }

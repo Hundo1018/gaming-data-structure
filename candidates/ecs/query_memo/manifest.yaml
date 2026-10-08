@@ -4,11 +4,12 @@ track: ecs
 binary: gds_ecs_query_memo
 island: -1
 parents: [ecs_soa]
-origin: exploit_control
+origin: negative_control
 novelty_status: EXACT_REDISCOVERY
-# Under the contract this candidate was written against, the gate accepts it on
-# every workload. That is the finding it exists to record; see notes.md.
-expect_verify: pass
+# Under the unsalted contract it was written against, the gate accepted it on
+# every workload (commit 2f4ad45; see notes.md). Since query digests are salted
+# per call, the gate must reject it wherever it reuses a total across calls.
+expect_verify: fail
 
 hypothesis: >
   Not a research hypothesis. The claim under test is about the harness: that a

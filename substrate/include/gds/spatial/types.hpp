@@ -78,27 +78,48 @@ inline Vec3 add(Vec3 a, Vec3 b) { return Vec3{a.x + b.x, a.y + b.y, a.z + b.z}; 
 // Observation digests
 // ---------------------------------------------------------------------------
 
-inline std::uint64_t digest_hit(EntityId id, Vec3 p) {
-  std::uint64_t a = 0x9E3779B97F4A7C15ull ^ static_cast<std::uint64_t>(id);
+inline std::uint64_t digest_hit(EntityId id, Vec3 p, std::uint64_t salt) {
+  std::uint64_t a = (0x9E3779B97F4A7C15ull ^ salt) ^ static_cast<std::uint64_t>(id);
   a = mix_word(a, std::bit_cast<std::uint32_t>(p.x));
   a = mix_word(a, std::bit_cast<std::uint32_t>(p.y));
   a = mix_word(a, std::bit_cast<std::uint32_t>(p.z));
   return splitmix64(a);
 }
 
+// The salt of a radius query, taken from the query itself. A radius answer is a
+// sum, and an unsalted sum is a quantity a structure could keep per cell as a
+// running total and hand back for every cell a query swallows whole, without
+// visiting anything inside it — `candidates/ecs/query_memo` showed the same
+// hole in the ECS track at 2.6x. Salting each hit by the query that found it
+// makes a precomputed total worthless, because no two queries share a salt.
+inline std::uint64_t radius_salt(Vec3 c, float r) {
+  std::uint64_t a = 0x7AD1u;
+  a = mix_word(a, std::bit_cast<std::uint32_t>(c.x));
+  a = mix_word(a, std::bit_cast<std::uint32_t>(c.y));
+  a = mix_word(a, std::bit_cast<std::uint32_t>(c.z));
+  a = mix_word(a, std::bit_cast<std::uint32_t>(r));
+  return splitmix64(a);
+}
+
 // A radius query is a set, so its digest is a sum and the iteration order of
-// the structure is unconstrained.
+// the structure is unconstrained. It is constructed from the query it answers.
+// query_radius_of(id, r) is the query centred on the entity's position, so it
+// uses RadiusDigest(position, r) and excludes the entity's own term.
 struct RadiusDigest {
+  std::uint64_t salt;
   std::uint64_t acc = 0;
-  void hit(EntityId id, Vec3 p) { acc += digest_hit(id, p); }
+  RadiusDigest(Vec3 c, float r) : salt(radius_salt(c, r)) {}
+  void hit(EntityId id, Vec3 p) { acc += digest_hit(id, p, salt); }
+  std::uint64_t term(EntityId id, Vec3 p) const { return digest_hit(id, p, salt); }
   std::uint64_t value() const { return acc; }
 };
 
 // A k-nearest query is a sequence, so its digest is an ordered fold. Ties are
-// broken by ascending id, which makes the sequence unique.
+// broken by ascending id, which makes the sequence unique. It needs no salt: an
+// ordered fold over a query-specific sequence has no algebra to precompute.
 struct KnnDigest {
   std::uint64_t acc = 0xCBF29CE484222325ull;
-  void push(EntityId id, Vec3 p) { acc = splitmix64(acc * 31u ^ digest_hit(id, p)); }
+  void push(EntityId id, Vec3 p) { acc = splitmix64(acc * 31u ^ digest_hit(id, p, 0)); }
   std::uint64_t value() const { return acc; }
 };
 

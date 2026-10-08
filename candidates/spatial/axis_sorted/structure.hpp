@@ -62,7 +62,7 @@ class AxisSorted {
 
   std::uint64_t query_radius(Vec3 c, float r) const {
     rebuild_if_needed();
-    RadiusDigest d;
+    RadiusDigest d(c, r);
     const float r2 = r * r;
     for_each_in_slab(c.x, r, [&](std::size_t i) {
       if (dist2(sorted_pos_[i], c) <= r2) d.hit(sorted_id_[i], sorted_pos_[i]);
@@ -72,7 +72,7 @@ class AxisSorted {
 
   std::uint64_t query_radius_of(EntityId self, float r) const {
     if (self >= live_.size() || !live_[self]) return 0;
-    return query_radius(pos_[self], r) - digest_hit(self, pos_[self]);
+    return query_radius(pos_[self], r) - RadiusDigest(pos_[self], r).term(self, pos_[self]);
   }
 
   std::uint64_t query_knn(Vec3 c, std::uint32_t k) const {

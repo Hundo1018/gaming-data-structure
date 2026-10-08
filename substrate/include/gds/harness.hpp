@@ -67,12 +67,22 @@ struct Replay {
 
   void end_of_frame(const WorkloadSpec& spec) {
     if (spec.integrate_per_frame) structure.integrate(spec.dt);
+    std::uint64_t index = 0;
     for (ComponentMask m : spec.query_masks) {
-      fold(structure.query(m));
+      fold(structure.query(m, query_salt(spec.seed, frame, index++)));
     }
     fold(structure.entity_count());
     structure.sync();
+    ++frame;
   }
+
+  // A fresh value for every query call, identical on the oracle's side and the
+  // candidate's because both replay the same frames.
+  static std::uint64_t query_salt(std::uint64_t seed, std::uint64_t frame, std::uint64_t index) {
+    return splitmix64(splitmix64(seed ^ 0x5A17ull) ^ (frame << 8) ^ index);
+  }
+
+  std::uint64_t frame = 0;
 };
 
 // ---------------------------------------------------------------------------
