@@ -98,7 +98,9 @@ rounds, so drift on a shared machine is spread across all of them instead of
 landing on whichever ran during a slow minute. `orchestrate.py --verify-only`
 runs the compile and correctness gates and stops.
 
-Requirements: CMake 3.20+, a C++20 compiler, Python 3.9+ with PyYAML (used only
+Requirements: CMake 3.20+, GCC or Clang in C11 mode on Linux with glibc (the
+allocation tracker replaces glibc's `malloc` through its `__libc_` entry
+points), Python 3.9+ with PyYAML (used only
 to read candidate manifests). On four shared cores `run_all.py` took 37 minutes
 for the current population: 24 for the suite, 1 for the floor, 12 for the
 sweeps.
@@ -271,7 +273,7 @@ recorded a falsification against a stronger paraphrase, "win `h05`".
 
 ### Hardware counters
 
-`substrate/src/pmu.cpp` opens cycles, instructions, cache references and misses,
+`substrate/src/pmu.c` opens cycles, instructions, cache references and misses,
 and branch instructions and misses through `perf_event_open`. On a machine that
 refuses — no PMU exposed to the guest, or `perf_event_paranoid` too high — every
 counter is reported unavailable with the kernel's reason. Nothing is estimated
@@ -308,16 +310,28 @@ workload had.
 ## Adding a candidate
 
 Create `candidates/<track>/<name>/` with `manifest.yaml`, `hypothesis.md`,
-`structure.hpp`, `structure.cpp` and `notes.md`. CMake picks the directory up on
+`structure.h`, `structure.c` and `notes.md`. CMake picks the directory up on
 the next configure, and the manifest's `track` decides which workloads it meets.
 
-| track | contract | entry macro |
-|---|---|---|
-| `ecs` | `substrate/include/gds/api.hpp` | `GDS_CANDIDATE_MAIN(YourType)` |
-| `spatial` | `substrate/include/gds/spatial/api.hpp` | `GDS_SPATIAL_CANDIDATE_MAIN(YourType)` |
+`structure.h` defines a type named `<name>` and its operations as `static
+inline` functions `<name>_<operation>`. `structure.c` is three lines:
 
-Each contract is checked at compile time by a concept, so a structure that does
-not satisfy it fails to build with a message saying which requirement it missed.
+```c
+#include "structure.h"
+#define GDS_CANDIDATE uniform_grid
+#include "gds/spatial/entry.h"   /* "gds/entry.h" for the ecs track */
+```
+
+| track | contract | example |
+|---|---|---|
+| `ecs` | `substrate/include/gds/api.h` | `candidates/ecs/soa` |
+| `spatial` | `substrate/include/gds/spatial/api.h` | `candidates/spatial/uniform_grid` |
+
+Each contract is a list of prototypes that `entry.h` redeclares for the
+candidate's prefix, so a function with the wrong signature fails to compile
+and a missing one fails to link, each with a message naming the function.
+A spatial candidate also declares `enum { <name>_native_rewind = 0 };` (or 1
+if it keeps its own history).
 
 Neither contract names an array, an index, a chunk, a cell or a pointer. Both
 constrain observable answers only. Deferring work is allowed; answering with
@@ -325,11 +339,19 @@ stale data is not. A spatial broad phase may over-admit as loosely as it likes,
 as long as the accept test is the shared `dist2`.
 
 A candidate descended from another includes its parent by path — the candidates
-root is on the include path, so `#include "spatial/uniform_grid/structure.hpp"`
+root is on the include path, so `#include "spatial/uniform_grid/structure.h"`
 works. `grid_undo_log` is built that way, which is what makes it a measurement
 of one changed variable rather than of two separately written structures.
 
 ## Deliberate deviations from PROJECT.md
+
+- **The candidates are C, not C++.** `PROJECT.md` asks for compilable C++
+  research objects, and the suite was C++20 until the user asked for C. Every
+  candidate, the substrate and the floor tool are now C11; ARCHITECTURE.md's
+  "The language" says what replaced templates, classes and concepts, and
+  `benchmarks/port_timing.md` what the port changed in time and memory. The
+  port was accepted only once every binary returned the C++ build's checksums
+  on every workload.
 
 - **No per-candidate `tests.cpp` or `benchmark.cpp`.** `PROJECT.md` lists both
   in the candidate layout. Correctness and measurement are shared harness code

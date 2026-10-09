@@ -46,7 +46,7 @@ def load_yaml(path):
 
 
 def parse_workload(path):
-    """Reads the flat `key: value` workload format, same grammar as the C++ parser."""
+    """Reads the flat `key: value` workload format, same grammar as the C parsers."""
     spec = {}
     for raw in Path(path).read_text().splitlines():
         line = raw.split("#", 1)[0].strip()
@@ -79,16 +79,16 @@ def git_commit():
 
 def compiler_version(build_dir):
     cache = build_dir / "CMakeCache.txt"
-    cxx = "unknown"
+    cc = "unknown"
     if cache.exists():
         for line in cache.read_text().splitlines():
-            if line.startswith("CMAKE_CXX_COMPILER:"):
-                cxx = line.split("=", 1)[1]
+            if line.startswith("CMAKE_C_COMPILER:"):
+                cc = line.split("=", 1)[1]
     try:
-        out = subprocess.run([cxx, "--version"], capture_output=True, text=True).stdout
-        return out.splitlines()[0] if out else cxx
+        out = subprocess.run([cc, "--version"], capture_output=True, text=True).stdout
+        return out.splitlines()[0] if out else cc
     except OSError:
-        return cxx
+        return cc
 
 
 def build(build_dir, native_arch):

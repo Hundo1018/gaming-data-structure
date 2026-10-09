@@ -23,27 +23,32 @@ recorded rather than left as a gap.
 
 ```
 substrate/include/gds/          shared by every track
-  types.hpp                     hashing and digest primitives
-  measure.hpp                   repetitions, percentiles, the reported metric block
-  alloc_tracker.hpp             global operator new/delete replacement
-  pmu.hpp                       perf_event_open counters, degrading honestly
-  json.hpp
-  api.hpp  harness.hpp  entry.hpp  workload.hpp  reference.hpp    ── ecs track
-  spatial/                                                        ── spatial track
-    api.hpp        the candidate contract, as a C++20 concept
-    types.hpp      Vec3, the shared dist2 and wrap, the digests
-    oracle.hpp     linear scan with full-copy history
-    workload.hpp   the spec and op stream
-    harness.hpp    verify and measure
-    entry.hpp      per-candidate main, and the rewind-strategy choice
-    rebuild_rewind.hpp   history strategy: snapshot the world, rebuild the index
-    undo_log_rewind.hpp  history strategy: record what changed, replay it back
+  common.h                      token pasting, hashing, bit casts, the optimiser barrier
+  vec.h                         GDS_VEC: a growable array with std::vector's growth policy
+  sort.inc.h                    template: introsort, partial sort, heaps, binary search
+  alloc.h                       allocation counters (the allocator is src/alloc.c)
+  measure.h                     repetitions, percentiles, the reported metric block
+  pmu.h                         perf_event_open counters, degrading honestly
+  json.h
+  types.h  api.h  workload.h  reference.h                     ── ecs track
+  replay.inc.h  run.inc.h  entry.h                            ── ecs harness
+  spatial/                                                    ── spatial track
+    api.h          the candidate contract, as prototypes checked at compile time
+    types.h        Vec3, the shared dist2 and wrap, the digests
+    knn.h          the (dist2, id) order as sort and heap instances
+    oracle.h       linear scan with full-copy history
+    workload.h     the spec and op stream
+    replay.inc.h  run.inc.h   verify, measure and report, per structure
+    entry.h        per-candidate main, and the rewind-strategy choice
+    rebuild_rewind.inc.h   history strategy: snapshot the world, rebuild the index
+    undo_log_rewind.inc.h  history strategy: record what changed, replay it back
 
-substrate/src/                  the non-header parts of the above
+substrate/src/                  alloc.c (the counting malloc), measure.c, pmu.c,
+                                json.c, workload.c, spatial_workload.c
 substrate/tools/                research instruments, never ranked
-  spatial_floor.cpp             gds_floor_spatial: the irreducible cost of a tick
-candidates/<track>/<name>/      manifest.yaml hypothesis.md structure.hpp
-                                structure.cpp notes.md
+  spatial_floor.c               gds_floor_spatial: the irreducible cost of a tick
+candidates/<track>/<name>/      manifest.yaml hypothesis.md structure.h
+                                structure.c notes.md
 workloads/public/               workloads a search may see
 workloads/hidden/               held out, used to detect overfitting
 workloads/sweep/                scaling experiment templates and sweeps.yaml
@@ -54,6 +59,7 @@ runner/
   sweep.py                      growth with population; families that vary a key
   predictions.py                preregistered predictions judged against results
   verify.py  ab.py              one binary against its track; interleaved A/B
+  equivalence.py  build_ab.py   two builds: same answers? then paired timing
   archive.py pareto.py report.py scaling_report.py manifest.py
 benchmarks/                     results.json report.md floor.json floor.md
                                 scaling.json scaling.md predictions.json predictions.md
@@ -61,17 +67,63 @@ archive/                        SQLite, git-ignored
 ```
 
 **The boundary rule.** Anything that decides *how a measurement is taken* is
-shared (`measure.hpp`, `alloc_tracker`, `pmu`), so two tracks cannot quietly
+shared (`measure.h`, `alloc.c`, `pmu.c`, `vec.h`), so two tracks cannot quietly
 measure different things under the same name. Anything that decides *what
-question is asked* is per-track (`api.hpp`, `workload.hpp`, `harness.hpp`,
-`entry.hpp`). When something needs to move between the two, that is a decision
+question is asked* is per-track (`api.h`, `workload.h`, `run.inc.h`,
+`entry.h`). When something needs to move between the two, that is a decision
 worth making explicitly rather than by copying.
+
+## The language
+
+Everything that is compiled is C11 (`-std=c11`, GNU extensions off) with three
+compiler builtins (`__builtin_ctzll`, `__builtin_clzll`,
+`__builtin_popcountll`) and one empty `asm` barrier. It was C++20 until the
+port recorded in `benchmarks/port_timing.md`; `runner/equivalence.py` showed
+that every binary of the C build returns the same checksums as the C++ build on
+every workload before the C++ was removed.
+
+C has no templates, classes or concepts, and three conventions stand in for
+them:
+
+- **A structure is a prefix.** A candidate named `uniform_grid` is a type
+  `uniform_grid` and `static inline` functions `uniform_grid_insert`,
+  `uniform_grid_query_radius` and so on, defined in its `structure.h`.
+  `structure.c` defines `GDS_CANDIDATE` to the prefix and includes the track's
+  `entry.h`. Nothing is called through a function pointer: every call from the
+  harness into a candidate is to a static inline function the compiler can see.
+- **Generic code is a template header.** A file ending in `.inc.h` is included
+  with a macro naming the structure it is instantiated for, and defines
+  functions whose names are built from that macro with `GDS_CAT`. `entry.h`
+  includes `replay.inc.h` once for the oracle and once for the candidate, so
+  both replay through the same code; the spatial `entry.h` also instantiates
+  the rebuild wrapper around the candidate, as `<prefix>_rr`, and the workload
+  decides at run time which of the two is measured. `sort.inc.h` follows
+  libstdc++'s `std::sort` and heap algorithms step for step, which keeps the
+  order of equal elements, and with it each structure's memory layout, what it
+  was in C++.
+- **The contract is a list of prototypes.** `GDS_ECS_CONTRACT(P)` and
+  `GDS_SPATIAL_CONTRACT(P)` redeclare every operation with its required
+  signature. A function with a different signature fails to compile
+  (`conflicting types for 'soa_query'`); a missing one is a compiler warning
+  naming it (`'soa_reported_bytes' used but never defined`) and then a link
+  error. A spatial candidate also declares the enumeration constant
+  `<prefix>_native_rewind`, which a `_Static_assert` checks is 0 or 1.
+
+Two parts exist only to keep measurements comparable with the C++ ones.
+`GDS_VEC` grows as libstdc++'s `std::vector` does (doubling on push, size +
+max(size, added) on resize, exact on reserve and assign). `alloc.c` defines
+`malloc` and its relatives in every executable, forwards to glibc through its
+`__libc_` entry points with a 16-byte header recording the requested size, and
+implements `realloc` as allocate, copy, free, so that the peak is charged as it
+was when every container was a `std::vector`. On the five candidates checked
+first, reported bytes, peak bytes and allocation counts came out identical to
+the C++ build.
 
 ## The data flow of one measurement
 
 1. `runner/orchestrate.py` loads every `candidates/*/*/manifest.yaml` and
    validates it against `runner/manifest.py`. A schema violation stops the run.
-2. CMake globs `candidates/*/*/structure.cpp` and builds one executable per
+2. CMake globs `candidates/*/*/structure.c` and builds one executable per
    candidate, named `gds_<track>_<name>`. A candidate's own directory and the
    candidates root are on its include path, so a descendant can include its
    parent by path rather than by copy.
@@ -137,13 +189,13 @@ beside the measurement.
 ## Workload formats
 
 Flat `key: value`, `#` starts a comment. **An unknown key is an error**, in both
-the C++ and the Python parser: a silently ignored field would make two different
+the C and the Python parser: a silently ignored field would make two different
 experiments look like the same one.
 
-| track | C++ parser | Python parser | key reference |
+| track | C parser | Python parser | key reference |
 |---|---|---|---|
-| ecs | `substrate/src/workload.cpp` | `runner/orchestrate.py: parse_workload` | `workloads/README.md` |
-| spatial | `substrate/src/spatial_workload.cpp` | same | `workloads/README.md` |
+| ecs | `substrate/src/workload.c` | `runner/orchestrate.py: parse_workload` | `workloads/README.md` |
+| spatial | `substrate/src/spatial_workload.c` | same | `workloads/README.md` |
 
 A workload names its `track`, and a candidate only ever meets workloads of its
 own track.
@@ -151,11 +203,11 @@ own track.
 ## The contracts
 
 Neither contract names an array, an index, a chunk, a cell or a pointer. Both
-constrain observable answers only, and both are checked at compile time by a
-C++20 concept, so a structure that does not satisfy one fails to build with a
-message naming the requirement it missed.
+constrain observable answers only, and both are checked at compile time by
+prototype redeclaration (see "The language"), so a structure that does not
+satisfy one fails to build with a message naming the function.
 
-| | ecs (`gds/api.hpp`) | spatial (`gds/spatial/api.hpp`) |
+| | ecs (`gds/api.h`) | spatial (`gds/spatial/api.h`) |
 |---|---|---|
 | identity | the structure chooses its own opaque handle | the harness assigns dense ids, because identity is part of the answer to "what is near me" |
 | mutation | create, destroy, add, remove, set | insert, remove, `move_by` |
@@ -163,7 +215,8 @@ message naming the requirement it missed.
 | batching | allowed; `sync()` is a declared point for it | allowed; `end_tick()` is a declared point for it |
 | staleness | never: every observation must be correct when it is made | same |
 | salting | `query(required, salt)`: a fresh salt per call, folded into every entity's digest | a radius query's digest is salted by the query's own centre and radius |
-| history | not part of the contract | `rewind_to`, with `kNativeRewind` declaring whether the structure keeps its own |
+| history | not part of the contract | `rewind_to`, with `<prefix>_native_rewind` declaring whether the structure keeps its own |
+| relocation | a structure may not point into itself: the harness moves it by copying the struct | same; the rebuild wrapper replaces its index that way |
 
 Three invariants hold across both, and exist so that candidates are comparable
 rather than merely each correct:
@@ -188,9 +241,13 @@ rather than merely each correct:
 ## Adding things
 
 **A candidate** — create `candidates/<track>/<name>/` with the five files.
-`structure.cpp` ends with `GDS_CANDIDATE_MAIN(T)` (ecs) or
-`GDS_SPATIAL_CANDIDATE_MAIN(T)` (spatial). CMake picks it up on the next
-configure. Fill in `complexity:`; the sweep will check it.
+`structure.h` defines the type `<name>` and its `<name>_<operation>`
+functions; `structure.c` is three lines, `#include "structure.h"`, `#define
+GDS_CANDIDATE <name>`, and `#include "gds/entry.h"` (ecs) or
+`"gds/spatial/entry.h"` (spatial). `candidates/ecs/soa` and
+`candidates/spatial/uniform_grid` are short examples of each. CMake picks the
+directory up on the next configure. Fill in `complexity:`; the sweep will
+check it.
 
 **A workload** — a file in `workloads/public/` or `workloads/hidden/` naming its
 `track`. Say in a comment which hypothesis it exists to break.
@@ -201,8 +258,8 @@ grows with the population, every candidate measures linear regardless of what it
 does.
 
 **A track** — a directory under `substrate/include/gds/`, carrying its own
-`api.hpp`, `workload.hpp`, `harness.hpp`, `entry.hpp` and oracle, reusing
-`measure.hpp` and the allocation tracker unchanged. Then `candidates/<track>/`
+`api.h`, `workload.h`, `replay.inc.h`, `run.inc.h`, `entry.h` and oracle,
+reusing `measure.h`, `vec.h` and the allocator unchanged. Then `candidates/<track>/`
 and workloads naming it.
 
 ## Not here
@@ -217,7 +274,7 @@ and workloads naming it.
 - **Third-party baselines.** Every candidate is written here, so the numbers
   compare implementations in this repository and say nothing about EnTT, flecs,
   or any production library. Two manifests already record this limit explicitly.
-- **Hardware counters on this machine.** The code is in `pmu.cpp`; this
+- **Hardware counters on this machine.** The code is in `pmu.c`; this
   container's kernel returns `ENOENT` from `perf_event_open`, so the counters
   are reported unavailable with that reason and never estimated.
 - **Four of the six research domains.** Event streams, graph and navigation, and
