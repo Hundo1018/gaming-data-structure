@@ -39,6 +39,7 @@ experiments look like the same one. The C++ parsers
 | `recency_window` | how far back `access: recent` reaches |
 | `burst_frame_ratio` `burst_multiplier` | fraction of frames carrying a burst, and how much larger |
 | `stale_access_ratio` | fraction of accesses aimed at already-destroyed handles |
+| `access_width` | components one drawn `get` or `set` touches on the same entity, as consecutive operations over distinct components; counts as that many operations of the frame. Default 1 |
 | `p_position` `p_velocity` `p_health` `p_tag` | probability a new entity carries each component |
 | `integrate_per_frame` | run `p += v*dt` over matching entities each frame |
 | `dt` | timestep for integrate |
@@ -61,6 +62,8 @@ the oracle and every candidate replay it identically.
 | `move_fraction` | share of live entities that move each tick |
 | `speed_min` `speed_max` | per-tick displacement in world units |
 | `teleport_ratio` | share of moves that jump anywhere in the world |
+| `movement` | `independent` (each mover takes its own step) or `flock` (each mover adds its cluster's drift to its own step, so a clump travels as a clump) |
+| `flock_speed` | per-tick drift of each cluster under `movement: flock` |
 | `placement` | `uniform` or `clustered` initial positions |
 | `clusters` `cluster_radius` | number of clumps and their spread |
 | `radius_queries_per_tick` | "what is near this point" |
@@ -151,10 +154,11 @@ constant and its reason.
 Recorded here rather than left implicit, because an uncovered dimension is a
 claim nobody has tested:
 
-- **Multi-component point access.** Every `get` and `set` names one randomly
-  chosen component, so no workload reads several components of one entity in one
-  operation. That is the access pattern most gameplay code has, and it is the
-  case `aos` is built for; see `candidates/ecs/aos/notes.md`.
+- **Multi-component point access** is covered by one controlled pair,
+  `w06_point_narrow` and `w07_point_wide`, which differ only in `access_width`
+  (1 and 3) and hold the operation count fixed (4,670,000 operations each). Both
+  are pure point access: no integrate, no query, no structural change. The width
+  is not swept beyond those two points.
 - **Wide components.** The four component types total 36 bytes. Nothing here
   tests a layout whose cost hinges on a copy too large to stay in cache; see
   `candidates/ecs/archetype/notes.md`.
@@ -162,12 +166,17 @@ claim nobody has tested:
   belongs to the spatial-query track. The ECS workloads vary temporal locality,
   skew and burstiness only.
 - **Concurrency.** Everything here is single-threaded, in both tracks.
-- **Spatial: non-uniform query reach.** Every structure is told one typical
-  query radius and sizes itself from it. Nothing tests a world where some
-  systems ask for two metres and others for two hundred.
-- **Spatial: correlated movement.** Entities move independently. Nothing tests
-  a crowd moving together, which is what would keep a cluster dense while it
-  travels rather than letting it diffuse.
+- **Spatial: non-uniform query reach** is now covered by one held-out
+  workload, `hs06_mixed_reach`: `s01_steady_uniform` with radii from 2 to 128,
+  so the typical radius a structure is told (65) is one almost no query has. It
+  is one point, not a sweep; the spread of reach is not varied.
+- **Spatial: correlated movement** is now covered by one held-out workload,
+  `hs07_crowd`: `s02_dense_clustered` with `movement: flock`, so each clump
+  keeps its density while it crosses the world. Under flocking the movers of a
+  tick are distinct entities rather than drawn with replacement, or an entity
+  drawn twice would take its cluster's drift twice and the clump would smear;
+  `gds_floor_spatial` measures 989 entities per radius query on `hs07` against
+  999 on `s02`, so the clump does hold together.
 - **Spatial: the rest of the rewind trade.** The two parameter sweeps give the
   history strategies a curve against movement rate at depth 6 and against depth
   at 10% moving, at one population, in a uniform world, with no teleports.

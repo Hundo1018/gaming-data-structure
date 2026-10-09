@@ -183,6 +183,7 @@ bool parse_workload_text(const std::string& text, WorkloadSpec& out, std::string
     else if (key == "burst_frame_ratio") ok = need_f(out.burst_frame_ratio);
     else if (key == "burst_multiplier") ok = need_u(out.burst_multiplier);
     else if (key == "stale_access_ratio") ok = need_f(out.stale_access_ratio);
+    else if (key == "access_width") ok = need_u(out.access_width);
     else if (key == "p_position") ok = need_f(out.p_position);
     else if (key == "p_velocity") ok = need_f(out.p_velocity);
     else if (key == "p_health") ok = need_f(out.p_health);
@@ -354,9 +355,20 @@ Workload generate_workload(const WorkloadSpec& spec) {
       acc += spec.w_remove;
       if (r < acc) { op.kind = OpKind::Remove; w.ops.push_back(op); continue; }
       acc += spec.w_get;
-      if (r < acc) { op.kind = OpKind::Get; w.ops.push_back(op); continue; }
-      op.kind = OpKind::Set;
+      op.kind = r < acc ? OpKind::Get : OpKind::Set;
       w.ops.push_back(op);
+      // Wider access repeats the same kind on the same entity for the next
+      // components in id order, from values already drawn, so a width of 1
+      // consumes exactly the random numbers it always did.
+      const std::uint32_t width = std::min<std::uint32_t>(
+          std::max<std::uint32_t>(1, spec.access_width), kComponentCount);
+      for (std::uint32_t k = 1; k < width && i + 1 < count; ++k) {
+        Op more = op;
+        more.comp = static_cast<ComponentId>((static_cast<int>(op.comp) + k) % kComponentCount);
+        more.value = vals[static_cast<int>(more.comp)];
+        w.ops.push_back(more);
+        ++i;
+      }
     }
     w.frames.push_back(Frame{begin, static_cast<std::uint32_t>(w.ops.size())});
   }

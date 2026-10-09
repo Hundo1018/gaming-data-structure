@@ -135,6 +135,20 @@ inline void print_common_bench_json(const RepetitionResult& med,
     std::printf("%s%llu", i ? ", " : "", (unsigned long long)reps[i].total_ns);
   }
   std::printf("],\n");
+  // The step percentiles of every repetition, not only the median one, so that
+  // a reader can tell a difference between two candidates from the spread of
+  // one candidate against itself. runner/predictions.py uses them to mark a
+  // prediction decided by less than that spread.
+  std::printf("  \"repetition_step_ns_p50\": [");
+  for (std::size_t i = 0; i < reps.size(); ++i) {
+    std::printf("%s%llu", i ? ", " : "", (unsigned long long)percentile(reps[i].step_ns, 0.50));
+  }
+  std::printf("],\n");
+  std::printf("  \"repetition_step_ns_p99\": [");
+  for (std::size_t i = 0; i < reps.size(); ++i) {
+    std::printf("%s%llu", i ? ", " : "", (unsigned long long)percentile(reps[i].step_ns, 0.99));
+  }
+  std::printf("],\n");
 }
 
 inline void print_pmu_json(const RepetitionResult& med, const Pmu& pmu) {

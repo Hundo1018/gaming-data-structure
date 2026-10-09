@@ -40,13 +40,23 @@ substrate/include/gds/          shared by every track
     undo_log_rewind.hpp  history strategy: record what changed, replay it back
 
 substrate/src/                  the non-header parts of the above
+substrate/tools/                research instruments, never ranked
+  spatial_floor.cpp             gds_floor_spatial: the irreducible cost of a tick
 candidates/<track>/<name>/      manifest.yaml hypothesis.md structure.hpp
                                 structure.cpp notes.md
 workloads/public/               workloads a search may see
 workloads/hidden/               held out, used to detect overfitting
 workloads/sweep/                scaling experiment templates and sweeps.yaml
-runner/                         orchestrate, sweep, archive, pareto, reports, manifest
-benchmarks/                     results.json report.md scaling.json scaling.md
+runner/
+  run_all.py                    the whole experiment, serially, in order
+  orchestrate.py                build, verify, measure, Pareto, report
+  floor.py                      headroom: candidates as multiples of the floor
+  sweep.py                      growth with population; families that vary a key
+  predictions.py                preregistered predictions judged against results
+  verify.py  ab.py              one binary against its track; interleaved A/B
+  archive.py pareto.py report.py scaling_report.py manifest.py
+benchmarks/                     results.json report.md floor.json floor.md
+                                scaling.json scaling.md predictions.json predictions.md
 archive/                        SQLite, git-ignored
 ```
 
@@ -74,10 +84,18 @@ worth making explicitly rather than by copying.
    code path. The binary prints one JSON object on stdout.
 6. The orchestrator stores every result in `archive/archive.db`, computes Pareto
    fronts, and writes `benchmarks/results.json` and `benchmarks/report.md`.
-7. `runner/sweep.py` is a separate pass over the same binaries: it generates
+7. `runner/floor.py` runs `gds_floor_spatial` on every spatial workload and
+   writes `benchmarks/floor.json` and `benchmarks/floor.md`, dividing each
+   candidate's median tick in `results.json` by the floor.
+8. `runner/sweep.py` is a separate pass over the same binaries: it generates
    workloads that differ only in population, fits a growth exponent to each
    candidate's curve, and writes `benchmarks/scaling.json` and
    `benchmarks/scaling.md`.
+9. `runner/predictions.py` reads every manifest's `predictions:`, evaluates them
+   against `results.json` and `scaling.json`, and writes
+   `benchmarks/predictions.json` and `benchmarks/predictions.md`.
+
+`runner/run_all.py` runs 1 to 9 in that order.
 
 ## The manifest schema
 
@@ -108,6 +126,7 @@ This table is generated: `python3 runner/manifest.py`.
 | `expected_disadvantages` | required | documentation |
 | `mutation_operator` | optional | documentation: which operator from PROJECT.md produced this candidate from its parent |
 | `notes` | optional | documentation |
+| `predictions` | optional | runner/predictions.py: every entry is judged against results.json and scaling.json; verdicts in benchmarks/predictions.md |
 
 The rule exists because it was broken. `complexity:` sat in twelve manifests
 across two tracks, required by `PROJECT.md`, and no line of the runner ever read
@@ -143,9 +162,10 @@ message naming the requirement it missed.
 | observation | get, mask, query, entity_count | `position_of`, `query_radius`, `query_radius_of`, `query_knn`, entity_count |
 | batching | allowed; `sync()` is a declared point for it | allowed; `end_tick()` is a declared point for it |
 | staleness | never: every observation must be correct when it is made | same |
+| salting | `query(required, salt)`: a fresh salt per call, folded into every entity's digest | a radius query's digest is salted by the query's own centre and radius |
 | history | not part of the contract | `rewind_to`, with `kNativeRewind` declaring whether the structure keeps its own |
 
-Two invariants hold across both, and exist so that candidates are comparable
+Three invariants hold across both, and exist so that candidates are comparable
 rather than merely each correct:
 
 - **Shared arithmetic.** The distance test, the toroidal wrap and every digest
@@ -157,6 +177,13 @@ rather than merely each correct:
 - **A broad phase may over-admit.** Culling can be as loose as a candidate
   likes; the accept test must be the shared one. This is what lets a
   representation be genuinely different without changing the question.
+- **An answer is found, not computed.** A set-valued answer is digested as a
+  sum, and an unsalted sum can be maintained as a running total without ever
+  enumerating the set. `candidates/ecs/query_memo` did that and was 2.6x faster
+  than any honest candidate on `w04_random_access` while passing every check.
+  Salting every query's digest per call makes a carried total worthless; a
+  candidate passes the salt it is given to the shared digest and does nothing
+  else with it. Deferring or fusing work inside one call stays allowed.
 
 ## Adding things
 

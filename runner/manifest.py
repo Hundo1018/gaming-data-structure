@@ -38,6 +38,9 @@ FIELDS = {
     "mutation_operator":      (False, "documentation: which operator from PROJECT.md "
                                       "produced this candidate from its parent"),
     "notes":                  (False, "documentation"),
+    "predictions":            (False, "runner/predictions.py: every entry is judged against "
+                                      "results.json and scaling.json; verdicts in "
+                                      "benchmarks/predictions.md"),
 }
 
 
@@ -55,6 +58,9 @@ def validate(manifest, path):
                 f"{path}: unknown field '{field}'. Add it to runner/manifest.py "
                 f"with the code that reads it, or 'documentation' if nothing does."
             )
+    if "predictions" in manifest:
+        from predictions import validate_predictions
+        problems.extend(validate_predictions(manifest["predictions"], path))
     return problems
 
 
