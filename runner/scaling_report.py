@@ -299,7 +299,16 @@ _VARY_METRICS = [
     ("p50", "step_ns_p50", "Median tick, microseconds", 1000.0, "{:.1f}"),
     ("p99", "step_ns_p99", "p99 tick, microseconds", 1000.0, "{:.1f}"),
     ("peak bytes", "peak_bytes", "Peak allocated bytes, MB", 1048576.0, "{:.2f}"),
+    # Not a Pareto objective: the median over only the ticks that open with a
+    # rewind, which is the cost of putting the world back, measured apart from
+    # the ordinary ticks the percentiles mix it with. Shown when a family rewinds.
+    ("rewind tick", "rewind_step_ns_p50", "Median rewind tick, microseconds", 1000.0,
+     "{:.1f}"),
 ]
+
+
+def _metric_present(rows, field):
+    return any(any(x for x in (row.get(field) or [])) for _, row in rows)
 
 
 def crossings(values, a_by, b_by):
@@ -384,19 +393,20 @@ def _p99_sentence(key, values, rows, fixed, rewinding):
         return None
     phrases = []
     for t in sorted(set(ticks.values())):
-        rank, other = p99_rank(t)
+        steady = max(1, t - 1)
+        rank, other = p99_rank(steady)
         where = (_rank_word(rank) if other is None
                  else f"between the {_rank_word(rank)} and the {_rank_word(other)}")
-        phrases.append(f"the {where} of {t}")
-    text = (f"The p99 column is the harness's 99th percentile over every tick of the "
-            f"median repetition: {', '.join(phrases)}. Tick 0, which inserts the whole "
-            "population, is one of them.")
+        phrases.append(f"the {where} of {steady}")
+    text = (f"The p99 column is the harness's 99th percentile over the ticks of the "
+            f"median repetition after the load tick: {', '.join(phrases)}. Tick 0, "
+            "which inserts the whole population, is left out of every percentile and "
+            "reported on its own.")
     if rewinding:
-        text += (" So is every rewind, and a p99 value is a rewind tick only where that "
-                 "candidate's rewinds cost more than its ordinary ticks. The load tick "
-                 "and any tick slowed by the machine rank among the costliest too, and "
-                 "each one that ranks above the rewinds moves the p99 one place down "
-                 "them, or off them.")
+        text += (" Every rewind is among those ticks, and a p99 value is a rewind tick "
+                 "only where that candidate's rewinds cost more than its ordinary ticks; "
+                 "any tick slowed by the machine ranks among the costliest too. The "
+                 "median rewind tick table measures the rewinds alone.")
     return text
 
 
@@ -429,11 +439,12 @@ def _write_vary_families(results, a):
       "within the noise of a shared machine, and a pair that changes order more "
       "than once on one objective is not separated by this sweep at all.")
     a("")
-    a("A p99 change of order is a change in the tail of the tick times, and the "
-      "p99 is taken over every tick, the load tick included. It is a change in the "
-      "cost of a rewind only where both candidates' rewinds are costlier than "
-      "their ordinary ticks, which these tables cannot show. Each family's section "
-      "says which tick of its run the p99 is.")
+    a("A p99 change of order is a change in the tail of the tick times, taken over "
+      "every tick after the load tick. It is a change in the cost of a rewind only "
+      "where both candidates' rewinds are costlier than their ordinary ticks; for "
+      "the rewinds themselves read the median rewind tick, which is taken over the "
+      "ticks that open with a rewind and nothing else. Each family's section says "
+      "which tick of its run the p99 is.")
     a("")
     a("`history` is the rewind strategy the binary reported: `native` for a "
       "candidate that keeps its own, `snapshot_rebuild` for one measured inside the "
@@ -478,6 +489,8 @@ def _write_vary_families(results, a):
             a("")
 
         for _, field, title, scale, fmt in _VARY_METRICS:
+            if not _metric_present(rows, field):
+                continue
             a(f"{title}, by `{key}`:")
             a("")
             a("| candidate | history | " + " | ".join(str(v) for v in values) + " |")
@@ -498,6 +511,8 @@ def _write_vary_families(results, a):
             continue
         found, repeated, quiet = [], [], []
         for label, field, _, _, _ in _VARY_METRICS:
+            if not _metric_present(rows, field):
+                continue
             any_here = False
             for i, (na, ra) in enumerate(rows):
                 for nb, rb in rows[i + 1:]:

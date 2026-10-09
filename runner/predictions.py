@@ -19,7 +19,9 @@ A prediction:
     - id: P1
       claim: hs03_knn_heavy median tick at most 0.5x uniform_grid's
       metric: step_ns_p50            # step_ns_p50 | step_ns_p99 | peak_bytes
-                                     # | time_exponent | memory_exponent
+                                     # | rewind_step_ns_p50 (median of the ticks
+                                     # that open with a rewind) | time_exponent
+                                     # | memory_exponent
       workloads: [hs03_knn_heavy]    # main-suite workloads, or "*" for the track
       against: uniform_grid          # ratio of this candidate to another
       at_most: 0.5                   # at_most | at_least | below | above | within
@@ -54,7 +56,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-METRICS = {"step_ns_p50", "step_ns_p99", "peak_bytes", "time_exponent", "memory_exponent"}
+METRICS = {"step_ns_p50", "step_ns_p99", "peak_bytes", "rewind_step_ns_p50",
+           "time_exponent", "memory_exponent"}
 BOUNDS = ("at_most", "at_least", "below", "above", "within")
 COMPARISONS = ("against", "against_min", "against_workload", "gap_closed")
 KEYS = {"id", "claim", "metric", "workloads", "sweep", "regimes", "size", "values",
@@ -142,12 +145,11 @@ class Data:
             if not fit:
                 return None
             return float(fit["exponent"]), fit.get("r_squared")
-        key = {"step_ns_p50": "step_ns_p50", "step_ns_p99": "step_ns_p99",
-               "peak_bytes": "peak_bytes"}[metric]
+        key = metric
         axis = "size" if size is not None else "value"
         want = size if size is not None else value
         xs = row.get(axis) or []
-        if want not in xs:
+        if want not in xs or key not in row:
             return None
         return float(row[key][xs.index(want)]), None
 

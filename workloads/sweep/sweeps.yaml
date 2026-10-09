@@ -160,16 +160,14 @@ families:
     measures: >
       Two history strategies against the share of entities that move each
       tick, with the rollback schedule fixed. The median tick does not rewind:
-      it is the cost of keeping history while the world moves. The p99 tick is
-      the second costliest of the 100 ticks, and the costly ones are expected
-      to be the load tick, which inserts the population, and the 9 rewinds.
-      Where every rewind costs more than any ordinary tick, the p99 is the
-      costliest rewind if the load tick costs more still, and otherwise the
-      load tick or the second costliest rewind. One ordinary tick slowed by the
-      machine above the costliest rewind is enough to make the p99 that tick
-      or the load tick. Where a strategy's
-      rewind costs about what an ordinary tick does, as a log's may when little
-      moves, the p99 is an ordinary tick and says nothing about the rewind.
+      it is the cost of keeping history while the world moves. The median
+      rewind tick is taken over the 9 ticks that open with a rewind and nothing
+      else, so it is the cost of putting the world back. The p99 tick is taken
+      over the 99 ticks after the load tick, which the harness reports apart;
+      it is the second costliest of them, so where every rewind costs more
+      than any ordinary tick it is the second costliest rewind, and where a
+      strategy's rewind costs about what an ordinary tick does, as a log's may
+      when little moves, it is the tick tail and says nothing about the rewind.
     checks: no manifest field; it locates where the history strategies change order between the two points hs01 and hs02 measure
 
   - id: rewind_depth
@@ -200,35 +198,21 @@ families:
     # at every point; only how far each rewind goes changes. move_fraction is
     # 0.1, where hs01 and hs02 leave the order of the two strategies unknown.
     #
-    # The cost of the longer interval is in the p99. The harness's p99
-    # interpolates the sorted tick times at 0.99 * (n - 1) over all n ticks,
-    # tick 0 included: at 400 ticks the fifth costliest, at 100 the second.
-    # Counting the load tick, 10 of the 400 ticks here are expected to be
-    # costly, against 10 of 100 in rewind_move_fraction. So where rewinds are
-    # the costliest ticks, this family's p99 is the fourth or fifth costliest
-    # of its 9 rewinds, about the middle of them, and that family's is its
-    # costliest rewind, its load tick or its second costliest rewind. The two
-    # families' p99 rows are not the same statistic; compare within one.
-    #
-    # A longer run would not move the p99 to another part of the rewinds. The
-    # p99 is about 0.01 * n ticks from the top and the rewinds are n /
-    # rewind_every of the ticks, so it sits about 0.01 * rewind_every of the
-    # way down them whatever n is. It would make the load tick count for less,
-    # but ticks slowed by the machine grow with n as well, and it would double
-    # the time of a family that is already the longer of the two. A p99 over
-    # the rewind ticks alone would need the harness to report one.
+    # The p99 is taken over the ticks after the load tick (the harness reports
+    # the load tick on its own), interpolated at 0.99 * (n - 1): at 399 steady
+    # ticks the fifth costliest, against the second costliest of 99 in
+    # rewind_move_fraction, so the two families' p99 rows are not the same
+    # statistic; compare within one. The median rewind tick is the same
+    # statistic in both: the median of the 9 ticks that open with a rewind.
     measures: >
       Two history strategies against how far back a rewind goes, at 10% of
       entities moving each tick. The median tick does not rewind and should
-      not move with depth for either strategy. The p99 tick is the fifth
-      costliest of the 400 ticks, and the costly ones are expected to be the
-      load tick, which inserts the population, and the 9 rewinds. Where every
-      rewind costs more than any ordinary tick, that is the fourth or fifth
-      costliest rewind, about the middle of them, with room for the load tick
-      and three ordinary ticks slowed by the machine above it. Where a
-      strategy's rewind costs about what an ordinary tick does, as a log's may
-      at shallow depth, the p99 is an ordinary tick or the load tick, and a
-      p99 crossing there is one of the tick tail rather than of the rewind.
-      Deeper, the p99 is where a log that unwinds tick by tick and a rebuild
-      that does not are expected to part.
+      not move with depth for either strategy. The median rewind tick is the
+      median of the 9 ticks that open with a rewind, and is where a log that
+      unwinds tick by tick and a rebuild that does not are expected to part as
+      the depth grows. The p99 is the fifth costliest of the 399 ticks after
+      the load tick: where every rewind costs more than any ordinary tick it
+      is about the middle of the rewinds, and where a strategy's rewind costs
+      about what an ordinary tick does, as a log's may at shallow depth, it is
+      the tick tail rather than the rewind.
     checks: no manifest field; it is the second axis of the history trade, against which a log's cost grows and a rebuild's does not

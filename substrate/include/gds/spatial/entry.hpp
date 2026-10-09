@@ -50,6 +50,21 @@ int run_and_report(const SpatialWorkload& w, const WorldConfig& cfg, const std::
 
   const RepetitionResult& med = median_repetition(reps);
   print_common_bench_json(med, reps, w.ops.size(), "tick");
+  // The ticks that open with a rewind, separately: the cost of putting the
+  // world back is the question a history strategy answers, and in the tick
+  // percentiles it is mixed with every ordinary tick. Zero when nothing rewinds.
+  std::vector<std::uint64_t> rewind_steps;
+  for (std::size_t t = 0; t < w.ticks.size() && t < med.step_ns.size(); ++t) {
+    const Tick& tk = w.ticks[t];
+    if (tk.op_begin < tk.op_end && w.ops[tk.op_begin].kind == SpatialOp::Rewind) {
+      rewind_steps.push_back(med.step_ns[t]);
+    }
+  }
+  std::printf("  \"rewind_steps\": %zu,\n", rewind_steps.size());
+  std::printf("  \"rewind_step_ns_p50\": %llu,\n",
+              (unsigned long long)percentile(rewind_steps, 0.50));
+  std::printf("  \"rewind_step_ns_max\": %llu,\n",
+              (unsigned long long)percentile(rewind_steps, 1.0));
   print_pmu_json(med, pmu);
   std::printf("}\n");
   return 0;

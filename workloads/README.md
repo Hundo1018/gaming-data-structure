@@ -123,12 +123,13 @@ every pair of candidates whose order changes, the two measured values on either
 side of the change. The crossing is stated as that interval and never placed
 inside it: nothing between the two values was run.
 
-The p99 tick is the harness's 99th percentile over every tick of the run, the
-load tick included. It is the cost of a rewind only where a candidate's rewinds
-are its costliest ticks; where a rewind costs about what an ordinary tick does,
-the p99 is an ordinary tick, and a p99 crossing is one of the tick tail. The
-report says which tick of each family's run the p99 is, and `sweeps.yaml` says
-where that falls among the rewinds.
+The p99 tick is the harness's 99th percentile over the ticks after the load
+tick, which is reported on its own. It is the cost of a rewind only where a
+candidate's rewinds are its costliest ticks; where a rewind costs about what an
+ordinary tick does, the p99 is an ordinary tick, and a p99 crossing is one of
+the tick tail. The median rewind tick, a fourth table, is taken over only the
+ticks that open with a rewind and measures the rewind itself. The report says
+which tick of each family's run the p99 is.
 
 Two parameter sweeps compare history strategies on the spatial track, at 30000
 entities with the churn and query mix of `hs01`:

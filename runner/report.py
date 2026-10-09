@@ -87,9 +87,9 @@ def write_report(results, workloads, path):  # noqa: C901
     a("## Measurements")
     a("")
     a("Timing is per step, where a step is a frame in the ECS track and a tick in the "
-      "spatial track. Step 0 carries the initial population load, which is why the `max` "
-      "column sits far above `p99` on the larger workloads: that column is almost always "
-      "the load step, not steady state.")
+      "spatial track. Step 0 creates the initial population and nothing else, so it is "
+      "left out of every step percentile and of `max`, which describe steady state; the "
+      "load step is archived on its own as `load_step_ns`.")
     a("")
     a("`bytes/entity` is the allocated footprint standing at the end of the run divided by "
       "the live population at the end of the run. `peak` is the high-water mark of live "

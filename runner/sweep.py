@@ -292,7 +292,8 @@ def run_vary_family(fam, prepared, cfg, fam_candidates, build_dir, timeout, resu
     # first.
     rows = {c["name"]: {"value": [], "step_ns_p50": [], "step_ns_p99": [],
                         "peak_bytes": [], "checksum": [], "rewind_strategy": [],
-                        "rewinds": [], "ticks": []} for c in passed}
+                        "rewinds": [], "ticks": [], "rewind_step_ns_p50": []}
+            for c in passed}
     for i, v in enumerate(values):
         shift = i % len(passed) if passed else 0
         for c in passed[shift:] + passed[:shift]:
@@ -311,6 +312,7 @@ def run_vary_family(fam, prepared, cfg, fam_candidates, build_dir, timeout, resu
             row["rewind_strategy"].append(m.get("rewind_strategy"))
             row["rewinds"].append(m.get("rewinds"))
             row["ticks"].append(m.get("ticks"))
+            row["rewind_step_ns_p50"].append(m.get("rewind_step_ns_p50", 0))
             print(f"[vary]   {c['name']:16s} {fam['id']:24s} {key} {v}: p50 "
                   f"{m['step_ns_p50'] / 1000.0:.1f} us, p99 "
                   f"{m['step_ns_p99'] / 1000.0:.1f} us, history "
