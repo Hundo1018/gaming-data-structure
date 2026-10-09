@@ -94,3 +94,56 @@ notes: >
   history_ticks at construction, the query box was made conservative, and
   uniform_grid is held as a mutable member instead of inherited; see Changes
   after review in hypothesis.md.
+
+# The predictions this candidate was written against, as data, thresholds as
+# given before it was implemented. runner/predictions.py judges them.
+predictions:
+  - id: P1a
+    claim: hs01_rewind_all_moving median below uniform_grid and grid_undo_log
+    metric: step_ns_p50
+    workloads: [hs01_rewind_all_moving]
+    against: [uniform_grid, grid_undo_log]
+    below: 1.0
+  - id: P1b
+    claim: hs01_rewind_all_moving p99 below uniform_grid and grid_undo_log
+    metric: step_ns_p99
+    workloads: [hs01_rewind_all_moving]
+    against: [uniform_grid, grid_undo_log]
+    below: 1.0
+  - id: P2a
+    claim: hs02_rewind_few_moving median within 1.3x of grid_undo_log
+    metric: step_ns_p50
+    workloads: [hs02_rewind_few_moving]
+    against: grid_undo_log
+    at_most: 1.3
+  - id: P2b
+    claim: hs02_rewind_few_moving p99 within 1.5x of grid_undo_log
+    metric: step_ns_p99
+    workloads: [hs02_rewind_few_moving]
+    against: grid_undo_log
+    at_most: 1.5
+  - id: P2c
+    claim: hs02_rewind_few_moving p99 below uniform_grid under snapshot-and-rebuild
+    metric: step_ns_p99
+    workloads: [hs02_rewind_few_moving]
+    against: uniform_grid
+    below: 1.0
+  - id: P3
+    claim: within 1.2x of cell_sorted where everything moves and nothing rewinds
+    metric: step_ns_p50
+    workloads: [s01_steady_uniform, s03_wide_radius, s04_teleport, hs04_flat_world]
+    against: cell_sorted
+    at_most: 1.2
+  - id: P4
+    claim: spatial_move time exponent at most 0.3 in both regimes
+    metric: time_exponent
+    sweep: spatial_move
+    regimes: [fixed_world, fixed_density]
+    at_most: 0.3
+  - id: P5
+    claim: rewind_move_fraction p99 within 1.2x of the better history strategy at every value
+    metric: step_ns_p99
+    sweep: rewind_move_fraction
+    values: "*"
+    against_min: [uniform_grid, grid_undo_log]
+    at_most: 1.2

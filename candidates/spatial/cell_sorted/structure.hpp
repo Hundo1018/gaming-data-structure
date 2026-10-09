@@ -129,7 +129,10 @@ class CellSorted {
            sorted_y_.capacity() * sizeof(float) + sorted_z_.capacity() * sizeof(float);
   }
 
- private:
+ protected:
+  // Protected rather than private so that a descendant can change one thing
+  // and include the rest by path; cell_rows does, for the walk.
+  //
   // One 256-bit vector of floats. GCC's -O2 cost model vectorises a loop only
   // when its trip count is a known multiple of the vector width, so the
   // distance test runs over blocks of exactly this many slots and masks the

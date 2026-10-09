@@ -130,10 +130,17 @@ class Data:
         return float(m[metric]), spread(reps)
 
     def sweep_regimes(self, family):
+        # A family that varies a workload key has no regimes; its one curve is
+        # addressed with the regime None.
+        if family in self.scaling.get("curves", {}):
+            return [None]
         return sorted(k.split("::", 1)[1] for k in self.scaling.get("sweeps", {})
                       if k.split("::", 1)[0] == family)
 
     def sweep_row(self, family, regime, candidate):
+        if regime is None:
+            return self.scaling.get("curves", {}).get(family, {}).get(
+                "candidates", {}).get(candidate)
         return self.scaling.get("sweeps", {}).get(f"{family}::{regime}", {}).get(candidate)
 
     def sweep(self, candidate, family, regime, metric, size=None, value=None):
@@ -192,7 +199,7 @@ def points(p, data, candidate):
                 row = data.sweep_row(family, r, candidate) or {}
                 vals = row.get("value") or []
             for v in vals:
-                out.append((f"{family}·{r}·{v}",
+                out.append((f"{family}·{v}" if r is None else f"{family}·{r}·{v}",
                             lambda c, r=r, v=v: data.sweep(c, family, r, metric, value=v),
                             "sweep", (r, v)))
         else:

@@ -89,3 +89,25 @@ notes: >
   shape's. reported_bytes also counts the group vector, which the parent
   omits, so it exceeds the parent's by that vector's capacity times
   sizeof(Group); peak allocated bytes should equal the parent's.
+
+# The predictions this candidate was written against, as data, thresholds as
+# given before it was implemented. runner/predictions.py judges them.
+predictions:
+  - id: P1
+    claim: w02_query_heavy at most 0.95x archetype's
+    metric: step_ns_p50
+    workloads: [w02_query_heavy]
+    against: archetype
+    at_most: 0.95
+  - id: P2
+    claim: w01_steady_uniform at most 0.95x archetype's
+    metric: step_ns_p50
+    workloads: [w01_steady_uniform]
+    against: archetype
+    at_most: 0.95
+  - id: P3
+    claim: no ECS workload slower than archetype by more than 5%
+    metric: step_ns_p50
+    workloads: [w01_steady_uniform, w02_query_heavy, w03_structural_churn, w04_random_access, w05_small_world, h01_zipf_hotspot, h02_bursty_spawn, h03_stale_handles, h04_recent_locality, h05_sparse_component]
+    against: archetype
+    at_most: 1.05

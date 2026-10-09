@@ -76,3 +76,67 @@ notes: >
   The parent's comparison sort is replaced by a radix sort, and its per-cell
   binary search by the hierarchy; the two are not separated here, so a gain over
   the parent is the sum of both.
+
+# The predictions this candidate was written against, as data, thresholds as
+# given before it was implemented. runner/predictions.py judges them.
+predictions:
+  - id: P1a
+    claim: s02_dense_clustered median tick lower than uniform_grid's
+    metric: step_ns_p50
+    workloads: [s02_dense_clustered]
+    against: uniform_grid
+    below: 1.0
+  - id: P1b
+    claim: s02_dense_clustered peak memory at most half of uniform_grid's
+    metric: peak_bytes
+    workloads: [s02_dense_clustered]
+    against: uniform_grid
+    at_most: 0.5
+  - id: P2
+    claim: hs03_knn_heavy median tick lower than uniform_grid's
+    metric: step_ns_p50
+    workloads: [hs03_knn_heavy]
+    against: uniform_grid
+    below: 1.0
+  - id: P3
+    claim: s01_steady_uniform within 1.5x of uniform_grid
+    metric: step_ns_p50
+    workloads: [s01_steady_uniform]
+    against: uniform_grid
+    at_most: 1.5
+  - id: P4
+    claim: beats morton_sorted on all ten spatial workloads
+    metric: step_ns_p50
+    workloads: [s01_steady_uniform, s02_dense_clustered, s03_wide_radius, s04_teleport, s05_small_world, hs01_rewind_all_moving, hs02_rewind_few_moving, hs03_knn_heavy, hs04_flat_world, hs05_spawn_churn]
+    against: morton_sorted
+    below: 1.0
+  - id: P5a
+    claim: spatial_move time exponent at least 0.8
+    metric: time_exponent
+    sweep: spatial_move
+    regimes: [fixed_world, fixed_density]
+    at_least: 0.8
+  - id: P5b
+    claim: spatial_query_radius fixed_density time exponent at most 0.25
+    metric: time_exponent
+    sweep: spatial_query_radius
+    regimes: [fixed_density]
+    at_most: 0.25
+  - id: P6a
+    claim: spatial_move fixed_world memory exponent at least 0.9
+    metric: memory_exponent
+    sweep: spatial_move
+    regimes: [fixed_world]
+    at_least: 0.9
+  - id: P6b
+    claim: spatial_query_radius fixed_world memory exponent at least 0.9
+    metric: memory_exponent
+    sweep: spatial_query_radius
+    regimes: [fixed_world]
+    at_least: 0.9
+  - id: P6c
+    claim: spatial_knn fixed_world memory exponent at least 0.9
+    metric: memory_exponent
+    sweep: spatial_knn
+    regimes: [fixed_world]
+    at_least: 0.9

@@ -73,3 +73,40 @@ notes: >
   population. query_radius is the parent's code; the parent states its cost
   as cells touched plus the entities in them, which at fixed density is
   constant, and it is written here as O(1) so the sweep checks it.
+
+# The predictions this candidate was written against, as data, thresholds as
+# given before it was implemented. runner/predictions.py judges them.
+predictions:
+  - id: P1
+    claim: hs03_knn_heavy at most 0.5x uniform_grid's
+    metric: step_ns_p50
+    workloads: [hs03_knn_heavy]
+    against: uniform_grid
+    at_most: 0.5
+  - id: P2
+    claim: s05_small_world at most 0.7x uniform_grid's
+    metric: step_ns_p50
+    workloads: [s05_small_world]
+    against: uniform_grid
+    at_most: 0.7
+  - id: P3
+    claim: on no spatial workload slower than uniform_grid by more than 10%
+    metric: step_ns_p50
+    workloads: [s01_steady_uniform, s02_dense_clustered, s03_wide_radius, s04_teleport, s05_small_world, hs01_rewind_all_moving, hs02_rewind_few_moving, hs03_knn_heavy, hs04_flat_world, hs05_spawn_churn]
+    against: uniform_grid
+    at_most: 1.1
+  - id: P4a
+    claim: spatial_knn fixed_world at population 1000 at least 3x faster than uniform_grid
+    metric: step_ns_p50
+    sweep: spatial_knn
+    regimes: [fixed_world]
+    size: 1000
+    against: uniform_grid
+    at_most: 0.3333
+  - id: P4b
+    claim: spatial_knn fixed_density time exponent no higher than uniform_grid's
+    metric: time_exponent
+    sweep: spatial_knn
+    regimes: [fixed_density]
+    against: uniform_grid
+    at_most: 0.0

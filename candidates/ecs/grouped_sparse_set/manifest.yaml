@@ -76,3 +76,25 @@ notes: >
   group swaps are constant work; it is written as O(1) because that is a form
   a sweep can check. The parent's code is reproduced rather than included
   because every member of SparseSet is private.
+
+# The predictions this candidate was written against, as data, thresholds as
+# given before it was implemented. runner/predictions.py judges them.
+predictions:
+  - id: P1
+    claim: h05_sparse_component closes at least half the gap from sparse_set to archetype
+    metric: step_ns_p50
+    workloads: [h05_sparse_component]
+    gap_closed: {from: sparse_set, to: archetype}
+    at_least: 0.5
+  - id: P2
+    claim: w01 and w02 at least 15% faster than sparse_set
+    metric: step_ns_p50
+    workloads: [w01_steady_uniform, w02_query_heavy]
+    against: sparse_set
+    at_most: 0.85
+  - id: P3
+    claim: w03_structural_churn within 15% of sparse_set either way
+    metric: step_ns_p50
+    workloads: [w03_structural_churn]
+    against: sparse_set
+    within: 0.15
