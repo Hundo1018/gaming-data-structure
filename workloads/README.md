@@ -185,5 +185,6 @@ claim nobody has tested:
   deeper than 32 ticks or in a clustered world. The movement sweep also passes
   through the regime of `hs01` at 1.0 and close to that of `hs02` at 0.02
   (different seed, fewer ticks, and `hs01`'s churn rather than `hs02`'s), so
-  those two no longer hold a rewind regime out: no hidden workload tests a
-  history strategy somewhere the public set does not already reach.
+  those two no longer held a rewind regime out. `hs08_crowd_rollback` was added
+  for that reason: travelling clumps with churn, rolled back twelve ticks every
+  eighth tick, which nothing public reaches.

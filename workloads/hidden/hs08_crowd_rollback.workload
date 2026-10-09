@@ -1,0 +1,35 @@
+# Held out, and added after the rollback sweeps made hs01 and hs02 reachable
+# from the public set. hs07_crowd with rollback: the clumps travel, entities
+# spawn and despawn every tick, and every eighth tick the world goes back
+# twelve ticks. Nothing public rewinds a clustered world, rewinds deeper than
+# the sweep's uniform world with churn, or rewinds a world whose density moves.
+# Rewinding also rewinds where each cluster is, so the queries after a rollback
+# are aimed where the clumps were.
+id: hs08_crowd_rollback
+visibility: hidden
+track: spatial
+seed: 8008
+world_size: 1024
+world_height: 256
+initial_entities: 40000
+ticks: 200
+inserts_per_tick: 30
+removes_per_tick: 25
+move_fraction: 1.0
+movement: flock
+flock_speed: 3.0
+speed_min: 0.2
+speed_max: 1.5
+placement: clustered
+clusters: 8
+cluster_radius: 8
+radius_queries_per_tick: 48
+entity_radius_queries_per_tick: 48
+knn_queries_per_tick: 12
+query_radius_min: 4
+query_radius_max: 8
+knn_k: 8
+query_focus: clustered
+rewind_every: 8
+rewind_depth: 12
+history_ticks: 16
