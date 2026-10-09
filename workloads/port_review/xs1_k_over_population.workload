@@ -1,0 +1,29 @@
+# Population grows by one per tick from zero, so every knn asks for more
+# neighbours than exist: the search runs until r > limit. Teleports and
+# rewinds over a tiny population; radius 0 up to the whole world.
+id: xs1_k_over_population
+visibility: public
+track: spatial
+seed: 9101
+world_size: 64
+world_height: 64
+initial_entities: 0
+ticks: 60
+inserts_per_tick: 3
+removes_per_tick: 2
+move_fraction: 1.0
+speed_min: 0.0
+speed_max: 6.0
+teleport_ratio: 0.5
+placement: uniform
+radius_queries_per_tick: 16
+entity_radius_queries_per_tick: 16
+knn_queries_per_tick: 8
+query_radius_min: 0
+query_radius_max: 64
+knn_k: 50
+query_focus: uniform
+rewind_every: 6
+rewind_depth: 3
+history_ticks: 5
+verify_sweep_ticks: 4

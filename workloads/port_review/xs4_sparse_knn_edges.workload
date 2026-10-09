@@ -1,0 +1,31 @@
+# A sparse flat world whose typical radius is below the cell floor
+# (extent/256 = 1), so morton_sorted and spatial_hash run at the floor and
+# knn doubles from it several times before k is met. Query boxes cross the
+# world's lower edge: negative hash cells, morton clamp at 0. k = 1, tiny
+# radii, fast movers and teleports, shallow rewinds.
+id: xs4_sparse_knn_edges
+visibility: public
+track: spatial
+seed: 9104
+world_size: 256
+world_height: 16
+initial_entities: 3000
+ticks: 80
+inserts_per_tick: 10
+removes_per_tick: 12
+move_fraction: 1.0
+speed_min: 0.0
+speed_max: 40.0
+teleport_ratio: 0.3
+placement: uniform
+radius_queries_per_tick: 16
+entity_radius_queries_per_tick: 16
+knn_queries_per_tick: 16
+query_radius_min: 0.1
+query_radius_max: 0.5
+knn_k: 1
+query_focus: uniform
+rewind_every: 5
+rewind_depth: 2
+history_ticks: 3
+verify_sweep_ticks: 8

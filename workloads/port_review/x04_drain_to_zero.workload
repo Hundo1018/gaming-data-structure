@@ -1,0 +1,26 @@
+# Destroy outweighs create three to one, so the population of 2048 (a power of
+# two) drains to nothing within a few frames and then hovers at zero while the
+# free list holds every slot. Accesses are all stale once nothing is alive.
+id: x04_drain_to_zero
+visibility: public
+track: ecs
+seed: 9104
+initial_entities: 2048
+max_entities: 4096
+frames: 80
+ops_per_frame: 600
+w_create: 1.0
+w_destroy: 3.0
+w_add: 0.5
+w_remove: 0.5
+w_get: 1.0
+w_set: 1.0
+access: uniform
+stale_access_ratio: 1.0
+integrate_per_frame: true
+query_masks: position+velocity, health+tag, position+velocity+health+tag
+p_position: 1.0
+p_velocity: 0.8
+p_health: 0.5
+p_tag: 0.3
+verify_sweep_frames: 2

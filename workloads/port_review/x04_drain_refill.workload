@@ -1,0 +1,26 @@
+# Destroys outpace creates, so the population drains to zero and then hovers
+# around it: queries and integrate on a structure whose words are all zero and
+# whose group is empty, and slots recycled again and again from the free list.
+id: x04_drain_refill
+visibility: public
+track: ecs
+seed: 7004
+initial_entities: 500
+max_entities: 500
+frames: 160
+ops_per_frame: 30
+w_create: 1.0
+w_destroy: 3.0
+w_add: 1.0
+w_remove: 1.0
+w_get: 1.0
+w_set: 1.0
+access: uniform
+stale_access_ratio: 0.5
+integrate_per_frame: true
+query_masks: position+velocity, health, position+velocity+health+tag, tag
+p_position: 1.0
+p_velocity: 0.7
+p_health: 0.5
+p_tag: 0.5
+verify_sweep_frames: 1

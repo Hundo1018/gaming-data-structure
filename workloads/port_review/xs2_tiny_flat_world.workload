@@ -1,0 +1,30 @@
+# A world 0.01 across with no height: the cell size hits the 1e-4 floor in
+# morton_sorted and spatial_hash, z extent is zero (wrap returns lo), and
+# radius queries are exactly 0 (only coincident points match; query_radius_of
+# subtracts its own term). Many small cells, so the hash table grows past
+# several powers of two.
+id: xs2_tiny_flat_world
+visibility: public
+track: spatial
+seed: 9102
+world_size: 0.01
+world_height: 0
+initial_entities: 3000
+ticks: 40
+inserts_per_tick: 40
+removes_per_tick: 40
+move_fraction: 0.5
+speed_min: 0.0
+speed_max: 0.0005
+teleport_ratio: 0.2
+placement: clustered
+clusters: 3
+cluster_radius: 0.001
+radius_queries_per_tick: 32
+entity_radius_queries_per_tick: 32
+knn_queries_per_tick: 16
+query_radius_min: 0
+query_radius_max: 0
+knn_k: 5
+query_focus: clustered
+verify_sweep_ticks: 4

@@ -1,0 +1,29 @@
+# Removals outpace inserts until the world is empty, and rewinds bring it
+# back. Queries run against an empty but previously populated structure
+# (rebuild to size 0, live_count 0) and against one restored by the rebuild
+# wrapper. knn_k is 0, so every knn takes the early return.
+id: xs3_decline_to_empty
+visibility: public
+track: spatial
+seed: 9103
+world_size: 128
+world_height: 32
+initial_entities: 400
+ticks: 50
+inserts_per_tick: 2
+removes_per_tick: 30
+move_fraction: 1.0
+speed_min: 0.5
+speed_max: 4.0
+placement: uniform
+radius_queries_per_tick: 16
+entity_radius_queries_per_tick: 16
+knn_queries_per_tick: 8
+query_radius_min: 4
+query_radius_max: 24
+knn_k: 0
+query_focus: uniform
+rewind_every: 9
+rewind_depth: 7
+history_ticks: 8
+verify_sweep_ticks: 4

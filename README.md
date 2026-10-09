@@ -98,9 +98,15 @@ rounds, so drift on a shared machine is spread across all of them instead of
 landing on whichever ran during a slow minute. `orchestrate.py --verify-only`
 runs the compile and correctness gates and stops.
 
-Requirements: CMake 3.20+, GCC or Clang in C11 mode on Linux with glibc (the
-allocation tracker replaces glibc's `malloc` through its `__libc_` entry
-points), Python 3.9+ with PyYAML (used only
+Three tools compare two builds rather than two candidates, for a change of
+compiler, flags or language: `runner/equivalence.py` checks that every binary
+gives the same answers in both, `runner/build_ab.py` times them in interleaved
+pairs, and `runner/rank_stability.py` asks whether the two builds order the
+candidates the same way and how much of that question the noise lets through.
+They were written for the C11 port and are kept for the next change of
+toolchain.
+
+Requirements: CMake 3.20+, a C++20 compiler, Python 3.9+ with PyYAML (used only
 to read candidate manifests). On four shared cores `run_all.py` took 37 minutes
 for the current population: 24 for the suite, 1 for the floor, 12 for the
 sweeps.
@@ -273,7 +279,7 @@ recorded a falsification against a stronger paraphrase, "win `h05`".
 
 ### Hardware counters
 
-`substrate/src/pmu.c` opens cycles, instructions, cache references and misses,
+`substrate/src/pmu.cpp` opens cycles, instructions, cache references and misses,
 and branch instructions and misses through `perf_event_open`. On a machine that
 refuses — no PMU exposed to the guest, or `perf_event_paranoid` too high — every
 counter is reported unavailable with the kernel's reason. Nothing is estimated
@@ -310,28 +316,16 @@ workload had.
 ## Adding a candidate
 
 Create `candidates/<track>/<name>/` with `manifest.yaml`, `hypothesis.md`,
-`structure.h`, `structure.c` and `notes.md`. CMake picks the directory up on
+`structure.hpp`, `structure.cpp` and `notes.md`. CMake picks the directory up on
 the next configure, and the manifest's `track` decides which workloads it meets.
 
-`structure.h` defines a type named `<name>` and its operations as `static
-inline` functions `<name>_<operation>`. `structure.c` is three lines:
-
-```c
-#include "structure.h"
-#define GDS_CANDIDATE uniform_grid
-#include "gds/spatial/entry.h"   /* "gds/entry.h" for the ecs track */
-```
-
-| track | contract | example |
+| track | contract | entry macro |
 |---|---|---|
-| `ecs` | `substrate/include/gds/api.h` | `candidates/ecs/soa` |
-| `spatial` | `substrate/include/gds/spatial/api.h` | `candidates/spatial/uniform_grid` |
+| `ecs` | `substrate/include/gds/api.hpp` | `GDS_CANDIDATE_MAIN(YourType)` |
+| `spatial` | `substrate/include/gds/spatial/api.hpp` | `GDS_SPATIAL_CANDIDATE_MAIN(YourType)` |
 
-Each contract is a list of prototypes that `entry.h` redeclares for the
-candidate's prefix, so a function with the wrong signature fails to compile
-and a missing one fails to link, each with a message naming the function.
-A spatial candidate also declares `enum { <name>_native_rewind = 0 };` (or 1
-if it keeps its own history).
+Each contract is checked at compile time by a concept, so a structure that does
+not satisfy it fails to build with a message saying which requirement it missed.
 
 Neither contract names an array, an index, a chunk, a cell or a pointer. Both
 constrain observable answers only. Deferring work is allowed; answering with
@@ -339,19 +333,11 @@ stale data is not. A spatial broad phase may over-admit as loosely as it likes,
 as long as the accept test is the shared `dist2`.
 
 A candidate descended from another includes its parent by path — the candidates
-root is on the include path, so `#include "spatial/uniform_grid/structure.h"`
+root is on the include path, so `#include "spatial/uniform_grid/structure.hpp"`
 works. `grid_undo_log` is built that way, which is what makes it a measurement
 of one changed variable rather than of two separately written structures.
 
 ## Deliberate deviations from PROJECT.md
-
-- **The candidates are C, not C++.** `PROJECT.md` asks for compilable C++
-  research objects, and the suite was C++20 until the user asked for C. Every
-  candidate, the substrate and the floor tool are now C11; ARCHITECTURE.md's
-  "The language" says what replaced templates, classes and concepts, and
-  `benchmarks/port_timing.md` what the port changed in time and memory. The
-  port was accepted only once every binary returned the C++ build's checksums
-  on every workload.
 
 - **No per-candidate `tests.cpp` or `benchmark.cpp`.** `PROJECT.md` lists both
   in the candidate layout. Correctness and measurement are shared harness code
@@ -372,6 +358,25 @@ of one changed variable rather than of two separately written structures.
 - **One hierarchical spatial candidate.** `morton_lbvh` is the first; every
   other spatial candidate is a grid, a hash of a grid, or a sorted array. No
   octree, k-d tree or incrementally refitted hierarchy has been tried.
+
+## The language
+
+The suite is C++20, as `PROJECT.md` specifies. It was ported to C11 once, at
+the user's request, and reverted on the evidence in
+[`benchmarks/language_port.md`](benchmarks/language_port.md). Over 1,206
+comparisons the C build gave the same checksums as the C++ build, and the same
+bytes and allocation counts for every candidate but the ECS oracle. Wherever
+the timing could tell two candidates apart, the two builds ranked them the same
+way (372 of 372 pairs on `step_ns_p50`). The deciding points were these:
+- The third-party baselines a reviewer would expect (EnTT, nanoflann,
+  Boost.Geometry, PhysX, Jolt) are C++ only, and C would reach them through a
+  call boundary.
+- The C allocation tracker worked only on glibc and disabled AddressSanitizer.
+- Every existing result was measured in C++.
+
+The port also showed that run-to-run spread on this machine is about 29%. It
+found three defects in the C++ suite that no suite workload reaches. All three
+are recorded there, and `workloads/port_review/` reproduces two of them.
 
 ## Current results
 

@@ -1,0 +1,33 @@
+# A world 3e38 across. dist2 overflows to +inf between clusters, so k-nearest
+# answers end in ties at +inf decided by id, and far box bounds are +inf too,
+# which must not be pruned against a kth best of +inf. Radii from 1e18 to
+# 1e20 put r*r on both sides of overflow, and teleports overflow p + delta,
+# which the wrap sends to the min corner (clamped to step 0 of the code).
+id: xb4_overflow_world
+visibility: public
+track: spatial
+seed: 6104
+world_size: 3e38
+world_height: 3e38
+initial_entities: 700
+ticks: 40
+inserts_per_tick: 10
+removes_per_tick: 10
+move_fraction: 0.3
+speed_min: 1e17
+speed_max: 1e18
+teleport_ratio: 0.3
+placement: clustered
+clusters: 5
+cluster_radius: 1e18
+radius_queries_per_tick: 16
+entity_radius_queries_per_tick: 16
+knn_queries_per_tick: 16
+query_radius_min: 1e18
+query_radius_max: 1e20
+knn_k: 300
+query_focus: clustered
+rewind_every: 9
+rewind_depth: 2
+history_ticks: 3
+verify_sweep_ticks: 1

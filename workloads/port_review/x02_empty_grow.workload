@@ -1,0 +1,28 @@
+# Starts empty (frame 0 queries and integrates an empty structure), grows one
+# entity at a time across the 64/128/192 slot word boundaries, with recent
+# access, wide access and stale handles. A sparse Velocity keeps the group small.
+id: x02_empty_grow
+visibility: public
+track: ecs
+seed: 7002
+initial_entities: 0
+max_entities: 200
+frames: 300
+ops_per_frame: 20
+w_create: 3.0
+w_destroy: 2.0
+w_add: 1.0
+w_remove: 1.0
+w_get: 1.0
+w_set: 1.0
+access: recent
+recency_window: 8
+access_width: 4
+stale_access_ratio: 0.5
+integrate_per_frame: true
+query_masks: velocity, position+velocity, tag, health+tag, position+velocity+health+tag
+p_position: 0.9
+p_velocity: 0.15
+p_health: 0.3
+p_tag: 0.3
+verify_sweep_frames: 1

@@ -1,0 +1,34 @@
+# A population that starts at one and grows by two a tick past k = 40, with a
+# rebuild rewind every fifth tick. While fewer than k are live, grid_ring_knn's
+# want = min(k, live) grows with every tick and its scratch heap is reserved
+# afresh each time (an exact allocation per growth step, in both builds), the
+# walk ends on having seen everyone or falls back to the parent, and
+# cell_sorted / cell_rows only stop once the box passes the world (r > limit).
+# The sorted arrays grow from seven slots by resize. A tenth of the moves are
+# teleports.
+id: r2_grow_past_k_rewind
+visibility: hidden
+track: spatial
+seed: 9311
+world_size: 200
+world_height: 50
+initial_entities: 1
+ticks: 50
+inserts_per_tick: 3
+removes_per_tick: 1
+move_fraction: 1.0
+speed_min: 0.5
+speed_max: 8.0
+teleport_ratio: 0.1
+placement: uniform
+radius_queries_per_tick: 16
+entity_radius_queries_per_tick: 16
+knn_queries_per_tick: 48
+query_radius_min: 4
+query_radius_max: 8
+knn_k: 40
+query_focus: uniform
+rewind_every: 5
+rewind_depth: 2
+history_ticks: 3
+verify_sweep_ticks: 1

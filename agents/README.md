@@ -7,13 +7,11 @@ Explorer, Mutator, Assumption Breaker, Adversary, Judge, Historian.
 
 What already exists for them to plug into:
 
-- **Candidate generation** writes a directory under `candidates/<track>/<name>/`
-  with a C11 `structure.h` and a three-line `structure.c`. CMake picks it up on
-  the next configure, and the contract in `substrate/include/gds/api.h` (or
-  `gds/spatial/api.h`) is enforced at compile time by redeclaring every
-  operation with its required prototype, so a generated structure with a wrong
-  signature fails to compile and one with a missing function fails to link,
-  each with a message naming the function.
+- **Candidate generation** writes a directory under `candidates/<track>/<name>/`.
+  CMake picks it up on the next configure, and the contract in
+  `substrate/include/gds/api.hpp` is enforced at compile time by a concept, so a
+  generated structure that does not satisfy it fails to build with a message
+  saying which requirement it missed.
 - **Genealogy** is already in the schema: `manifest.yaml` carries `id`,
   `parents`, `island`, `origin` and `novelty_status`, and the archive stores all
   of them per run.
@@ -60,18 +58,17 @@ The attack stage found a wrong-answer defect (an overflowing bound in
 change that would have been credited to a mechanism (`fused_archetype`), and
 three latent defects in `uniform_grid` that no workload can reach.
 
-## How the C port was produced
+## The C port, and its reversal
 
-The suite was written in C++20 and ported to C11 at the user's request. The
-coordinating session wrote the substrate and five candidates itself (`soa`,
-`uniform_grid`, `grid_undo_log` and both oracles) and accepted that design
-only when `runner/equivalence.py` reported the same checksums as the C++
-binaries on all 25 workloads, with reported bytes, peak bytes and allocation
-counts also identical. The other sixteen candidates and the floor tool were
-ported by two workflows of paired agents: a porter per group of candidates,
-working in its own build directory and iterating until the equivalence check
-passed, then an adversarial reviewer that read the C against the C++ function
-by function, wrote edge-case workloads for paths the suite does not reach, and
-fixed what it found. The acceptance rule was bit-level: every verify and bench
-checksum, status, failure message and op count of the C build equal to the C++
-build's on every workload.
+The same kind of loop ported the whole suite to C11 and back. The
+coordinating session wrote the C substrate and five candidates itself. Paired
+agents then ported the other sixteen, a porter and then an adversarial
+reviewer for each group. The porter iterated until `runner/equivalence.py`
+showed the C++ build's checksums on every workload. The reviewer read the C
+against the C++ function by function and wrote edge-case workloads, now in
+`workloads/port_review/`.
+
+A second round of six agents then gathered the evidence for keeping C or not.
+Five measured, and a skeptic re-ran their headline numbers and corrected seven
+claims. The user chose C++ on that evidence. `benchmarks/language_port.md` has
+the method, the numbers and the defects this found.

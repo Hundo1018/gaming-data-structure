@@ -1,0 +1,31 @@
+# Starts with no entity and creates only rarely, so the first frames integrate
+# and query a structure with no groups, then with one or two tiny groups, all
+# far below one block. Recent-window access over a handful of entities makes
+# the same entity gain and lose components over and over: adds that overwrite
+# a present component, removes of an absent one, and moves back into groups
+# that already exist. Every non-pair query shape appears once per frame.
+id: xa04_empty_start
+visibility: public
+track: ecs
+seed: 7704
+initial_entities: 0
+max_entities: 40
+frames: 250
+ops_per_frame: 40
+w_create: 0.4
+w_destroy: 0.2
+w_add: 2.0
+w_remove: 2.0
+w_get: 1.0
+w_set: 1.0
+access: recent
+recency_window: 4
+stale_access_ratio: 0.2
+integrate_per_frame: true
+dt: 0.0625
+query_masks: velocity, position, health, position+velocity+tag, velocity+health, position+velocity
+p_position: 0.5
+p_velocity: 0.5
+p_health: 0.2
+p_tag: 0.2
+verify_sweep_frames: 1

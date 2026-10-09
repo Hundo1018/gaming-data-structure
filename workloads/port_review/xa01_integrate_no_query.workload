@@ -1,0 +1,30 @@
+# Integrate every frame but no query at all, so fused_archetype's pending step
+# is applied only by sync (resolve_pending), never by query_and_step. Heavy
+# add/remove churn moves entities between groups, removes everything from some
+# (mask-0 group) and re-adds; a third of accesses are stale; a negative dt; the
+# oracle sweeps every frame, reading every stepped Position after sync.
+id: xa01_integrate_no_query
+visibility: public
+track: ecs
+seed: 7701
+initial_entities: 800
+max_entities: 1200
+frames: 150
+ops_per_frame: 300
+w_create: 1.0
+w_destroy: 1.0
+w_add: 3.0
+w_remove: 3.0
+w_get: 1.0
+w_set: 1.0
+access: uniform
+access_width: 2
+stale_access_ratio: 0.3
+integrate_per_frame: true
+dt: -0.731
+query_masks:
+p_position: 0.7
+p_velocity: 0.6
+p_health: 0.3
+p_tag: 0.3
+verify_sweep_frames: 1
