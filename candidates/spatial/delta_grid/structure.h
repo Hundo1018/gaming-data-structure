@@ -79,15 +79,15 @@ typedef struct {
   Vec3 pos;
 } delta_grid_record_;
 
-/* A frame is the history of one tick: its records, or, when `full`, the
- * positions and liveness as the tick began and the live count then. A slot
- * keeps the buffers of both kinds once it has used them. */
-/* The frame's three vectors, named so that end_tick can swap them with the
- * open frame's as std::swap did: the structs are exchanged, no buffer moves. */
+/* A frame's three vectors, named so that end_tick can swap them with the open
+ * frame's as std::swap did: the structs are exchanged, no buffer moves. */
 typedef GDS_VEC(delta_grid_record_) delta_grid_records_;
 typedef GDS_VEC(Vec3) delta_grid_positions_;
 typedef GDS_VEC(uint8_t) delta_grid_liveness_;
 
+/* A frame is the history of one tick: its records, or, when `full`, the
+ * positions and liveness as the tick began and the live count then. A slot
+ * keeps the buffers of both kinds once it has used them. */
 typedef struct {
   uint64_t tick;
   bool full;

@@ -310,7 +310,8 @@ int main(int argc, char** argv) {
           const size_t first = radius_buf.size;
           collect_radius(&oracle, w.max_entity_id, op->v, op->radius, GDS_NO_ENTITY,
                          gds_radius_salt(op->v, op->radius), &radius_buf, &c);
-          if (!same_answer(&radius_buf, first, brute_force_query_radius(&oracle, op->v, op->radius))) {
+          if (!same_answer(&radius_buf, first,
+                           brute_force_query_radius(&oracle, op->v, op->radius))) {
             printf("{\"status\":\"internal_error\",\"tick\":%u}\n", t);
             return 4;
           }
