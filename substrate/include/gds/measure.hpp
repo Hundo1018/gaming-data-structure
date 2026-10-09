@@ -101,6 +101,21 @@ inline const RepetitionResult& median_repetition(const std::vector<RepetitionRes
   return reps[order[order.size() / 2]];
 }
 
+// Step 0 of every workload in both tracks is the load step: it creates the
+// whole initial population and nothing else. It is a different question from
+// steady state, and keeping it in the percentiles made the p99 of a short run
+// the load step itself (on a 100-tick run p99 interpolates between the two
+// costliest steps). The step percentiles are taken over every step after it,
+// and the load step is reported on its own as `load_step_ns`.
+// A run of one step has no steady state, and its one step is what is reported.
+inline std::vector<std::uint64_t> steady_steps(const std::vector<std::uint64_t>& steps) {
+  const std::size_t first = steps.size() > 1 ? 1 : 0;
+  std::vector<std::uint64_t> out;
+  out.reserve(steps.size() - first);
+  for (std::size_t i = first; i < steps.size(); ++i) out.push_back(steps[i]);
+  return out;
+}
+
 // The metric block every track reports, under names that mean the same thing in
 // each. `step_label` is the track's word for its unit of latency.
 inline void print_common_bench_json(const RepetitionResult& med,
@@ -118,10 +133,13 @@ inline void print_common_bench_json(const RepetitionResult& med,
   std::printf("  \"checksum\": \"%llu\",\n", (unsigned long long)med.checksum);
   std::printf("  \"total_ns\": %llu,\n", (unsigned long long)med.total_ns);
   std::printf("  \"ops_per_second\": %.1f,\n", throughput);
-  std::printf("  \"step_ns_p50\": %llu,\n", (unsigned long long)percentile(med.step_ns, 0.50));
-  std::printf("  \"step_ns_p95\": %llu,\n", (unsigned long long)percentile(med.step_ns, 0.95));
-  std::printf("  \"step_ns_p99\": %llu,\n", (unsigned long long)percentile(med.step_ns, 0.99));
-  std::printf("  \"step_ns_max\": %llu,\n", (unsigned long long)percentile(med.step_ns, 1.0));
+  const std::vector<std::uint64_t> steady = steady_steps(med.step_ns);
+  std::printf("  \"step_ns_p50\": %llu,\n", (unsigned long long)percentile(steady, 0.50));
+  std::printf("  \"step_ns_p95\": %llu,\n", (unsigned long long)percentile(steady, 0.95));
+  std::printf("  \"step_ns_p99\": %llu,\n", (unsigned long long)percentile(steady, 0.99));
+  std::printf("  \"step_ns_max\": %llu,\n", (unsigned long long)percentile(steady, 1.0));
+  std::printf("  \"load_step_ns\": %llu,\n",
+              (unsigned long long)(med.step_ns.empty() ? 0 : med.step_ns[0]));
   std::printf("  \"peak_bytes\": %lld,\n", (long long)med.alloc.peak_bytes);
   std::printf("  \"live_bytes\": %lld,\n", (long long)med.alloc.live_bytes);
   std::printf("  \"reported_bytes\": %zu,\n", med.reported_bytes);
@@ -133,6 +151,20 @@ inline void print_common_bench_json(const RepetitionResult& med,
   std::printf("  \"repetition_total_ns\": [");
   for (std::size_t i = 0; i < reps.size(); ++i) {
     std::printf("%s%llu", i ? ", " : "", (unsigned long long)reps[i].total_ns);
+  }
+  std::printf("],\n");
+  // The step percentiles of every repetition, not only the median one, so that
+  // a reader can tell a difference between two candidates from the spread of
+  // one candidate against itself. runner/predictions.py uses them to mark a
+  // prediction decided by less than that spread.
+  std::printf("  \"repetition_step_ns_p50\": [");
+  for (std::size_t i = 0; i < reps.size(); ++i) {
+    std::printf("%s%llu", i ? ", " : "", (unsigned long long)percentile(steady_steps(reps[i].step_ns), 0.50));
+  }
+  std::printf("],\n");
+  std::printf("  \"repetition_step_ns_p99\": [");
+  for (std::size_t i = 0; i < reps.size(); ++i) {
+    std::printf("%s%llu", i ? ", " : "", (unsigned long long)percentile(steady_steps(reps[i].step_ns), 0.99));
   }
   std::printf("],\n");
 }

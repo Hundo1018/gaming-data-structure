@@ -1,0 +1,142 @@
+id: spatial_morton_lbvh
+name: morton_lbvh
+track: spatial
+binary: gds_spatial_morton_lbvh
+island: 2
+parents: [spatial_morton_sorted]
+origin: mutation
+mutation_operator: spatial_grouping
+novelty_status: EXACT_REDISCOVERY
+expect_verify: pass
+
+hypothesis: >
+  A clustered world defeats a flat structure because a fixed cell cannot be the
+  right size where the world is crowded and where it is empty at once. Group
+  morton_sorted's order instead of searching it: runs of sixteen consecutive
+  entities in Morton order are compact regions whose size follows the local
+  density, and a hierarchy of bounding boxes over those runs, rebuilt with a
+  radix sort once per tick, finds a radius answer by pruning boxes and scanning
+  contiguous runs with vector arithmetic. It should beat the grid where the
+  grid's cells are crowded, and in memory everywhere, because nothing it
+  allocates is proportional to the world's volume.
+
+representation: >
+  Positions and liveness in flat arrays indexed by id, which are the authority
+  and what position_of reads. A derived index rebuilt by the first query after
+  any mutation: a 30-bit Morton code per live entity from its position
+  quantised to 1024 steps per axis over the world bounds (each axis divided by
+  its own extent), an LSD radix sort of (code << 32 | id) words in three 10-bit
+  passes, ids and positions gathered in that order into four structure-of-arrays
+  columns (x, y, z, id), each 64-byte aligned so that every run of sixteen is
+  one cache line, and an implicit hierarchy over those runs: level 0 holds one
+  box per run of sixteen, each level above one box per eight boxes below, stored
+  as groups of eight sibling boxes in rows of eight floats. A node's contiguous
+  entity range and its children follow from its index and are not stored.
+
+operations:
+  insert_remove_move: one array write and a stale flag; the next query pays the rebuild
+  rebuild: codes and three histograms in one pass over the ids, up to three stable scatters, a gather into the four sorted columns, boxes bottom-up
+  query_radius: depth first from the root, testing each node's eight child boxes at once and pruning a box whose lower-bound squared distance exceeds r*r; every entity of a reached leaf is tested with dist2(p, c) <= r*r
+  query_knn: best first by box distance with a bounded max-heap of k under nearer; stops when the nearest unexpanded box is strictly farther than the kth best with k held
+  rewind: not supported natively; measured wrapped in snapshot-and-rebuild
+
+assumptions:
+  - queries per tick are numerous enough to amortise one O(n) rebuild per tick
+  - consecutive runs of Morton order are spatially compact enough that their boxes prune well
+  - a scan of sixteen contiguous entities with vector arithmetic costs about as much as one box test of eight children, so leaves of sixteen are where refining stops paying
+  - the population, not the world's volume, is what memory should follow
+
+expected_advantages:
+  - a crowded region gets small leaves and an empty one large leaves, with no per-cell storage
+  - the accept test runs over contiguous runs of the sorted columns with vector arithmetic instead of a linked-list walk
+  - a k-nearest search is ordered by distance, so it does not widen a box over empty space
+  - memory is proportional to the population
+  - teleports and ordinary movement cost exactly the same, as in the parent
+
+expected_disadvantages:
+  - an O(n) rebuild every tick that anything moves, however little moved
+  - on even density a grid indexes its cell directly, while this descends five or six levels
+  - a run that straddles a large step of the Morton curve has a box much larger than its contents
+  - each axis is quantised over its own extent, so code cells, and on average leaves, have the world's proportions; in the public worlds, four times wider than tall, a leaf is about four times longer across than it is tall, with a mean width about a fifth larger than a cube of the same volume, and the sphere's edge admits correspondingly more
+  - two copies of every position, and two 8-byte keys per entity for the sort
+
+complexity:
+  insert_remove_move: O(n)
+  query_radius: O(internal nodes whose box meets the sphere, one eight-box test each + leaves whose box meets the sphere, sixteen entity tests each); output-sensitive, with no worst-case bound below O(n)
+  query_knn: O(internal nodes expanded, one eight-box test and up to eight frontier pushes of O(log frontier) each + leaves expanded, sixteen entity tests each and an O(log k) heap update per entity kept)
+
+notes: >
+  The insert_remove_move claim is per tick, as the move family measures it:
+  each mutation is O(1), and the first observation after any of them pays an
+  O(n) rebuild, which is the term that grows when the number of moves per tick
+  is held fixed. The query claims count nodes, not levels: a node is visited
+  when its parent's box meets the sphere, and a run that straddles a jump of the
+  Morton curve has a box that can meet the sphere while none of its entities
+  does, so the number of boxes reached is not bounded by log n plus the answer.
+  The parent's comparison sort is replaced by a radix sort, and its per-cell
+  binary search by the hierarchy; the two are not separated here, so a gain over
+  the parent is the sum of both.
+
+# The predictions this candidate was written against, as data, thresholds as
+# given before it was implemented. runner/predictions.py judges them.
+predictions:
+  - id: P1a
+    claim: s02_dense_clustered median tick lower than uniform_grid's
+    metric: step_ns_p50
+    workloads: [s02_dense_clustered]
+    against: uniform_grid
+    below: 1.0
+  - id: P1b
+    claim: s02_dense_clustered peak memory at most half of uniform_grid's
+    metric: peak_bytes
+    workloads: [s02_dense_clustered]
+    against: uniform_grid
+    at_most: 0.5
+  - id: P2
+    claim: hs03_knn_heavy median tick lower than uniform_grid's
+    metric: step_ns_p50
+    workloads: [hs03_knn_heavy]
+    against: uniform_grid
+    below: 1.0
+  - id: P3
+    claim: s01_steady_uniform within 1.5x of uniform_grid
+    metric: step_ns_p50
+    workloads: [s01_steady_uniform]
+    against: uniform_grid
+    at_most: 1.5
+  - id: P4
+    claim: beats morton_sorted on all ten spatial workloads
+    metric: step_ns_p50
+    workloads: [s01_steady_uniform, s02_dense_clustered, s03_wide_radius, s04_teleport, s05_small_world, hs01_rewind_all_moving, hs02_rewind_few_moving, hs03_knn_heavy, hs04_flat_world, hs05_spawn_churn]
+    against: morton_sorted
+    below: 1.0
+  - id: P5a
+    claim: spatial_move time exponent at least 0.8
+    metric: time_exponent
+    sweep: spatial_move
+    regimes: [fixed_world, fixed_density]
+    at_least: 0.8
+  - id: P5b
+    claim: spatial_query_radius fixed_density time exponent at most 0.25
+    metric: time_exponent
+    sweep: spatial_query_radius
+    regimes: [fixed_density]
+    at_most: 0.25
+  - id: P6a
+    claim: spatial_move fixed_world memory exponent at least 0.9
+    metric: memory_exponent
+    sweep: spatial_move
+    regimes: [fixed_world]
+    at_least: 0.9
+  - id: P6b
+    claim: spatial_query_radius fixed_world memory exponent at least 0.9
+    metric: memory_exponent
+    sweep: spatial_query_radius
+    regimes: [fixed_world]
+    at_least: 0.9
+  - id: P6c
+    claim: spatial_knn fixed_world memory exponent at least 0.9
+    metric: memory_exponent
+    sweep: spatial_knn
+    regimes: [fixed_world]
+    at_least: 0.9

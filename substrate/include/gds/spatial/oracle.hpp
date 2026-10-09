@@ -48,7 +48,7 @@ class BruteForceOracle {
 
   std::uint64_t query_radius(Vec3 c, float r) const {
     const float r2 = r * r;
-    RadiusDigest d;
+    RadiusDigest d(c, r);
     for (std::size_t i = 0; i < live_.size(); ++i) {
       if (live_[i] && dist2(pos_[i], c) <= r2) d.hit(static_cast<EntityId>(i), pos_[i]);
     }
@@ -59,7 +59,7 @@ class BruteForceOracle {
     if (self >= live_.size() || !live_[self]) return 0;
     const Vec3 c = pos_[self];
     const float r2 = r * r;
-    RadiusDigest d;
+    RadiusDigest d(c, r);
     for (std::size_t i = 0; i < live_.size(); ++i) {
       if (i == self) continue;
       if (live_[i] && dist2(pos_[i], c) <= r2) d.hit(static_cast<EntityId>(i), pos_[i]);

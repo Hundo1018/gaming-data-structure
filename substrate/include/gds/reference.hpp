@@ -65,11 +65,11 @@ class ReferenceStructure {
     return it == records_.end() ? ComponentMask(0) : it->second.mask;
   }
 
-  std::uint64_t query(ComponentMask required) const {
+  std::uint64_t query(ComponentMask required, std::uint64_t salt) const {
     std::uint64_t acc = 0;
     for (const auto& kv : records_) {
       if ((kv.second.mask & required) == required) {
-        acc += digest_entity(required, kv.second.values);
+        acc += digest_entity(required, kv.second.values, salt);
       }
     }
     return acc;

@@ -74,3 +74,24 @@ cell costing a binary search. `hs03_knn_heavy` runs 25000 entities in a
 
 The fix is not a faster sort. It is to stop paying a binary search per cell — a
 cell directory, or walking a Morton range instead of searching each cell.
+
+## Run `20261009T042136Z`
+
+Suite `20261009T042136Z` and sweeps `sweep-20261009T044632Z`, same machine class, GCC 13.3.0, 5 repetitions, under the salted query contract. Step times below are medians across repetitions, the estimator `runner/predictions.py` judges with.
+
+### The fixes these notes named, built and measured
+
+These notes said the layout argument had not been given its best case, and
+named the fixes: a radix or counting sort instead of `std::sort`, and a cell
+directory or an explicit hierarchy instead of a binary search per cell. Both
+have now been built as children:
+
+- `cell_sorted`: a counting sort on the grid's cell index, whose running totals
+  are a directory. It beats this candidate on all ten original workloads (0.16x
+  to 0.41x) and beats `uniform_grid` wherever every entity moves.
+- `morton_lbvh`: this candidate's Morton order, radix sorted, with a
+  bounding-volume hierarchy over it. It beats this candidate on all ten (0.09x
+  to 0.38x) and is the fastest structure on the clustered workloads.
+
+What was falsified here was this implementation, as the notes said; the layout
+argument survives in both children.

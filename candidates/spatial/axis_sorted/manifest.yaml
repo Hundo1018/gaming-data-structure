@@ -45,3 +45,14 @@ notes: >
   Present as the middle of the range. The size of the gap on both sides — to
   scanning everything, and to partitioning all three axes — is the result worth
   having.
+
+# Encoded from hypothesis.md after that candidate had been measured. Only the
+# predictions whose prose fixes a workload, a metric and a direction are here;
+# the prose remains the preregistration and these are its machine-readable form.
+predictions:
+  - id: P1
+    claim: better than scanning everything, on every spatial workload
+    metric: step_ns_p50
+    workloads: "*"
+    against: brute_force
+    below: 1.0

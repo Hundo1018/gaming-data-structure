@@ -22,3 +22,10 @@ Two detection paths fired, and the difference between them matters:
 
 The second path is the one worth keeping. It means correctness of handle
 invalidation does not depend on an adversary having thought of it.
+
+## Run `20261009T042136Z`
+
+Rejected by 9 of the 12 ECS workloads. The three it passes, `w04_random_access`,
+`w06_point_narrow` and `w07_point_wide`, are the three with `w_create` and
+`w_destroy` at zero: no slot is ever recycled, so the missing generation counter
+cannot be observed, for the same reason as before.

@@ -1,0 +1,108 @@
+id: spatial_cell_sorted
+name: cell_sorted
+track: spatial
+binary: gds_spatial_cell_sorted
+island: 2
+parents: [spatial_morton_sorted]
+origin: mutation
+mutation_operator: change_layout
+novelty_status: EXACT_REDISCOVERY
+expect_verify: pass
+
+hypothesis: >
+  morton_sorted's bet, given its best case. Rebuilding the searchable form from
+  scratch once per tick can beat an incrementally maintained grid if the
+  rebuild is a counting sort on the dense cell index rather than a comparison
+  sort on a Morton code, and if a cell is found by reading a directory rather
+  than by a binary search. Then a move is one array write, the rebuild is
+  sequential passes and one scatter, and a query reads contiguous runs.
+
+representation: >
+  Positions and liveness in flat arrays indexed by id, which are the authority.
+  A derived index rebuilt by the first query after any mutation: ids, x, y and z
+  as four parallel arrays ordered by uniform_grid's cell index, built by a
+  counting sort, and a directory of cells+1 offsets such that the entities of
+  cell c are the range [start[c], start[c+1]). Same cell geometry as
+  uniform_grid.
+
+operations:
+  insert_remove_move: one array write and a stale flag; the next query pays the rebuild
+  rebuild: clear the directory, count per cell, running totals, scatter in id order
+  query_radius: uniform_grid's walk over the cells of the query box, each cell found with one directory lookup and scanned as one contiguous range, tested eight slots at a time
+  query_knn: uniform_grid's box doubling, unaltered, gathering from each cell's contiguous range
+  rewind: not supported natively; measured wrapped in snapshot-and-rebuild
+
+assumptions:
+  - most entities move on most ticks, so an incremental structure pays for most of them anyway
+  - queries per tick are numerous enough that contiguous runs repay one rebuild per tick
+  - a pass over the directory is a sequential clear or running sum, cheap per cell beside the per-entity scatter, so a directory of 8 cells per entity (s01) to 31 (s02) does not dominate the rebuild
+
+expected_advantages:
+  - a move costs one array write and nothing else, whether it is a step or a jump
+  - no comparison sort and no search anywhere
+  - a cell's entities are one contiguous range found with one directory lookup, not a linked list
+  - the distance test is vectorised over contiguous positions
+
+expected_disadvantages:
+  - the whole population and every cell are touched every tick that anything moves, however little moved
+  - the directory is sized by the world and the query radius, not by the population, and is cleared and summed every rebuild
+  - two copies of every position
+
+complexity:
+  insert_remove_move: O(n)
+  query_radius: O(1)
+  query_knn: O(1)
+
+notes: >
+  The insert_remove_move claim is for what the spatial_move family measures,
+  the cost of keeping the structure current per tick. Each mutation is one
+  array write, and the rebuild it forces is O(ids + cells), where ids is every
+  id the workload issues (max_entity_id + 1), live or not, and cells is set by
+  the world and the query radius. That is O(n) at fixed density, where both
+  terms grow with n. At fixed world size the cell term is a constant (162712
+  cells in the sweep's world), which flattens the small end of the curve, and
+  under spawn churn the id term counts every id ever issued rather than the
+  live population. The two query claims are for fixed density, where a query
+  of fixed reach touches a fixed number of cells and entities. The mutation
+  operator is change_layout because the sort order is what changed and the
+  directory follows from it: ordering by a dense cell index is what lets the
+  counting sort's running totals serve as the lookup. A query reads each cell
+  of its box separately, as uniform_grid does; reading a row of the box as one
+  run would be a second change and is not made. The cell geometry is
+  uniform_grid's, reproduced rather than included because its members are
+  reachable only by inheriting its linked lists; the parent's members are
+  private.
+
+# The predictions this candidate was written against, as data, thresholds as
+# given before it was implemented. runner/predictions.py judges them.
+predictions:
+  - id: P1
+    claim: beats morton_sorted on all ten spatial workloads
+    metric: step_ns_p50
+    workloads: [s01_steady_uniform, s02_dense_clustered, s03_wide_radius, s04_teleport, s05_small_world, hs01_rewind_all_moving, hs02_rewind_few_moving, hs03_knn_heavy, hs04_flat_world, hs05_spawn_churn]
+    against: morton_sorted
+    below: 1.0
+  - id: P2
+    claim: beats uniform_grid where every entity moves every tick
+    metric: step_ns_p50
+    workloads: [s01_steady_uniform, s03_wide_radius, s04_teleport, hs04_flat_world]
+    against: uniform_grid
+    below: 1.0
+  - id: P3
+    claim: loses to uniform_grid on hs02_rewind_few_moving by at least 1.5x
+    metric: step_ns_p50
+    workloads: [hs02_rewind_few_moving]
+    against: uniform_grid
+    at_least: 1.5
+  - id: P4
+    claim: spatial_move time exponent at least 0.8 in both regimes
+    metric: time_exponent
+    sweep: spatial_move
+    regimes: [fixed_world, fixed_density]
+    at_least: 0.8
+  - id: P5
+    claim: s04_teleport within 5% of its own s01_steady_uniform
+    metric: step_ns_p50
+    workloads: [s04_teleport]
+    against_workload: s01_steady_uniform
+    within: 0.05

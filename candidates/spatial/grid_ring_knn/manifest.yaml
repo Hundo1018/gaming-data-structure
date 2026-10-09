@@ -1,0 +1,112 @@
+id: spatial_grid_ring_knn
+name: grid_ring_knn
+track: spatial
+binary: gds_spatial_grid_ring_knn
+island: 0
+parents: [spatial_uniform_grid]
+origin: mutation
+mutation_operator: change_granularity
+novelty_status: EXACT_REDISCOVERY
+expect_verify: pass
+
+hypothesis: >
+  On a grid, the cost of a k-nearest query is the cells it walks, not the
+  entities it examines. Visiting cells once each, nearest-first, from a table
+  of offsets sorted by the least distance any point of the offset cell can be
+  from the query's cell, and stopping as soon as that bound passes the k-th
+  best distance, should walk a small fraction of the cells the parent's
+  doubling box re-walks, most of all in a sparse world.
+
+representation: >
+  uniform_grid, unchanged and included by path, plus a table built once, at
+  compile time, and shared by every instance: one octant of cell offsets
+  (|dx|, |dy|, |dz|), four bytes each, every offset whose lower bound is under
+  sixteen cell edges (3134 of them), sorted by that bound and grouped into
+  shells of equal bound, stored in two orders that differ only within a shell
+  (ascending |dz|, or ascending max(|dx|, |dy|)); 27 KB with the shells. Each
+  entry stands for its up to eight sign reflections. A k-nearest query keeps
+  the best k so far in a bounded max-heap, a scratch buffer reused across
+  queries.
+
+operations:
+  insert_remove_move: as uniform_grid
+  query_radius: as uniform_grid
+  query_knn: >
+    walk the table's shells in order from the query's cell, skipping offsets
+    longer than the grid, cells outside it and cells whose exact box bound
+    exceeds the k-th best; stop when k are held and the next shell's bound
+    exceeds the k-th best; if the table runs out first, answer with the
+    parent's widening search
+  rewind: not supported natively; measured wrapped in snapshot-and-rebuild, as the parent
+
+assumptions:
+  - the k-th neighbour usually lies within sixteen cell edges of the query
+  - a cell visited out of memory order costs about what a cell visited in order costs, once the walk is that much shorter
+  - the cell size the parent picks for radius queries is a reasonable unit for k-nearest too
+
+expected_advantages:
+  - each cell is visited at most once per query, where the parent re-walks every inner cell on every doubling
+  - the search stops at the k-th neighbour's distance rather than at the next power of two of it
+  - no vector of everything in the box and no partial sort of it; nothing allocated per query once the scratch heap has grown
+
+expected_disadvantages:
+  - cells are visited in distance order rather than memory order, so each head load can land on a different cache line
+  - the table is checked against a worst-case query position inside its cell, so up to about one cell edge per axis past the k-th distance is examined before the search can stop
+  - on a grid of fewer than seventeen cells along an axis the walk still passes every shell, and one the grid cannot use still costs its bound test and one step read; where the grid is short along two axes the second is tested a step at a time
+  - 27 KB of static table, which the allocation tracker does not see and reported_bytes counts
+  - a k-th neighbour beyond the table falls back to the parent's search after the table walk, paying for both
+  - each octant step costs eight reflections, some of them duplicates or outside the grid
+
+complexity:
+  insert_remove_move: O(1)
+  query_radius: O(1)
+  query_knn: O(1)
+
+notes: >
+  Only the k-nearest search differs from uniform_grid; insertion, removal,
+  movement, radius queries and history are the parent's code, so the pair
+  measures the search order and nothing else. change_granularity: the unit
+  by which the search widens goes from a box of doubled half-width, walked
+  from scratch, to one shell of cells at equal lower bound. Complexity claims
+  hold at fixed density and fixed k: the cells examined are set by the k-th
+  neighbour's distance in cell edges, which density and k set, not
+  population. query_radius is the parent's code; the parent states its cost
+  as cells touched plus the entities in them, which at fixed density is
+  constant, and it is written here as O(1) so the sweep checks it.
+
+# The predictions this candidate was written against, as data, thresholds as
+# given before it was implemented. runner/predictions.py judges them.
+predictions:
+  - id: P1
+    claim: hs03_knn_heavy at most 0.5x uniform_grid's
+    metric: step_ns_p50
+    workloads: [hs03_knn_heavy]
+    against: uniform_grid
+    at_most: 0.5
+  - id: P2
+    claim: s05_small_world at most 0.7x uniform_grid's
+    metric: step_ns_p50
+    workloads: [s05_small_world]
+    against: uniform_grid
+    at_most: 0.7
+  - id: P3
+    claim: on no spatial workload slower than uniform_grid by more than 10%
+    metric: step_ns_p50
+    workloads: [s01_steady_uniform, s02_dense_clustered, s03_wide_radius, s04_teleport, s05_small_world, hs01_rewind_all_moving, hs02_rewind_few_moving, hs03_knn_heavy, hs04_flat_world, hs05_spawn_churn]
+    against: uniform_grid
+    at_most: 1.1
+  - id: P4a
+    claim: spatial_knn fixed_world at population 1000 at least 3x faster than uniform_grid
+    metric: step_ns_p50
+    sweep: spatial_knn
+    regimes: [fixed_world]
+    size: 1000
+    against: uniform_grid
+    at_most: 0.3333
+  - id: P4b
+    claim: spatial_knn fixed_density time exponent no higher than uniform_grid's
+    metric: time_exponent
+    sweep: spatial_knn
+    regimes: [fixed_density]
+    against: uniform_grid
+    at_most: 0.0

@@ -81,10 +81,10 @@ class BrokenRecycle {
     return r ? r->mask : ComponentMask(0);
   }
 
-  std::uint64_t query(ComponentMask required) const {
+  std::uint64_t query(ComponentMask required, std::uint64_t salt) const {
     std::uint64_t acc = 0;
     for (const Record& r : records_) {
-      if (r.alive && (r.mask & required) == required) acc += digest_entity(required, r.values);
+      if (r.alive && (r.mask & required) == required) acc += digest_entity(required, r.values, salt);
     }
     return acc;
   }

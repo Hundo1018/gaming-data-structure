@@ -149,8 +149,17 @@ inline std::uint64_t digest_component(ComponentId c, const ComponentValue& v) {
 
 // Digest of one entity for a query over `required`. Components are folded in
 // ComponentId order, so the result does not depend on storage order.
-inline std::uint64_t digest_entity(ComponentMask required, const ComponentValue* values) {
-  std::uint64_t a = 0xCBF29CE484222325ull;
+//
+// `salt` is different on every query call and is folded in first, so the
+// digest of an entity under one call says nothing about its digest under the
+// next. Without it a query's answer was a sum a structure could keep as a
+// running total and never iterate anything to produce: `candidates/ecs/query_memo`
+// did exactly that and was 2.6x faster than any honest candidate on
+// w04_random_access. A candidate must take the salt from the call it is
+// answering and nowhere else.
+inline std::uint64_t digest_entity(ComponentMask required, const ComponentValue* values,
+                                   std::uint64_t salt) {
+  std::uint64_t a = splitmix64(0xCBF29CE484222325ull ^ salt);
   for (int i = 0; i < kComponentCount; ++i) {
     const ComponentMask bit = static_cast<ComponentMask>(1u << i);
     if (required & bit) {

@@ -74,7 +74,7 @@ class UniformGrid {
   }
 
   std::uint64_t query_radius(Vec3 c, float r) const {
-    RadiusDigest d;
+    RadiusDigest d(c, r);
     const float r2 = r * r;
     for_each_in_box(c, r, [&](EntityId id) {
       if (dist2(pos_[id], c) <= r2) d.hit(id, pos_[id]);
@@ -86,7 +86,7 @@ class UniformGrid {
     if (self >= live_.size() || !live_[self]) return 0;
     // The digest is a sum, so removing the centre from its own result is a
     // subtraction rather than a branch inside the inner loop.
-    return query_radius(pos_[self], r) - digest_hit(self, pos_[self]);
+    return query_radius(pos_[self], r) - RadiusDigest(pos_[self], r).term(self, pos_[self]);
   }
 
   std::uint64_t query_knn(Vec3 c, std::uint32_t k) const {

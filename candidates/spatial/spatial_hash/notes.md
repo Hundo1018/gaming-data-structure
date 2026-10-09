@@ -65,3 +65,18 @@ radius many times before it can prove it has the k closest, and every doubling
 multiplies the cells visited by eight, each one a hash probe. This is the same
 effect that left it level with a linear scan on `hs03_knn_heavy`, and it puts
 the weakness in the search strategy rather than in hashing.
+
+## Run `20261009T042136Z`
+
+Suite `20261009T042136Z` and sweeps `sweep-20261009T044632Z`, same machine class, GCC 13.3.0, 5 repetitions, under the salted query contract. Step times below are medians across repetitions, the estimator `runner/predictions.py` judges with.
+
+`hypothesis.md` predicted it would be slower than `uniform_grid` on every
+workload. The encoded prediction is falsified on `s02_dense_clustered` (0.994x)
+and `s03_wide_radius` (0.993x), which are ties inside the repetition spread
+rather than wins.
+
+The held-out `hs07_crowd` tests the mechanism these notes named for its memory:
+a cell that empties keeps its slot. On `s02` the eight clumps stay where they
+are and it needs 1.29 MB; on `hs07` the same clumps travel across the world and
+it needs 2.61 MB, every cell the crowd has passed through still holding a slot.
+It is still smaller than the dense grid's 5.84 MB there.

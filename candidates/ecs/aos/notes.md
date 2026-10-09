@@ -44,3 +44,36 @@ frame also contains.
 That gap is why the point-operation family exists. The first version of this
 sweep measured only the realistic frame, and every ECS candidate came out
 between n^0.70 and n^0.81 — which describes the passes, not the structure.
+
+## Run `20261009T042136Z`
+
+Suite `20261009T042136Z` and sweeps `sweep-20261009T044632Z`, same machine class, GCC 13.3.0, 5 repetitions, under the salted query contract. Step times below are medians across repetitions, the estimator `runner/predictions.py` judges with.
+
+### The claim this candidate exists to test has been tested, and failed
+
+`w06_point_narrow` and `w07_point_wide` differ only in how many components one
+point access touches (1 and 3) and replay the same 4,670,000 operations: the
+shape this layout was built for, which no earlier workload had.
+
+| | w06 (width 1) | w07 (width 3) | w07 / w06 |
+|---|---:|---:|---:|
+| `aos` | 989.7 us | 826.1 us | 0.835 |
+| `soa` | 1073.2 us | 864.2 us | 0.805 |
+| `aos` / `soa` | 0.922 | 0.956 | |
+
+`aos` is faster than `soa` at both widths, but its lead shrinks as the access
+widens, from 8% to 4%. Touching three components of one entity in a row is
+cheaper per operation for both layouts, and cheaper still for the one that
+stores them apart. Storing an entity's components together does not pay more as
+an access touches more of them, which is the claim `hypothesis.md` made.
+
+The encoded prediction (P1, within 10% of the split layouts on `w07`) is
+falsified, though not against `soa` (0.956): against `sparse_set`, which `aos`
+beats by 37%. The prose named "any layout that splits components apart", and
+`sparse_set` is one.
+
+Why the split layout gains more from width is not measured. A reading: after the
+first access to an entity, `soa`'s handle check hits in cache and its three
+column loads are independent, so they overlap; `aos`'s second and third
+accesses were already in the line the first one loaded, and there was less to
+save.

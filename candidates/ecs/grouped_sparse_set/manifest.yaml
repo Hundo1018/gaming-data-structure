@@ -1,0 +1,100 @@
+id: ecs_grouped_sparse_set
+name: grouped_sparse_set
+track: ecs
+binary: gds_ecs_grouped_sparse_set
+island: 1
+parents: [ecs_sparse_set]
+origin: mutation
+mutation_operator: indirection_removal
+novelty_status: EXACT_REDISCOVERY
+expect_verify: pass
+
+hypothesis: >
+  sparse_set lost h05_sparse_component to archetype because integrate reaches
+  Position through the sparse array once per Velocity holder, and because a
+  Position+Velocity query probes sets whose order is unrelated to the driver's.
+  Keeping every entity that holds both components at the same position in the
+  first G slots of both dense arrays turns integrate and those queries into
+  aligned walks with no lookup, and should close at least half of that gap
+  while leaving structural change within 15% of the parent's cost.
+
+representation: >
+  sparse_set's arrays, unchanged in content and size: per component a dense
+  array of entity indices, a parallel values array and a sparse array from
+  entity index to dense position, and a registry of generation, mask and
+  liveness. One ordering invariant is added, owned by a group over
+  {Position, Velocity}: the G entities holding both occupy positions [0, G) of
+  both Position's and Velocity's dense arrays, at the same position in each.
+  Entities holding only one of the pair sit at G or later in that array.
+
+operations:
+  create: as the parent, then two swaps into the group prefix if the mask holds both of the pair
+  destroy: two swaps out of the prefix if a member, then the parent's swap-erases
+  get_set: as the parent; registry check, sparse lookup, one dense load
+  add_remove: as the parent, plus two swaps when the change makes or breaks the pair
+  query: >
+    drive from the smallest of the group (when the mask names both of the pair)
+    and each required set, ties to the group; read the driver's components at
+    their dense position, and probe only the required components the driver
+    does not supply, with one sparse lookup serving both of the pair
+  integrate: walk [0, G) of Position's and Velocity's values in lockstep, no lookup and no mask test
+
+assumptions:
+  - Position and Velocity are iterated together far more often than an entity gains or loses either
+  - one group per component is enough; no second group needs Position or Velocity aligned with anything else
+  - the dependent sparse load per entity, not the packed arrays themselves, is what sparse_set loses to archetype
+
+expected_advantages:
+  - integrate becomes two sequential streams of the group's length, as in archetype
+  - a Position+Velocity query reads both components at one position and needs no mask test
+  - a query driven from another set reaches both of the pair through one sparse lookup instead of two
+  - no memory beyond the parent's: the group is an ordering of the same arrays and one counter
+
+expected_disadvantages:
+  - gaining or losing the second of the pair costs two swaps, each touching another entity's dense slot, value and sparse entry
+  - creating an entity with both of the pair swaps it over a non-member whenever one exists
+  - group swaps permute Position's and Velocity's dense arrays, so their non-member tails lose creation order
+  - only one pair can be aligned; a query over Health or Tag with one of the pair still probes through the sparse array
+
+complexity:
+  create: amortised O(components in mask), plus two swaps when the mask holds both of the pair
+  destroy: O(components held), plus two swaps when the entity is a group member
+  get_set: O(1)
+  add_remove: O(1)
+  query: O(n)
+
+notes: >
+  The child the parent's notes asked for: same arrays, same growth, same
+  registry, so peak and reported bytes should match sparse_set exactly and
+  the pair differs in dense order. indirection_removal rather than
+  change_layout because what the order buys is the removal of the per-entity
+  sparse lookup on integrate and on Position+Velocity queries; the arrays'
+  layout is otherwise the parent's. The query claim's n is the size of the
+  driving set, the smallest of the group and the required sets, which is
+  proportional to population at fixed component probabilities. add_remove is
+  amortised O(1), as in the parent: an add appends with push_back and the two
+  group swaps are constant work; it is written as O(1) because that is a form
+  a sweep can check. The parent's code is reproduced rather than included
+  because every member of SparseSet is private.
+
+# The predictions this candidate was written against, as data, thresholds as
+# given before it was implemented. runner/predictions.py judges them.
+predictions:
+  - id: P1
+    claim: h05_sparse_component closes at least half the gap from sparse_set to archetype
+    metric: step_ns_p50
+    workloads: [h05_sparse_component]
+    gap_closed: {from: sparse_set, to: archetype}
+    at_least: 0.5
+  - id: P2
+    claim: w01 and w02 at least 15% faster than sparse_set
+    metric: step_ns_p50
+    workloads: [w01_steady_uniform, w02_query_heavy]
+    against: sparse_set
+    at_most: 0.85
+  - id: P3
+    claim: w03_structural_churn within 15% of sparse_set either way
+    metric: step_ns_p50
+    workloads: [w03_structural_churn]
+    against: sparse_set
+    within: 0.15

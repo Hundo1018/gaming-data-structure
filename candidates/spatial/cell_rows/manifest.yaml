@@ -1,0 +1,72 @@
+id: spatial_cell_rows
+name: cell_rows
+track: spatial
+binary: gds_spatial_cell_rows
+island: 2
+parents: [spatial_cell_sorted]
+origin: mutation
+mutation_operator: change_granularity
+novelty_status: EXACT_REDISCOVERY
+expect_verify: pass
+
+hypothesis: >
+  In a cell-sorted array the cells of one row of a query box are adjacent, so a
+  row can be read as one run found with two directory reads instead of one
+  range per cell. The longer the rows of a box, in cells, the more that saves.
+
+representation: >
+  cell_sorted, unchanged and included by path, with the query walk replaced:
+  every row of the query box is the run [start[row + x0], start[row + x1 + 1])
+  of the sorted arrays, scanned in the parent's vector blocks.
+
+operations:
+  insert_remove_move: as cell_sorted
+  query_radius: one run per row of the box, exact test per entity
+  query_knn: cell_sorted's widening search, gathering per row
+  rewind: not supported natively; measured wrapped in snapshot-and-rebuild
+
+assumptions:
+  - the cell index runs x fastest, so a row of cells is one contiguous range
+  - query boxes span more than one cell per row often enough to matter
+
+expected_advantages:
+  - a row costs two directory reads whatever its length
+  - the vector loop masks one tail per row instead of one per cell
+
+expected_disadvantages:
+  - nothing on a box one cell wide, where a row is one cell
+  - the gain is a constant factor; nothing about growth changes
+
+complexity:
+  insert_remove_move: O(1), plus a deferred O(ids + cells) rebuild
+  query_radius: O(1)
+  query_knn: O(entities within the smallest sufficient box)
+
+notes: >
+  Separates the row walk from cell_sorted, whose reviewer measured it as a
+  scratch variant: cell_sorted reads cell by cell so that its comparison with
+  uniform_grid is about the key and the directory alone. query_radius is written
+  as O(1) because at fixed density the rows touched and their contents are
+  constant, which is what the sweep checks.
+
+# The predictions this candidate was written against, as data, thresholds as
+# given before it was implemented. runner/predictions.py judges them.
+predictions:
+  - id: P1
+    claim: no slower than cell_sorted by more than 3% on any spatial workload
+    metric: step_ns_p50
+    workloads: "*"
+    against: cell_sorted
+    at_most: 1.03
+  - id: P2
+    claim: hs06_mixed_reach at most 0.9x cell_sorted's
+    metric: step_ns_p50
+    workloads: [hs06_mixed_reach]
+    against: cell_sorted
+    at_most: 0.9
+  - id: P3
+    claim: hs03_knn_heavy at most 0.9x cell_sorted's
+    metric: step_ns_p50
+    workloads: [hs03_knn_heavy]
+    against: cell_sorted
+    at_most: 0.9

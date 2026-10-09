@@ -1,0 +1,47 @@
+id: ecs_query_memo
+name: query_memo
+track: ecs
+binary: gds_ecs_query_memo
+island: -1
+parents: [ecs_soa]
+origin: negative_control
+novelty_status: EXACT_REDISCOVERY
+# Under the unsalted contract it was written against, the gate accepted it on
+# every workload (commit 2f4ad45; see notes.md). Since query digests are salted
+# per call, the gate must reject it wherever it reuses a total across calls.
+expect_verify: fail
+
+hypothesis: >
+  Not a research hypothesis. The claim under test is about the harness: that a
+  candidate cannot be fast by computing what the answer's digest would be
+  without finding the answer. A query returns a sum of per-entity digests, and
+  a sum can be kept as a running total, so a structure that maintains it never
+  iterates anything to answer a query.
+
+representation: >
+  soa, plus one running total per component mask that has been queried. Every
+  mutation subtracts the entity's digest before it changes and adds it back
+  after; integrate marks every mask containing Position stale.
+
+operations:
+  query: return the running total; recompute with one pass only when stale
+  mutations: two digests per tracked mask the entity satisfies
+  everything else: soa
+
+assumptions:
+  - the query digest is an order-independent sum that does not change between calls
+
+expected_advantages:
+  - a query costs nothing on any workload that does not integrate
+
+expected_disadvantages:
+  - every mutation pays for every tracked mask
+  - no advantage where integrate changes every position each frame
+
+complexity:
+  query: O(1) when current, O(slots) when stale
+  mutation: O(tracked masks)
+
+notes: >
+  Written to find out whether the hole is real. If it passes and is fast, the
+  measurement rewards not doing the work, and the digest has to change.

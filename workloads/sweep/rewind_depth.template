@@ -1,0 +1,35 @@
+# Sweep template for a parameter sweep. See sweeps.yaml.
+#
+# runner/sweep.py overrides id and rewind_depth and nothing else. Everything
+# but the rollback schedule and the tick count is rewind_move_fraction's at a
+# move_fraction of 0.1, the seed included.
+#
+# The schedule is chosen so that every depth in the sweep rewinds, and rewinds
+# the same number of times. rewind_every is 40 because it has to exceed the
+# deepest rewind (32); sweeps.yaml says why. history_ticks is 32 at every depth,
+# so only the distance of the rewind changes from one point to the next, not
+# how much history is retained. 400 ticks give 9 rewinds, at ticks 40 to 360.
+id: sweep_rewind_depth
+visibility: public
+track: spatial
+seed: 4006
+world_size: 1024
+world_height: 256
+initial_entities: 30000
+ticks: 400
+inserts_per_tick: 20
+removes_per_tick: 15
+move_fraction: 0.1
+speed_min: 0.5
+speed_max: 4.0
+placement: uniform
+radius_queries_per_tick: 48
+entity_radius_queries_per_tick: 48
+knn_queries_per_tick: 12
+knn_k: 8
+query_radius_min: 8
+query_radius_max: 16
+query_focus: uniform
+rewind_every: 40
+rewind_depth: 8
+history_ticks: 32

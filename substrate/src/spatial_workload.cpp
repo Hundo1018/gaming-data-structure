@@ -12,6 +12,10 @@ const char* placement_name(Placement p) {
   return p == Placement::Uniform ? "uniform" : "clustered";
 }
 
+const char* movement_name(Movement m) {
+  return m == Movement::Independent ? "independent" : "flock";
+}
+
 namespace {
 
 std::string trim(const std::string& s) {
@@ -35,6 +39,12 @@ bool parse_double(const std::string& v, double& out) {
   if (end == v.c_str() || *end != '\0') return false;
   out = x;
   return true;
+}
+
+bool parse_movement(const std::string& v, Movement& out) {
+  if (v == "independent") { out = Movement::Independent; return true; }
+  if (v == "flock") { out = Movement::Flock; return true; }
+  return false;
 }
 
 bool parse_placement(const std::string& v, Placement& out) {
@@ -115,6 +125,8 @@ bool parse_spatial_text(const std::string& text, SpatialSpec& out, std::string& 
     else if (key == "speed_min") ok = need_f(out.speed_min);
     else if (key == "speed_max") ok = need_f(out.speed_max);
     else if (key == "teleport_ratio") ok = need_f(out.teleport_ratio);
+    else if (key == "movement") { if (!parse_movement(val, out.movement)) { error = "movement must be independent or flock"; return false; } }
+    else if (key == "flock_speed") ok = need_f(out.flock_speed);
     else if (key == "placement") { if (!parse_placement(val, out.placement)) { error = "placement must be uniform or clustered"; return false; } }
     else if (key == "clusters") ok = need_u(out.clusters);
     else if (key == "cluster_radius") ok = need_f(out.cluster_radius);
@@ -167,20 +179,50 @@ SpatialWorkload generate_spatial_workload(const SpatialSpec& spec) {
 
   Rng rng{splitmix64(spec.seed | 1)};
 
-  // Cluster centres are fixed for the whole run, so a clustered world stays
-  // clustered where the queries are aimed even as entities drift.
+  // Cluster centres are fixed for the whole run under independent movement, so
+  // a clustered world stays clustered where the queries are aimed even as
+  // entities drift. Under flocking each cluster also has a drift, and its centre
+  // at a given point of simulated time is where that drift has carried it; the
+  // queries follow it.
   std::vector<Vec3> centres;
+  std::vector<Vec3> drift;
   const std::uint32_t ncl = std::max<std::uint32_t>(1, spec.clusters);
   centres.reserve(ncl);
   for (std::uint32_t i = 0; i < ncl; ++i) {
     centres.push_back(Vec3{rng.range(-hx, hx), rng.range(-hx, hx), rng.range(-hz, hz)});
   }
+  const bool flocking = spec.movement == Movement::Flock;
+  if (flocking) {
+    drift.reserve(ncl);
+    for (std::uint32_t i = 0; i < ncl; ++i) {
+      float dx = rng.bell(), dy = rng.bell(), dz = rng.bell();
+      const float len = std::sqrt(dx * dx + dy * dy + dz * dz);
+      const float scale = len > 1e-6f ? spec.flock_speed / len : 0.0f;
+      drift.push_back(Vec3{dx * scale, dy * scale, dz * scale});
+    }
+  }
 
+  // Simulated time along the current branch. It advances one per tick and is
+  // set back by a rewind, so after rolling back the clusters are where they were.
+  std::uint32_t sim_time = 0;
+  auto centre_now = [&](std::uint32_t c) {
+    if (!flocking) return centres[c];
+    const float s = static_cast<float>(sim_time);
+    return wrap_into(Vec3{centres[c].x + drift[c].x * s, centres[c].y + drift[c].y * s,
+                          centres[c].z + drift[c].z * s},
+                     w.bounds);
+  };
+
+  std::uint32_t last_cluster = 0;
   auto sample_point = [&](Placement mode) {
     if (mode == Placement::Uniform) {
+      // Drawn only when it is used, so that every workload that does not flock
+      // generates exactly the op stream it generated before flocking existed.
+      if (flocking) last_cluster = rng.below(ncl);
       return Vec3{rng.range(-hx, hx), rng.range(-hx, hx), rng.range(-hz, hz)};
     }
-    const Vec3& c = centres[rng.below(ncl)];
+    last_cluster = rng.below(ncl);
+    const Vec3 c = centre_now(last_cluster);
     const float r = spec.cluster_radius;
     return wrap_into(Vec3{c.x + rng.bell() * r, c.y + rng.bell() * r, c.z + rng.bell() * r},
                      w.bounds);
@@ -191,6 +233,9 @@ SpatialWorkload generate_spatial_workload(const SpatialSpec& spec) {
   const std::uint32_t max_ids =
       spec.initial_entities + spec.inserts_per_tick * spec.ticks + 1;
   std::vector<std::uint8_t> live(max_ids, 0);
+  // Which cluster an entity flocks with: the one it was placed in, or a random
+  // one under uniform placement.
+  std::vector<std::uint32_t> cluster_of(flocking ? max_ids : 0, 0);
   std::vector<EntityId> live_list;
   live_list.reserve(max_ids);
   std::uint32_t next_id = 0;
@@ -217,6 +262,7 @@ SpatialWorkload generate_spatial_workload(const SpatialSpec& spec) {
     op.kind = SpatialOp::Insert;
     op.id = id;
     op.v = sample_point(spec.placement);
+    if (flocking) cluster_of[id] = last_cluster;
     ops.push_back(op);
   };
 
@@ -247,6 +293,7 @@ SpatialWorkload generate_spatial_workload(const SpatialSpec& spec) {
     const std::uint32_t begin = static_cast<std::uint32_t>(w.ops.size());
     deltas[t].inserted.clear();
     deltas[t].removed.clear();
+    ++sim_time;
 
     const bool rewinding = spec.rewind_every > 0 && (t % spec.rewind_every) == 0 &&
                            t > spec.rewind_depth;
@@ -267,6 +314,8 @@ SpatialWorkload generate_spatial_workload(const SpatialSpec& spec) {
         deltas[back].removed.clear();
       }
       rebuild_live_list();
+      // This tick continues the branch from the end of `target`.
+      sim_time = target + 1;
     }
 
     for (std::uint32_t i = 0; i < spec.inserts_per_tick; ++i) do_insert(t, w.ops);
@@ -278,8 +327,24 @@ SpatialWorkload generate_spatial_workload(const SpatialSpec& spec) {
             ? spec.moves_per_tick
             : static_cast<std::uint32_t>(static_cast<double>(n_live) * spec.move_fraction);
     if (n_live == 0) movers = 0;
+    // Independent movers are drawn with replacement, which is harmless when each
+    // takes its own random step. A flocking mover adds its cluster's drift, so
+    // an entity drawn twice would run ahead of its cluster and one never drawn
+    // would fall behind, and the clump would smear along its drift. Under
+    // flocking the movers are therefore distinct: a partial shuffle of the live
+    // list. With move_fraction below 1 the entities not chosen still lag.
+    std::vector<EntityId> flock_order;
+    if (flocking && n_live > 0) {
+      flock_order = live_list;
+      movers = std::min<std::uint32_t>(movers, static_cast<std::uint32_t>(n_live));
+      for (std::uint32_t i = 0; i < movers; ++i) {
+        const std::uint32_t j = i + rng.below(static_cast<std::uint32_t>(n_live) - i);
+        std::swap(flock_order[i], flock_order[j]);
+      }
+    }
     for (std::uint32_t i = 0; i < movers; ++i) {
-      const EntityId id = live_list[rng.below(static_cast<std::uint32_t>(n_live))];
+      const EntityId id = flocking ? flock_order[i]
+                                   : live_list[rng.below(static_cast<std::uint32_t>(n_live))];
       Op op{};
       op.kind = SpatialOp::MoveBy;
       op.id = id;
@@ -294,6 +359,7 @@ SpatialWorkload generate_spatial_workload(const SpatialSpec& spec) {
         const float len = std::sqrt(dx * dx + dy * dy + dz * dz);
         const float scale = len > 1e-6f ? speed / len : 0.0f;
         op.v = Vec3{dx * scale, dy * scale, dz * scale};
+        if (flocking) op.v = add(op.v, drift[cluster_of[id]]);
       }
       w.ops.push_back(op);
     }

@@ -26,3 +26,34 @@ What already exists for them to plug into:
 
 What is missing is the loop itself — island populations, selection from the
 Pareto archive, mutation scheduling, and the model calls.
+
+## How the latest generation was produced
+
+The loop is still not in this repository, but one was run against it from a
+coordinating Claude Code session, and its shape is recorded here because the
+evidence it produced is.
+
+1. **Specify.** The coordinator chose each candidate from an open question in
+   the existing notes or from a gap in `benchmarks/floor.md`, and wrote its
+   mechanism and falsifiable predictions, with thresholds, before any code
+   existed. Those predictions are in each manifest's `predictions:`.
+2. **Implement.** One agent per candidate, in its own build directory, under
+   rules that kept it from editing anything but its own files, from
+   benchmarking held-out workloads, and from editing its predictions after
+   seeing a number. It verified against every workload and its own adversarial
+   ones.
+3. **Attack.** A second agent reviewed the code line by line for contract and
+   measurement-integrity violations and wrote adversarial workloads and
+   differential fuzzers against it. Every reported finding carried a severity.
+4. **Fix.** A third agent fixed blockers and majors, or wrote down why not.
+5. **Measure and judge.** One serial run of `runner/run_all.py`, then
+   `runner/predictions.py`.
+6. **Historian.** After measurement, one agent per surviving candidate compared
+   it with the literature and classified its novelty, and a skeptic searched for
+   closer prior work; the classification is in `novelty_status`.
+
+The attack stage found a wrong-answer defect (an overflowing bound in
+`grid_ring_knn`), an unrequested second change that confounded a comparison
+(`cell_sorted`'s row walk, now its own candidate `cell_rows`), a code-shape
+change that would have been credited to a mechanism (`fused_archetype`), and
+three latent defects in `uniform_grid` that no workload can reach.

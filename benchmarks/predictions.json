@@ -1,0 +1,2182 @@
+{
+  "candidates": {
+    "aos": [
+      {
+        "claim": "on point access to whole entities (w07_point_wide) within noise of the layouts that split components apart",
+        "decided_within_noise": false,
+        "id": "P1",
+        "instances": [
+          {
+            "bound": "within 0.1",
+            "compared": "/ soa",
+            "noise_band": 0.066,
+            "point": "w07_point_wide",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9559,
+            "within_noise": true
+          },
+          {
+            "bound": "within 0.1",
+            "compared": "/ sparse_set",
+            "noise_band": 0.0401,
+            "point": "w07_point_wide",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 0.6329,
+            "within_noise": false
+          }
+        ],
+        "verdict": "FALSIFIED"
+      }
+    ],
+    "archetype": [
+      {
+        "claim": "beaten by sparse_set on w03_structural_churn",
+        "decided_within_noise": false,
+        "id": "P2",
+        "instances": [
+          {
+            "bound": "above 1.0",
+            "compared": "/ sparse_set",
+            "noise_band": 0.0478,
+            "point": "w03_structural_churn",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 0.7073,
+            "within_noise": false
+          }
+        ],
+        "verdict": "FALSIFIED"
+      }
+    ],
+    "axis_sorted": [
+      {
+        "claim": "better than scanning everything, on every spatial workload",
+        "decided_within_noise": false,
+        "id": "P1",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ brute_force",
+            "noise_band": 0.0148,
+            "point": "hs01_rewind_all_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.6415,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ brute_force",
+            "noise_band": 0.0307,
+            "point": "hs02_rewind_few_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.6293,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ brute_force",
+            "noise_band": 0.0172,
+            "point": "hs03_knn_heavy",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.8944,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ brute_force",
+            "noise_band": 0.021,
+            "point": "hs04_flat_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.4836,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ brute_force",
+            "noise_band": 0.0092,
+            "point": "hs05_spawn_churn",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.1019,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ brute_force",
+            "noise_band": 0.0237,
+            "point": "hs06_mixed_reach",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5428,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ brute_force",
+            "noise_band": 0.0417,
+            "point": "hs07_crowd",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.6417,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ brute_force",
+            "noise_band": 0.0259,
+            "point": "hs08_crowd_rollback",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.703,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ brute_force",
+            "noise_band": 0.0091,
+            "point": "s01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.305,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ brute_force",
+            "noise_band": 0.0431,
+            "point": "s02_dense_clustered",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.6712,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ brute_force",
+            "noise_band": 0.0244,
+            "point": "s03_wide_radius",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 1.0993,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ brute_force",
+            "noise_band": 0.0065,
+            "point": "s04_teleport",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.2978,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ brute_force",
+            "noise_band": 0.0301,
+            "point": "s05_small_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5576,
+            "within_noise": false
+          }
+        ],
+        "verdict": "FALSIFIED"
+      }
+    ],
+    "bitset_soa": [
+      {
+        "claim": "h05_sparse_component at most 0.6x soa's",
+        "decided_within_noise": false,
+        "id": "P1",
+        "instances": [
+          {
+            "bound": "at most 0.6",
+            "compared": "/ soa",
+            "noise_band": 0.0392,
+            "point": "h05_sparse_component",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5615,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "dense-mask workloads within 10% of soa either way",
+        "decided_within_noise": false,
+        "id": "P2",
+        "instances": [
+          {
+            "bound": "within 0.1",
+            "compared": "/ soa",
+            "noise_band": 0.0369,
+            "point": "w01_steady_uniform",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 0.8068,
+            "within_noise": false
+          },
+          {
+            "bound": "within 0.1",
+            "compared": "/ soa",
+            "noise_band": 0.0497,
+            "point": "w02_query_heavy",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 0.8728,
+            "within_noise": false
+          },
+          {
+            "bound": "within 0.1",
+            "compared": "/ soa",
+            "noise_band": 0.0324,
+            "point": "w04_random_access",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.901,
+            "within_noise": false
+          }
+        ],
+        "verdict": "FALSIFIED"
+      },
+      {
+        "claim": "peak memory within 5% above soa's on every ECS workload",
+        "decided_within_noise": false,
+        "id": "P3",
+        "instances": [
+          {
+            "bound": "at most 1.05",
+            "compared": "/ soa",
+            "noise_band": 0.0,
+            "point": "w01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0071,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ soa",
+            "noise_band": 0.0,
+            "point": "w02_query_heavy",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0071,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ soa",
+            "noise_band": 0.0,
+            "point": "w03_structural_churn",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0071,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ soa",
+            "noise_band": 0.0,
+            "point": "w04_random_access",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0071,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ soa",
+            "noise_band": 0.0,
+            "point": "w05_small_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0071,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ soa",
+            "noise_band": 0.0,
+            "point": "h01_zipf_hotspot",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0071,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ soa",
+            "noise_band": 0.0,
+            "point": "h02_bursty_spawn",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0071,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ soa",
+            "noise_band": 0.0,
+            "point": "h03_stale_handles",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0071,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ soa",
+            "noise_band": 0.0,
+            "point": "h04_recent_locality",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0071,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ soa",
+            "noise_band": 0.0,
+            "point": "h05_sparse_component",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0071,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      }
+    ],
+    "cell_rows": [
+      {
+        "claim": "no slower than cell_sorted by more than 3% on any spatial workload",
+        "decided_within_noise": true,
+        "id": "P1",
+        "instances": [
+          {
+            "bound": "at most 1.03",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.1072,
+            "point": "hs01_rewind_all_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9953,
+            "within_noise": true
+          },
+          {
+            "bound": "at most 1.03",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.033,
+            "point": "hs02_rewind_few_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9668,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.03",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.0676,
+            "point": "hs03_knn_heavy",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.715,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.03",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.0323,
+            "point": "hs04_flat_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9709,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.03",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.012,
+            "point": "hs05_spawn_churn",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9653,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.03",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.0104,
+            "point": "hs06_mixed_reach",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9666,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.03",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.033,
+            "point": "hs07_crowd",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0061,
+            "within_noise": true
+          },
+          {
+            "bound": "at most 1.03",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.0507,
+            "point": "hs08_crowd_rollback",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0227,
+            "within_noise": true
+          },
+          {
+            "bound": "at most 1.03",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.0379,
+            "point": "s01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9383,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.03",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.0587,
+            "point": "s02_dense_clustered",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9551,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.03",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.0117,
+            "point": "s03_wide_radius",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9966,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.03",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.0519,
+            "point": "s04_teleport",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9125,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.03",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.0488,
+            "point": "s05_small_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.7956,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "hs06_mixed_reach at most 0.9x cell_sorted's",
+        "decided_within_noise": false,
+        "id": "P2",
+        "instances": [
+          {
+            "bound": "at most 0.9",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.0104,
+            "point": "hs06_mixed_reach",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 0.9666,
+            "within_noise": false
+          }
+        ],
+        "verdict": "FALSIFIED"
+      },
+      {
+        "claim": "hs03_knn_heavy at most 0.9x cell_sorted's",
+        "decided_within_noise": false,
+        "id": "P3",
+        "instances": [
+          {
+            "bound": "at most 0.9",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.0676,
+            "point": "hs03_knn_heavy",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.715,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      }
+    ],
+    "cell_sorted": [
+      {
+        "claim": "beats morton_sorted on all ten spatial workloads",
+        "decided_within_noise": false,
+        "id": "P1",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0327,
+            "point": "s01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.2085,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0888,
+            "point": "s02_dense_clustered",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.4138,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0108,
+            "point": "s03_wide_radius",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.2571,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.046,
+            "point": "s04_teleport",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.2172,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0093,
+            "point": "s05_small_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.1661,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0256,
+            "point": "hs01_rewind_all_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.3236,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0267,
+            "point": "hs02_rewind_few_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.1875,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0683,
+            "point": "hs03_knn_heavy",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.1644,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0408,
+            "point": "hs04_flat_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.2206,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0363,
+            "point": "hs05_spawn_churn",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.313,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "beats uniform_grid where every entity moves every tick",
+        "decided_within_noise": false,
+        "id": "P2",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0261,
+            "point": "s01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9131,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0519,
+            "point": "s03_wide_radius",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.6633,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.048,
+            "point": "s04_teleport",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.7912,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0245,
+            "point": "hs04_flat_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.8489,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "loses to uniform_grid on hs02_rewind_few_moving by at least 1.5x",
+        "decided_within_noise": false,
+        "id": "P3",
+        "instances": [
+          {
+            "bound": "at least 1.5",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.1467,
+            "point": "hs02_rewind_few_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 4.4719,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "spatial_move time exponent at least 0.8 in both regimes",
+        "decided_within_noise": false,
+        "id": "P4",
+        "instances": [
+          {
+            "bound": "at least 0.8",
+            "compared": "",
+            "noise_band": 0.0,
+            "point": "spatial_move\u00b7fixed_world",
+            "poor_fit": true,
+            "status": "falsified",
+            "value": 0.585,
+            "within_noise": false
+          },
+          {
+            "bound": "at least 0.8",
+            "compared": "",
+            "noise_band": 0.0,
+            "point": "spatial_move\u00b7fixed_density",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.011,
+            "within_noise": false
+          }
+        ],
+        "verdict": "FALSIFIED"
+      },
+      {
+        "claim": "s04_teleport within 5% of its own s01_steady_uniform",
+        "decided_within_noise": true,
+        "id": "P5",
+        "instances": [
+          {
+            "bound": "within 0.05",
+            "compared": "/ own s01_steady_uniform",
+            "noise_band": 0.061,
+            "point": "s04_teleport",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0447,
+            "within_noise": true
+          }
+        ],
+        "verdict": "HELD"
+      }
+    ],
+    "delta_grid": [
+      {
+        "claim": "hs01_rewind_all_moving median below uniform_grid and grid_undo_log",
+        "decided_within_noise": false,
+        "id": "P1a",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.023,
+            "point": "hs01_rewind_all_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.8509,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ grid_undo_log",
+            "noise_band": 0.0233,
+            "point": "hs01_rewind_all_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.7034,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "hs01_rewind_all_moving p99 below uniform_grid and grid_undo_log",
+        "decided_within_noise": true,
+        "id": "P1b",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.3859,
+            "point": "hs01_rewind_all_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.8614,
+            "within_noise": true
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ grid_undo_log",
+            "noise_band": 0.2714,
+            "point": "hs01_rewind_all_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.4678,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "hs02_rewind_few_moving median within 1.3x of grid_undo_log",
+        "decided_within_noise": true,
+        "id": "P2a",
+        "instances": [
+          {
+            "bound": "at most 1.3",
+            "compared": "/ grid_undo_log",
+            "noise_band": 0.0184,
+            "point": "hs02_rewind_few_moving",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 1.318,
+            "within_noise": true
+          }
+        ],
+        "verdict": "FALSIFIED"
+      },
+      {
+        "claim": "hs02_rewind_few_moving p99 within 1.5x of grid_undo_log",
+        "decided_within_noise": true,
+        "id": "P2b",
+        "instances": [
+          {
+            "bound": "at most 1.5",
+            "compared": "/ grid_undo_log",
+            "noise_band": 0.7429,
+            "point": "hs02_rewind_few_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.4639,
+            "within_noise": true
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "hs02_rewind_few_moving p99 below uniform_grid under snapshot-and-rebuild",
+        "decided_within_noise": true,
+        "id": "P2c",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 1.0024,
+            "point": "hs02_rewind_few_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.479,
+            "within_noise": true
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "within 1.2x of cell_sorted where everything moves and nothing rewinds",
+        "decided_within_noise": true,
+        "id": "P3",
+        "instances": [
+          {
+            "bound": "at most 1.2",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.0213,
+            "point": "s01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.164,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.2",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.0281,
+            "point": "s03_wide_radius",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.1827,
+            "within_noise": true
+          },
+          {
+            "bound": "at most 1.2",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.0519,
+            "point": "s04_teleport",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.1109,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.2",
+            "compared": "/ cell_sorted",
+            "noise_band": 0.0464,
+            "point": "hs04_flat_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.1855,
+            "within_noise": true
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "spatial_move time exponent at most 0.3 in both regimes",
+        "decided_within_noise": false,
+        "id": "P4",
+        "instances": [
+          {
+            "bound": "at most 0.3",
+            "compared": "",
+            "noise_band": 0.0,
+            "point": "spatial_move\u00b7fixed_world",
+            "poor_fit": true,
+            "status": "held",
+            "value": -0.033,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 0.3",
+            "compared": "",
+            "noise_band": 0.0,
+            "point": "spatial_move\u00b7fixed_density",
+            "poor_fit": true,
+            "status": "held",
+            "value": 0.086,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "rewind_move_fraction p99 within 1.2x of the better history strategy at every value",
+        "decided_within_noise": false,
+        "id": "P5",
+        "instances": [
+          {
+            "bound": "at most 1.2",
+            "compared": "/ min = grid_undo_log",
+            "noise_band": 0.0,
+            "point": "rewind_move_fraction\u00b70.01",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 1.671,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.2",
+            "compared": "/ min = grid_undo_log",
+            "noise_band": 0.0,
+            "point": "rewind_move_fraction\u00b70.02",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 1.2642,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.2",
+            "compared": "/ min = grid_undo_log",
+            "noise_band": 0.0,
+            "point": "rewind_move_fraction\u00b70.05",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 6.5462,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.2",
+            "compared": "/ min = grid_undo_log",
+            "noise_band": 0.0,
+            "point": "rewind_move_fraction\u00b70.1",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 1.699,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.2",
+            "compared": "/ min = uniform_grid",
+            "noise_band": 0.0,
+            "point": "rewind_move_fraction\u00b70.2",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 1.2153,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.2",
+            "compared": "/ min = uniform_grid",
+            "noise_band": 0.0,
+            "point": "rewind_move_fraction\u00b70.35",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 1.6499,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.2",
+            "compared": "/ min = uniform_grid",
+            "noise_band": 0.0,
+            "point": "rewind_move_fraction\u00b70.5",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.53,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.2",
+            "compared": "/ min = uniform_grid",
+            "noise_band": 0.0,
+            "point": "rewind_move_fraction\u00b70.75",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.8148,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.2",
+            "compared": "/ min = uniform_grid",
+            "noise_band": 0.0,
+            "point": "rewind_move_fraction\u00b71.0",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.914,
+            "within_noise": false
+          }
+        ],
+        "verdict": "FALSIFIED"
+      }
+    ],
+    "fused_archetype": [
+      {
+        "claim": "w02_query_heavy at most 0.95x archetype's",
+        "decided_within_noise": false,
+        "id": "P1",
+        "instances": [
+          {
+            "bound": "at most 0.95",
+            "compared": "/ archetype",
+            "noise_band": 0.0295,
+            "point": "w02_query_heavy",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 0.9829,
+            "within_noise": false
+          }
+        ],
+        "verdict": "FALSIFIED"
+      },
+      {
+        "claim": "w01_steady_uniform at most 0.95x archetype's",
+        "decided_within_noise": true,
+        "id": "P2",
+        "instances": [
+          {
+            "bound": "at most 0.95",
+            "compared": "/ archetype",
+            "noise_band": 0.0678,
+            "point": "w01_steady_uniform",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 0.9954,
+            "within_noise": true
+          }
+        ],
+        "verdict": "FALSIFIED"
+      },
+      {
+        "claim": "no ECS workload slower than archetype by more than 5%",
+        "decided_within_noise": true,
+        "id": "P3",
+        "instances": [
+          {
+            "bound": "at most 1.05",
+            "compared": "/ archetype",
+            "noise_band": 0.0678,
+            "point": "w01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9954,
+            "within_noise": true
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ archetype",
+            "noise_band": 0.0295,
+            "point": "w02_query_heavy",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9829,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ archetype",
+            "noise_band": 0.095,
+            "point": "w03_structural_churn",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9518,
+            "within_noise": true
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ archetype",
+            "noise_band": 0.0392,
+            "point": "w04_random_access",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9849,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ archetype",
+            "noise_band": 0.0085,
+            "point": "w05_small_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9957,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ archetype",
+            "noise_band": 0.0609,
+            "point": "h01_zipf_hotspot",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9823,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ archetype",
+            "noise_band": 0.0429,
+            "point": "h02_bursty_spawn",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9401,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ archetype",
+            "noise_band": 0.0918,
+            "point": "h03_stale_handles",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9423,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ archetype",
+            "noise_band": 0.0201,
+            "point": "h04_recent_locality",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9715,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.05",
+            "compared": "/ archetype",
+            "noise_band": 0.0239,
+            "point": "h05_sparse_component",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9264,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      }
+    ],
+    "grid_ring_knn": [
+      {
+        "claim": "hs03_knn_heavy at most 0.5x uniform_grid's",
+        "decided_within_noise": false,
+        "id": "P1",
+        "instances": [
+          {
+            "bound": "at most 0.5",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0064,
+            "point": "hs03_knn_heavy",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.386,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "s05_small_world at most 0.7x uniform_grid's",
+        "decided_within_noise": false,
+        "id": "P2",
+        "instances": [
+          {
+            "bound": "at most 0.7",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0068,
+            "point": "s05_small_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.655,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "on no spatial workload slower than uniform_grid by more than 10%",
+        "decided_within_noise": true,
+        "id": "P3",
+        "instances": [
+          {
+            "bound": "at most 1.1",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0108,
+            "point": "s01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.8726,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.1",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0632,
+            "point": "s02_dense_clustered",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9194,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.1",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0608,
+            "point": "s03_wide_radius",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.8854,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.1",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0068,
+            "point": "s04_teleport",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9156,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.1",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0068,
+            "point": "s05_small_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.655,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.1",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0893,
+            "point": "hs01_rewind_all_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0177,
+            "within_noise": true
+          },
+          {
+            "bound": "at most 1.1",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.1555,
+            "point": "hs02_rewind_few_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.7085,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.1",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0064,
+            "point": "hs03_knn_heavy",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.386,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.1",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0169,
+            "point": "hs04_flat_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0153,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 1.1",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.2161,
+            "point": "hs05_spawn_churn",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.9499,
+            "within_noise": true
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "spatial_knn fixed_world at population 1000 at least 3x faster than uniform_grid",
+        "decided_within_noise": false,
+        "id": "P4a",
+        "instances": [
+          {
+            "bound": "at most 0.3333",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0,
+            "point": "spatial_knn\u00b7fixed_world\u00b7n=1000",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 0.6201,
+            "within_noise": false
+          }
+        ],
+        "verdict": "FALSIFIED"
+      },
+      {
+        "claim": "spatial_knn fixed_density time exponent no higher than uniform_grid's",
+        "decided_within_noise": false,
+        "id": "P4b",
+        "instances": [
+          {
+            "bound": "at most 0.0",
+            "compared": "- uniform_grid",
+            "noise_band": 0.0,
+            "point": "spatial_knn\u00b7fixed_density",
+            "poor_fit": true,
+            "status": "held",
+            "value": -0.013,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      }
+    ],
+    "grid_undo_log": [
+      {
+        "claim": "hs02_rewind_few_moving tail latency below uniform_grid under snapshot-and-rebuild",
+        "decided_within_noise": true,
+        "id": "P1",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.7295,
+            "point": "hs02_rewind_few_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.3272,
+            "within_noise": true
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "hs02_rewind_few_moving memory below uniform_grid under snapshot-and-rebuild",
+        "decided_within_noise": false,
+        "id": "P2",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0,
+            "point": "hs02_rewind_few_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.4096,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "hs01_rewind_all_moving tail latency above uniform_grid's (the log should lose)",
+        "decided_within_noise": false,
+        "id": "P3",
+        "instances": [
+          {
+            "bound": "above 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.2066,
+            "point": "hs01_rewind_all_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.8414,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      }
+    ],
+    "grouped_sparse_set": [
+      {
+        "claim": "h05_sparse_component closes at least half the gap from sparse_set to archetype",
+        "decided_within_noise": false,
+        "id": "P1",
+        "instances": [
+          {
+            "bound": "at least 0.5",
+            "compared": "gap sparse_set to archetype closed",
+            "noise_band": 0.0376,
+            "point": "h05_sparse_component",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.6086,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "w01 and w02 at least 15% faster than sparse_set",
+        "decided_within_noise": false,
+        "id": "P2",
+        "instances": [
+          {
+            "bound": "at most 0.85",
+            "compared": "/ sparse_set",
+            "noise_band": 0.0263,
+            "point": "w01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.7597,
+            "within_noise": false
+          },
+          {
+            "bound": "at most 0.85",
+            "compared": "/ sparse_set",
+            "noise_band": 0.0308,
+            "point": "w02_query_heavy",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 0.8793,
+            "within_noise": false
+          }
+        ],
+        "verdict": "FALSIFIED"
+      },
+      {
+        "claim": "w03_structural_churn within 15% of sparse_set either way",
+        "decided_within_noise": false,
+        "id": "P3",
+        "instances": [
+          {
+            "bound": "within 0.15",
+            "compared": "/ sparse_set",
+            "noise_band": 0.0116,
+            "point": "w03_structural_churn",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 0.6117,
+            "within_noise": false
+          }
+        ],
+        "verdict": "FALSIFIED"
+      }
+    ],
+    "morton_lbvh": [
+      {
+        "claim": "s02_dense_clustered median tick lower than uniform_grid's",
+        "decided_within_noise": false,
+        "id": "P1a",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0483,
+            "point": "s02_dense_clustered",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5739,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "s02_dense_clustered peak memory at most half of uniform_grid's",
+        "decided_within_noise": false,
+        "id": "P1b",
+        "instances": [
+          {
+            "bound": "at most 0.5",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0,
+            "point": "s02_dense_clustered",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.3058,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "hs03_knn_heavy median tick lower than uniform_grid's",
+        "decided_within_noise": false,
+        "id": "P2",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0058,
+            "point": "hs03_knn_heavy",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5216,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "s01_steady_uniform within 1.5x of uniform_grid",
+        "decided_within_noise": false,
+        "id": "P3",
+        "instances": [
+          {
+            "bound": "at most 1.5",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0193,
+            "point": "s01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0385,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "beats morton_sorted on all ten spatial workloads",
+        "decided_within_noise": false,
+        "id": "P4",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0259,
+            "point": "s01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.2372,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0523,
+            "point": "s02_dense_clustered",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.3366,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.013,
+            "point": "s03_wide_radius",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.3321,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0551,
+            "point": "s04_teleport",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.2349,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0109,
+            "point": "s05_small_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.174,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0108,
+            "point": "hs01_rewind_all_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.3247,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0261,
+            "point": "hs02_rewind_few_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.2013,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0047,
+            "point": "hs03_knn_heavy",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.0912,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0346,
+            "point": "hs04_flat_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.3806,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0423,
+            "point": "hs05_spawn_churn",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.2955,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "spatial_move time exponent at least 0.8",
+        "decided_within_noise": false,
+        "id": "P5a",
+        "instances": [
+          {
+            "bound": "at least 0.8",
+            "compared": "",
+            "noise_band": 0.0,
+            "point": "spatial_move\u00b7fixed_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.931,
+            "within_noise": false
+          },
+          {
+            "bound": "at least 0.8",
+            "compared": "",
+            "noise_band": 0.0,
+            "point": "spatial_move\u00b7fixed_density",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.92,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "spatial_query_radius fixed_density time exponent at most 0.25",
+        "decided_within_noise": false,
+        "id": "P5b",
+        "instances": [
+          {
+            "bound": "at most 0.25",
+            "compared": "",
+            "noise_band": 0.0,
+            "point": "spatial_query_radius\u00b7fixed_density",
+            "poor_fit": true,
+            "status": "held",
+            "value": 0.182,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "spatial_move fixed_world memory exponent at least 0.9",
+        "decided_within_noise": false,
+        "id": "P6a",
+        "instances": [
+          {
+            "bound": "at least 0.9",
+            "compared": "",
+            "noise_band": 0.0,
+            "point": "spatial_move\u00b7fixed_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.999,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "spatial_query_radius fixed_world memory exponent at least 0.9",
+        "decided_within_noise": false,
+        "id": "P6b",
+        "instances": [
+          {
+            "bound": "at least 0.9",
+            "compared": "",
+            "noise_band": 0.0,
+            "point": "spatial_query_radius\u00b7fixed_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.999,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "spatial_knn fixed_world memory exponent at least 0.9",
+        "decided_within_noise": false,
+        "id": "P6c",
+        "instances": [
+          {
+            "bound": "at least 0.9",
+            "compared": "",
+            "noise_band": 0.0,
+            "point": "spatial_knn\u00b7fixed_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.994,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      }
+    ],
+    "soa": [
+      {
+        "claim": "narrow queries faster than aos (w02_query_heavy)",
+        "decided_within_noise": false,
+        "id": "P1",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ aos",
+            "noise_band": 0.0357,
+            "point": "w02_query_heavy",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 1.1084,
+            "within_noise": false
+          }
+        ],
+        "verdict": "FALSIFIED"
+      },
+      {
+        "claim": "multi-component point access slower than aos (w07_point_wide)",
+        "decided_within_noise": true,
+        "id": "P2",
+        "instances": [
+          {
+            "bound": "above 1.0",
+            "compared": "/ aos",
+            "noise_band": 0.066,
+            "point": "w07_point_wide",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0462,
+            "within_noise": true
+          }
+        ],
+        "verdict": "HELD"
+      },
+      {
+        "claim": "smaller footprint than aos on every ECS workload",
+        "decided_within_noise": false,
+        "id": "P3",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ aos",
+            "noise_band": 0.0,
+            "point": "h01_zipf_hotspot",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5238,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ aos",
+            "noise_band": 0.0,
+            "point": "h02_bursty_spawn",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5238,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ aos",
+            "noise_band": 0.0,
+            "point": "h03_stale_handles",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5238,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ aos",
+            "noise_band": 0.0,
+            "point": "h04_recent_locality",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5238,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ aos",
+            "noise_band": 0.0,
+            "point": "h05_sparse_component",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5238,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ aos",
+            "noise_band": 0.0,
+            "point": "w01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5238,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ aos",
+            "noise_band": 0.0,
+            "point": "w02_query_heavy",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5238,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ aos",
+            "noise_band": 0.0,
+            "point": "w03_structural_churn",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5238,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ aos",
+            "noise_band": 0.0,
+            "point": "w04_random_access",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5238,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ aos",
+            "noise_band": 0.0,
+            "point": "w05_small_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5252,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ aos",
+            "noise_band": 0.0,
+            "point": "w06_point_narrow",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5238,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ aos",
+            "noise_band": 0.0,
+            "point": "w07_point_wide",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5238,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      }
+    ],
+    "sparse_set": [
+      {
+        "claim": "on h05_sparse_component beats every layout that scans the whole index space",
+        "decided_within_noise": false,
+        "id": "P1",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ aos",
+            "noise_band": 0.0361,
+            "point": "h05_sparse_component",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.5692,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ soa",
+            "noise_band": 0.0223,
+            "point": "h05_sparse_component",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.8317,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      }
+    ],
+    "spatial_hash": [
+      {
+        "claim": "slower than uniform_grid on every spatial workload",
+        "decided_within_noise": true,
+        "id": "P1",
+        "instances": [
+          {
+            "bound": "above 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.034,
+            "point": "hs01_rewind_all_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.5059,
+            "within_noise": false
+          },
+          {
+            "bound": "above 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.1498,
+            "point": "hs02_rewind_few_moving",
+            "poor_fit": false,
+            "status": "held",
+            "value": 2.621,
+            "within_noise": false
+          },
+          {
+            "bound": "above 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0077,
+            "point": "hs03_knn_heavy",
+            "poor_fit": false,
+            "status": "held",
+            "value": 3.8069,
+            "within_noise": false
+          },
+          {
+            "bound": "above 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.2049,
+            "point": "hs04_flat_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.1749,
+            "within_noise": true
+          },
+          {
+            "bound": "above 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0182,
+            "point": "hs05_spawn_churn",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.7678,
+            "within_noise": false
+          },
+          {
+            "bound": "above 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0417,
+            "point": "hs06_mixed_reach",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.0499,
+            "within_noise": false
+          },
+          {
+            "bound": "above 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0644,
+            "point": "hs07_crowd",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.2156,
+            "within_noise": false
+          },
+          {
+            "bound": "above 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0155,
+            "point": "hs08_crowd_rollback",
+            "poor_fit": false,
+            "status": "held",
+            "value": 1.1872,
+            "within_noise": false
+          },
+          {
+            "bound": "above 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0269,
+            "point": "s01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 2.1201,
+            "within_noise": false
+          },
+          {
+            "bound": "above 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0496,
+            "point": "s02_dense_clustered",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 0.9939,
+            "within_noise": true
+          },
+          {
+            "bound": "above 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.061,
+            "point": "s03_wide_radius",
+            "poor_fit": false,
+            "status": "falsified",
+            "value": 0.9928,
+            "within_noise": true
+          },
+          {
+            "bound": "above 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0154,
+            "point": "s04_teleport",
+            "poor_fit": false,
+            "status": "held",
+            "value": 2.0967,
+            "within_noise": false
+          },
+          {
+            "bound": "above 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0276,
+            "point": "s05_small_world",
+            "poor_fit": false,
+            "status": "held",
+            "value": 2.9369,
+            "within_noise": false
+          }
+        ],
+        "verdict": "FALSIFIED"
+      },
+      {
+        "claim": "less memory than uniform_grid on s02_dense_clustered",
+        "decided_within_noise": false,
+        "id": "P2",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ uniform_grid",
+            "noise_band": 0.0,
+            "point": "s02_dense_clustered",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.2214,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      }
+    ],
+    "uniform_grid": [
+      {
+        "claim": "the fastest candidate on an evenly spread world (s01_steady_uniform)",
+        "decided_within_noise": false,
+        "id": "P1",
+        "instances": [
+          {
+            "bound": "below 1.0",
+            "compared": "/ axis_sorted",
+            "noise_band": 0.0146,
+            "point": "s01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.2526,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ brute_force",
+            "noise_band": 0.0116,
+            "point": "s01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.077,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ morton_sorted",
+            "noise_band": 0.0236,
+            "point": "s01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.2284,
+            "within_noise": false
+          },
+          {
+            "bound": "below 1.0",
+            "compared": "/ spatial_hash",
+            "noise_band": 0.0269,
+            "point": "s01_steady_uniform",
+            "poor_fit": false,
+            "status": "held",
+            "value": 0.4717,
+            "within_noise": false
+          }
+        ],
+        "verdict": "HELD"
+      }
+    ]
+  },
+  "results_run": "20261009T042136Z",
+  "scaling_run": "sweep-20261009T044632Z"
+}

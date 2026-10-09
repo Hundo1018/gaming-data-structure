@@ -12,9 +12,11 @@
 //  2. move_by(id, delta) sets the position to wrap_into(current + delta,
 //     bounds), using the shared wrap. Deltas may be small or may cross the
 //     world; nothing distinguishes a step from a teleport.
-//  3. query_radius(c, r) returns the sum of digest_hit over every live entity
-//     with dist2(position, c) <= r*r. Iteration order is unconstrained. A broad
-//     phase may over-admit; the accept test must be the shared dist2.
+//  3. query_radius(c, r) returns RadiusDigest(c, r) folded over every live
+//     entity with dist2(position, c) <= r*r. Iteration order is unconstrained.
+//     A broad phase may over-admit; the accept test must be the shared dist2.
+//     The digest is salted by the query, so a total kept from earlier work
+//     cannot stand in for visiting the entities.
 //  4. query_radius_of(id, r) is the same query centred on that entity's own
 //     position and excluding it. A dead id yields 0.
 //  5. query_knn(c, k) returns an ordered fold over the k nearest live entities,

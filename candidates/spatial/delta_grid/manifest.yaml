@@ -1,0 +1,149 @@
+id: spatial_delta_grid
+name: delta_grid
+track: spatial
+binary: gds_spatial_delta_grid
+island: 3
+parents: [spatial_cell_sorted, spatial_grid_undo_log]
+origin: mutation
+mutation_operator: delayed_update
+novelty_status: KNOWN_COMPONENTS_NEW_COMBINATION
+expect_verify: pass
+
+hypothesis: >
+  Neither of grid_undo_log's two history strategies needs to be chosen in
+  advance if history is kept as data and the index is derived. Recording each
+  tick's first changes, and storing a tick as a full pre-image instead once its
+  records pass an eighth of the id space, makes unwinding a matter of writing two
+  arrays; deferring the index to the first query, and there choosing between a
+  counting-sort rebuild and moving only the changed ids into a delta layer by
+  whether they exceed half the live population, makes the index pay what changed
+  when little did and one rebuild when much did. It should then match the undo
+  log when few entities move and beat snapshot-and-rebuild when all of them do.
+
+representation: >
+  Positions and liveness in flat arrays indexed by id, which are the authority.
+  History: a ring of up to history_ticks + 1 frames, grown one slot per closed
+  tick until full, plus the open one, each either a
+  vector of 16-byte records (id with previous liveness in its top bit, previous
+  position) or a pre-image (a copy of the position and liveness arrays as the
+  tick began, and the live count), with a 32-bit stamp per id against a per-tick
+  epoch. Index, derived: a base of ids, x, y and z in four parallel arrays
+  ordered by uniform_grid's cell index, with a directory of cells+1 offsets and
+  the base slot of each id, as cell_sorted builds it; plus a delta of
+  uniform_grid's intrusive doubly-linked per-cell lists over the same cells,
+  holding the entities changed since the last rebuild, each tombstoned in the
+  base by NaN in x and kNoEntity in its id. A deduplicated dirty list of ids
+  changed since the last query, with a 32-bit pass stamp per id.
+
+operations:
+  insert_remove_move: one array write, a record the first time the entity changes in the tick (none once the tick is a pre-image), and the id listed dirty (none once the list passes half the id space); removing or moving a dead id does nothing
+  index_update: at the first query after any change, a counting-sort rebuild if a pre-image was copied or the listed ids exceed half the live population, else each listed id tombstoned in the base and linked, relinked or unlinked in the delta
+  query_radius: uniform_grid's walk over the cells of the query box, widened by a millionth of |c| + r so that it holds every point the shared test accepts, scanning each cell's base range eight lanes at a time as cell_sorted does and walking its delta list, the list skipped entirely when the delta is empty
+  query_knn: uniform_grid's box doubling over the same widened box, gathering from each cell's base range, tombstones skipped by id, and its delta list; the stop past twice the largest extent also requires the box to span every cell
+  end_tick: the open frame swapped into the next ring slot, the ring growing by one slot per tick until it holds history_ticks + 1 and turning after that; no copy and, once the ring is full, no allocation
+  rewind: undo the open tick, then the retained frames newer than the target newest first, writing only the arrays; when any is a pre-image, copy the oldest one and undo only the record frames older than it; the index is repaired by the next query. With history_ticks 0, a rewind to the tick just closed succeeds when nothing has changed since and fails otherwise
+
+assumptions:
+  - the number of entities changed per tick ranges from a few percent to all of them across the games this serves, so neither history strategy is right for all of them
+  - restoring the authoritative arrays is cheap when the index is not touched, so unwinding history and repairing the index can be separate steps
+  - an index repair that touches about eleven random lines per changed id beats a rebuild that touches six or seven per live entity while fewer than about half of the entities changed
+  - restoring a record costs about eight times as many bytes of traffic as copying one id slot of a pre-image, so a pre-image is cheaper to restore once a tick's records pass about an eighth of the id space
+
+expected_advantages:
+  - unwinding never removes from or inserts into an index, which is what made grid_undo_log lose when everything moves
+  - a rewind through any number of all-moving ticks is one copy of the oldest pre-image and one rebuild
+  - when few entities move, both the frame and the index repair cost what changed rather than what exists
+  - the frame buffers are reused, so history allocates nothing per tick once the ring is full
+
+expected_disadvantages:
+  - the delta is trimmed only by a rebuild, so under sustained low movement it accumulates most of the population and queries walk linked lists and scan tombstones
+  - three representations of position (authority, base, and the pre-images) and two index layers to keep consistent
+  - per id it carries uniform_grid's arrays plus a base slot, a dirty stamp and a history stamp, and per cell both a directory entry and a list head
+  - a pre-image frame costs a copy of the id space plus an eighth of it in records on every tick that takes one, whether or not it is ever rewound
+
+complexity:
+  insert_remove_move: O(1)
+  query_radius: O(1)
+  query_knn: O(1)
+
+notes: >
+  The insert_remove_move claim is for what the spatial_move family measures,
+  the cost of keeping the structure current under a fixed number of moves per
+  tick. Each mutation is an array write, at most one record and at most one
+  listing. The index repair is O(1) per listed id on the incremental path. A
+  rebuild is O(ids + cells), but it happens only when more than half of the live
+  population is listed, so per listed id it costs O(1 + cells / live), which is
+  O(1) at fixed density; in the fixed_world regime the cell term grows as the
+  population shrinks, and the two smallest populations of that family, where
+  2000 moves list more than half the population, are on the rebuild path. The
+  query claims are for fixed density, where a query of fixed reach touches a
+  fixed number of cells and entities, in the base or in the delta. Rewind cost
+  is not swept: it is the records of the frames newer than the target, or, from
+  the oldest pre-image among them, one copy of the id space plus the records of
+  the frames older than it, followed by one index repair. ALPHA = 0.5 and BETA =
+  0.125 are fixed in hypothesis.md from a count of cache lines, not from any
+  measurement. The mutation operator is delayed_update because what changed
+  from both parents is when the index learns of a change: not at the change, as
+  in uniform_grid and grid_undo_log, and not by a rebuild at every query after
+  any change, as in cell_sorted, but at the first query, in whichever of two
+  forms is cheaper for what accumulated; history is kept away from the index so
+  that unwinding is only another accumulation. With history_ticks of 0 no
+  history is kept; a rewind to the tick just closed succeeds only when nothing
+  has changed since, which is the rewind a depth-0 workload issues. After the
+  review the ring grows with the ticks closed instead of being sized from
+  history_ticks at construction, the query box was made conservative, and
+  uniform_grid is held as a mutable member instead of inherited; see Changes
+  after review in hypothesis.md.
+
+# The predictions this candidate was written against, as data, thresholds as
+# given before it was implemented. runner/predictions.py judges them.
+predictions:
+  - id: P1a
+    claim: hs01_rewind_all_moving median below uniform_grid and grid_undo_log
+    metric: step_ns_p50
+    workloads: [hs01_rewind_all_moving]
+    against: [uniform_grid, grid_undo_log]
+    below: 1.0
+  - id: P1b
+    claim: hs01_rewind_all_moving p99 below uniform_grid and grid_undo_log
+    metric: step_ns_p99
+    workloads: [hs01_rewind_all_moving]
+    against: [uniform_grid, grid_undo_log]
+    below: 1.0
+  - id: P2a
+    claim: hs02_rewind_few_moving median within 1.3x of grid_undo_log
+    metric: step_ns_p50
+    workloads: [hs02_rewind_few_moving]
+    against: grid_undo_log
+    at_most: 1.3
+  - id: P2b
+    claim: hs02_rewind_few_moving p99 within 1.5x of grid_undo_log
+    metric: step_ns_p99
+    workloads: [hs02_rewind_few_moving]
+    against: grid_undo_log
+    at_most: 1.5
+  - id: P2c
+    claim: hs02_rewind_few_moving p99 below uniform_grid under snapshot-and-rebuild
+    metric: step_ns_p99
+    workloads: [hs02_rewind_few_moving]
+    against: uniform_grid
+    below: 1.0
+  - id: P3
+    claim: within 1.2x of cell_sorted where everything moves and nothing rewinds
+    metric: step_ns_p50
+    workloads: [s01_steady_uniform, s03_wide_radius, s04_teleport, hs04_flat_world]
+    against: cell_sorted
+    at_most: 1.2
+  - id: P4
+    claim: spatial_move time exponent at most 0.3 in both regimes
+    metric: time_exponent
+    sweep: spatial_move
+    regimes: [fixed_world, fixed_density]
+    at_most: 0.3
+  - id: P5
+    claim: rewind_move_fraction p99 within 1.2x of the better history strategy at every value
+    metric: step_ns_p99
+    sweep: rewind_move_fraction
+    values: "*"
+    against_min: [uniform_grid, grid_undo_log]
+    at_most: 1.2

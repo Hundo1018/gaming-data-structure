@@ -198,6 +198,10 @@ def main():
     ap.add_argument("--no-native-arch", action="store_true")
     ap.add_argument("--only", default="", help="comma-separated candidate names")
     ap.add_argument("--skip-build", action="store_true")
+    ap.add_argument("--verify-only", action="store_true",
+                    help="run the compile and correctness gates and stop; writes no "
+                         "results, report or archive rows. Exits non-zero if any "
+                         "candidate disagrees with its expect_verify.")
     args = ap.parse_args()
 
     build_dir = Path(args.build_dir)
@@ -209,7 +213,9 @@ def main():
                   file=sys.stderr)
 
     run_id = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    archive = Archive(args.archive)
+    # A verify-only pass is a check, not an experiment, so it leaves the archive
+    # untouched rather than adding a run with no measurements in it.
+    archive = Archive(":memory:" if args.verify_only else args.archive)
     archive.add_run(
         {
             "run_id": run_id,
@@ -334,6 +340,17 @@ def main():
             results["notes"].append(
                 f"checksum disagreement on {w['name']}: " + json.dumps(seen)
             )
+
+    if args.verify_only:
+        disagree = [n for n, v in results["verification"].items()
+                    if not v["all_agree_with_expectation"]]
+        for note in results["notes"]:
+            print(f"[note]   {note}")
+        print(f"\nverify-only: {len(results['verification'])} candidates checked, "
+              f"{len(disagree)} disagree with their manifest"
+              + (": " + ", ".join(disagree) if disagree else ""))
+        archive.close()
+        sys.exit(1 if disagree else 0)
 
     # ---- gate 3: measurement -------------------------------------------
     # The oracle goes first so that the benchmark-mode checksum every other

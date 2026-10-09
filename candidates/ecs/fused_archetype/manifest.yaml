@@ -1,0 +1,113 @@
+id: ecs_fused_archetype
+name: fused_archetype
+track: ecs
+binary: gds_ecs_fused_archetype
+island: 2
+parents: [ecs_archetype]
+origin: mutation
+mutation_operator: delayed_update
+novelty_status: KNOWN_VARIANT
+expect_verify: pass
+
+hypothesis: >
+  In a frame that integrates and then queries, archetype walks the Position and
+  Velocity columns once for integrate and again for each query that names them.
+  Recording integrate's step and applying it inside the next query, block by
+  block in the walk that answers that query, brings those columns in from
+  beyond L1 once per frame instead of twice. If the second walk is a material
+  share of the frame, the median frame of w02_query_heavy and of
+  w01_steady_uniform should each fall to at most 0.95x archetype's, with no ECS
+  workload slower than archetype by more than 5%.
+
+representation: >
+  archetype, unchanged: entities grouped by exact component mask, one densely
+  packed typed column per component a group holds plus a row-to-entity array,
+  a registry from entity index to (generation, liveness, group, row), a free
+  list and a sixteen-entry mask-to-group table. Added beside it, a pending
+  step: a flag and the dt of the integrate call that recorded it. While the
+  flag is set, the Position column of every group holding both Position and
+  Velocity lags exactly one p += v*dt behind the answers the structure gives.
+
+operations:
+  create: as the parent; first resolves the pending step if the new entity holds both Position and Velocity
+  destroy: as the parent, with no resolve; the swap-remove carries a row's Position and Velocity together
+  get_set: as the parent; first resolves the pending step for a get of Position, or a set of Position or Velocity, on an entity holding both
+  add_remove: >
+    as the parent; first resolves the pending step for an add of Position or
+    Velocity that leaves the entity holding both, and for a remove of Velocity
+    from an entity holding Position
+  query: >
+    with no step pending, the parent's walk over matching groups. With one
+    pending, every group holding both of the pair is stepped in this call: one
+    that the query matches is stepped and digested 256 rows at a time, the
+    digest reading each block right after the step wrote it; one that does not
+    match is only stepped; a matching group without the pair is only digested
+  integrate: records the step; a step already pending is resolved first with a plain pass
+  sync: resolves a step that no query resolved, with a plain pass
+
+assumptions:
+  - in the frames measured here every integrate is followed by a query, so the step is almost always resolved by a query rather than by sync or a point operation
+  - the first query after integrate matches the groups holding Position and Velocity, so the step is fused into a digest rather than run alone
+  - archetype's second walk over the Position and Velocity columns is served from beyond L1 and costs time the query's digest does not already hide
+  - one pending step is enough; consecutive integrate calls without a query between them are rare
+
+expected_advantages:
+  - the columns of the stepped groups come in from L2 or L3 once per frame rather than twice
+  - the step keeps the parent's vectorisable loop and the digest keeps the parent's loop, so nothing is lost in either to gain the fusion
+  - no extra memory, and every point operation costs the parent's plus one predictable branch on the pending flag
+
+expected_disadvantages:
+  - when the digest's arithmetic, not memory, bounds the query walk, removing a walk saves only that walk's own loads and stores, which may be a small share of the frame
+  - a frame with no query, or whose first query matches no stepped group, gains nothing and pays the parent's integrate walk later
+  - a point operation that touches Position or Velocity while a step is pending pays a full step pass at that moment
+  - query and get are const in the contract, so the columns and the pending state are mutable
+
+complexity:
+  get_set: O(1)
+  add_remove: O(1)
+  query: O(n)
+
+notes: >
+  delayed_update rather than temporal_batching because one operation's work is
+  deferred to the next observation that needs it and done there, not
+  accumulated across many operations of one kind. The get_set and add_remove
+  claims are the parent's per-operation work, a copy of at most four components
+  for a structural change. Complexity lists only the three families the sweep
+  checks; create and destroy are the parent's O(1) work too. A create of an
+  entity holding Position and Velocity, or a get, set, add or remove that
+  touches the pair, while a step is pending also pays that step, O(n) once per
+  integrate call, which is integrate's cost moved rather than the operation's;
+  the harness never calls a point operation between integrate and sync. The
+  query claim's n is the matching entities plus, on the first query after
+  integrate, every entity holding Position and Velocity. The parent's code is
+  reproduced rather than included by path because every member of Archetype is
+  private and the fused query has to write a group's Position column. The
+  reproduction keeps the parent's text except for the pending step, the new
+  walk, one inserted flag test per point operation, mutable members and
+  reported_bytes, and the two new functions are kept out of line, so that a
+  difference against archetype is the mechanism's rather than the code
+  shape's. reported_bytes also counts the group vector, which the parent
+  omits, so it exceeds the parent's by that vector's capacity times
+  sizeof(Group); peak allocated bytes should equal the parent's.
+
+# The predictions this candidate was written against, as data, thresholds as
+# given before it was implemented. runner/predictions.py judges them.
+predictions:
+  - id: P1
+    claim: w02_query_heavy at most 0.95x archetype's
+    metric: step_ns_p50
+    workloads: [w02_query_heavy]
+    against: archetype
+    at_most: 0.95
+  - id: P2
+    claim: w01_steady_uniform at most 0.95x archetype's
+    metric: step_ns_p50
+    workloads: [w01_steady_uniform]
+    against: archetype
+    at_most: 0.95
+  - id: P3
+    claim: no ECS workload slower than archetype by more than 5%
+    metric: step_ns_p50
+    workloads: [w01_steady_uniform, w02_query_heavy, w03_structural_churn, w04_random_access, w05_small_world, h01_zipf_hotspot, h02_bursty_spawn, h03_stale_handles, h04_recent_locality, h05_sparse_component]
+    against: archetype
+    at_most: 1.05

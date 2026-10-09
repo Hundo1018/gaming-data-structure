@@ -66,3 +66,15 @@ structure, and stops describing it at the top.
 
 Its move cost is the deferred sort the manifest claims: n^1.099,
 from 43.6 ns per move at 1000 entities to 8871 ns at 128000.
+
+## Run `20261009T042136Z`
+
+Suite `20261009T042136Z` and sweeps `sweep-20261009T044632Z`, same machine class, GCC 13.3.0, 5 repetitions, under the salted query contract. Step times below are medians across repetitions, the estimator `runner/predictions.py` judges with.
+
+The prose prediction "far better than scanning everything" was encoded as
+below `brute_force` on every workload, and is falsified on one:
+`s03_wide_radius`, where it takes 3622 us to `brute_force`'s 3294 us (1.10x).
+There the query radius is 64 to 128 in a 1024-wide world, so a slab is an
+eighth to a quarter of the population, and examining that many through the
+sorted arrays evidently costs more than scanning every packed position; which
+part of the slab walk is dearer per entity is not measured.

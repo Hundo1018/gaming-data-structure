@@ -57,6 +57,12 @@ foreach(src ${GDS_CANDIDATE_SOURCES})
   list(APPEND GDS_CANDIDATE_TARGETS ${target})
 endforeach()
 
+# Research instruments: not candidates, never ranked. Each one measures
+# something about the workloads themselves.
+add_executable(gds_floor_spatial substrate/tools/spatial_floor.cpp)
+target_include_directories(gds_floor_spatial PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/candidates")
+target_link_libraries(gds_floor_spatial PRIVATE gds_substrate)
+
 message(STATUS "candidates: ${GDS_CANDIDATE_TARGETS}")
 message(STATUS "flags: ${GDS_FLAGS}")
 

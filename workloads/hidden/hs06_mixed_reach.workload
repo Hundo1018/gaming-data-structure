@@ -1,0 +1,25 @@
+# Held out. Every structure here sizes itself from one typical query radius,
+# the mean of query_radius_min and query_radius_max. This workload asks for
+# anything from two units to a hundred and twenty-eight, so the mean (65) is a
+# radius almost no query actually has: small queries scan cells sized for large
+# ones, and large ones span many of them. It is s01_steady_uniform with the
+# query reach widened and nothing else changed.
+id: hs06_mixed_reach
+visibility: hidden
+track: spatial
+seed: 8006
+world_size: 1024
+world_height: 256
+initial_entities: 20000
+ticks: 200
+move_fraction: 1.0
+speed_min: 0.5
+speed_max: 4.0
+placement: uniform
+radius_queries_per_tick: 64
+entity_radius_queries_per_tick: 64
+knn_queries_per_tick: 32
+query_radius_min: 2
+query_radius_max: 128
+knn_k: 8
+query_focus: uniform

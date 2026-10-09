@@ -54,3 +54,14 @@ notes: >
   The layout used by several production ECS libraries. Included because it is
   the strongest thing a new representation has to argue against on mixed
   workloads.
+
+# Encoded from hypothesis.md after that candidate had been measured. Only the
+# predictions whose prose fixes a workload, a metric and a direction are here;
+# the prose remains the preregistration and these are its machine-readable form.
+predictions:
+  - id: P1
+    claim: on h05_sparse_component beats every layout that scans the whole index space
+    metric: step_ns_p50
+    workloads: [h05_sparse_component]
+    against: [aos, soa]
+    below: 1.0
