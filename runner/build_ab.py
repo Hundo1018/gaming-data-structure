@@ -66,7 +66,8 @@ def geomean(xs):
 def measure_pair(a, b, workload, args):
     """Per-round metrics for both builds and the per-round ratios b/a."""
     rows = {"a": [], "b": [], "ratio": [], "a_peak": None, "b_peak": None,
-            "checksums_equal": True, "status": "ok"}
+            "checksums_equal": True, "status": "ok",
+            "also": {m: {"a": [], "b": []} for m in args.also}}
     for r in range(args.rounds):
         order = [("a", a), ("b", b)] if r % 2 == 0 else [("b", b), ("a", a)]
         got = {}
@@ -82,6 +83,9 @@ def measure_pair(a, b, workload, args):
             return rows
         rows["a"].append(got["a"][args.metric])
         rows["b"].append(got["b"][args.metric])
+        for m in args.also:
+            rows["also"][m]["a"].append(got["a"].get(m))
+            rows["also"][m]["b"].append(got["b"].get(m))
         rows["ratio"].append(got["b"][args.metric] / got["a"][args.metric]
                              if got["a"][args.metric] else None)
         rows["a_peak"] = got["a"]["peak_bytes"]
@@ -133,6 +137,8 @@ def main():
     ap.add_argument("--repeats", type=int, default=3)
     ap.add_argument("--warmup", type=int, default=1)
     ap.add_argument("--metric", default="total_ns")
+    ap.add_argument("--also", nargs="*", default=["step_ns_p50"],
+                    help="further metrics recorded per round in the JSON, not ratioed")
     ap.add_argument("--timeout", type=int, default=1800)
     ap.add_argument("--workloads", nargs="*", default=[],
                     help="workload names (file stems) to restrict to; default: all")
