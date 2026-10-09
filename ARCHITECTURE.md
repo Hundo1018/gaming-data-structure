@@ -207,10 +207,13 @@ and workloads naming it.
 
 ## Not here
 
-- **The agent loop.** Nothing calls a model. The six roles in `PROJECT.md` exist
-  as prompts in `prompts/`; the archive carries `island`, `parents`, `origin`
-  and `novelty_status` so a generation loop can be added without migrating
-  existing evidence. See `agents/README.md`.
+- **The agent loop.** Nothing here calls a model. The six roles in `PROJECT.md`
+  exist as prompts in `prompts/`; the archive carries `island`, `parents`,
+  `origin` and `novelty_status` so a generation loop can be added without
+  migrating existing evidence. The latest generation was produced by such a loop
+  run from outside this repository (specify, implement, attack, fix, then a
+  Historian with literature search); what it handed over is ordinary candidate
+  directories, verified and measured by the code here. See `agents/README.md`.
 - **Third-party baselines.** Every candidate is written here, so the numbers
   compare implementations in this repository and say nothing about EnTT, flecs,
   or any production library. Two manifests already record this limit explicitly.
