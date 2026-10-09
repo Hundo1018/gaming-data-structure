@@ -77,7 +77,22 @@ def main():
             {"binary": p["binary"], "a": va, "b": vb,
              "a_med": statistics.median(va), "b_med": statistics.median(vb)})
 
+    def separated(x, y, side):
+        return max(x[side]) < min(y[side]) or max(y[side]) < min(x[side])
+
     out = {"metric": metric, "workloads": {}}
+    # How much the test can see: a pair is resolved by a build when that build's
+    # per-round ranges for the two candidates do not overlap. Only pairs both
+    # builds resolve can show a disagreement that is not a tie.
+    resolved = {"a": 0, "b": 0, "both_agree": 0, "both_disagree": 0}
+    for w, cands in sorted(by_workload.items()):
+        for x, y in itertools.combinations(cands, 2):
+            ra, rb = separated(x, y, "a"), separated(x, y, "b")
+            resolved["a"] += ra
+            resolved["b"] += rb
+            if ra and rb:
+                same = (x["a_med"] < y["a_med"]) == (x["b_med"] < y["b_med"])
+                resolved["both_agree" if same else "both_disagree"] += 1
     for w, cands in sorted(by_workload.items()):
         tau = kendall_tau_b([c["a_med"] for c in cands], [c["b_med"] for c in cands])
         flips = []
@@ -91,6 +106,18 @@ def main():
                           "b_ratio": x["b_med"] / y["b_med"], "robust": robust})
         out["workloads"][w] = {"n": len(cands), "tau_b": tau, "flips": flips}
 
+    # Run-to-run noise: per candidate and workload, (max - min) / median over
+    # the rounds. It bounds the smallest difference any ordering here can show.
+    def spread(xs):
+        med = statistics.median(xs)
+        return (max(xs) - min(xs)) / med if med else 0.0
+    noise = {}
+    for side in ("a", "b"):
+        sp = sorted(spread(c[side]) for cands in by_workload.values() for c in cands)
+        noise[side] = {"p25": sp[len(sp) // 4], "median": statistics.median(sp),
+                       "p75": sp[3 * len(sp) // 4]} if sp else None
+    out["noise"] = noise
+
     taus = [v["tau_b"] for v in out["workloads"].values() if v["tau_b"] is not None]
     all_flips = [f for v in out["workloads"].values() for f in v["flips"]]
     out["summary"] = {
@@ -100,11 +127,23 @@ def main():
         "flipped_pairs": len(all_flips),
         "robust_flips": sum(1 for f in all_flips if f["robust"]),
         "pairs_compared": sum(v["n"] * (v["n"] - 1) // 2 for v in out["workloads"].values()),
+        "resolved_by_a": resolved["a"],
+        "resolved_by_b": resolved["b"],
+        "resolved_by_both_agree": resolved["both_agree"],
+        "resolved_by_both_disagree": resolved["both_disagree"],
     }
     s = out["summary"]
     print(f"metric {metric}: {s['workloads']} workloads, median tau-b {s['median_tau_b']}, "
           f"min {s['min_tau_b']}; {s['flipped_pairs']} of {s['pairs_compared']} pairs flip, "
           f"{s['robust_flips']} robustly")
+    print(f"  resolved (ranges do not overlap): {args.a_label} {s['resolved_by_a']}, "
+          f"{args.b_label} {s['resolved_by_b']}; by both: {s['resolved_by_both_agree']} agree, "
+          f"{s['resolved_by_both_disagree']} disagree")
+    for side, label in (("a", args.a_label), ("b", args.b_label)):
+        n = noise[side]
+        if n:
+            print(f"  per-round spread (max-min)/median, {label}: p25 {n['p25']:.1%}, "
+                  f"median {n['median']:.1%}, p75 {n['p75']:.1%}")
     for w, v in out["workloads"].items():
         for f in v["flips"]:
             print(f"  {w:26s} {f['pair'][0]} vs {f['pair'][1]}: {args.a_label} {f['a_ratio']:.3f}, "
@@ -120,6 +159,17 @@ def main():
                  f"Median tau-b {s['median_tau_b']:.3f}, lowest {s['min_tau_b']:.3f}; "
                  f"{s['flipped_pairs']} of {s['pairs_compared']} candidate pairs change order, "
                  f"{s['robust_flips']} of them robustly.", "",
+                 f"Resolution, the part of the comparison the noise lets through: "
+                 f"{args.a_label} separates {s['resolved_by_a']} pairs and {args.b_label} "
+                 f"{s['resolved_by_b']} (per-round ranges that do not overlap); of the pairs "
+                 f"both separate, {s['resolved_by_both_agree']} are in the same order and "
+                 f"{s['resolved_by_both_disagree']} in opposite orders.", "",
+                 "Run-to-run spread, (max - min) / median over the rounds per candidate and "
+                 "workload: " + "; ".join(
+                     f"{lab} median {noise[sd]['median']:.1%} (p25 {noise[sd]['p25']:.1%}, "
+                     f"p75 {noise[sd]['p75']:.1%})"
+                     for sd, lab in (("a", args.a_label), ("b", args.b_label)) if noise[sd]) + ".",
+                 "",
                  "| workload | candidates | tau-b | flipped pairs (a ratio → b ratio) |",
                  "|---|---:|---:|---|"]
         for w, v in out["workloads"].items():
