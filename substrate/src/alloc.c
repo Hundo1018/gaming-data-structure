@@ -132,6 +132,13 @@ void gds_alloc_reset(void) { memset(&g_counters, 0, sizeof g_counters); }
 
 GdsAllocStats gds_alloc_snapshot(void) { return g_counters; }
 
+void* gds_vec_alloc_copy_(const void* data, size_t keep, size_t new_cap, size_t elem) {
+  void* fresh = new_cap ? malloc(new_cap * elem) : NULL;
+  if (!fresh && new_cap) abort();
+  if (keep) memcpy(fresh, data, keep * elem);
+  return fresh;
+}
+
 void* gds_vec_regrow_(void* data, size_t keep, size_t new_cap, size_t elem) {
   /* An empty vector owns no block, as std::vector's does not. */
   void* fresh = new_cap ? malloc(new_cap * elem) : NULL;

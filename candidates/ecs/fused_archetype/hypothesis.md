@@ -4,8 +4,9 @@
 
 In every ECS workload that integrates, a frame is point operations, then
 `integrate` (`p += v*dt` over every entity holding Position and Velocity), then
-one to three queries, then `sync` (`Replay::end_of_frame` in
-`substrate/include/gds/harness.hpp`). `integrate` and each query are full
+one to three queries, then `sync` (`<prefix>_replay_end_of_frame` in
+`substrate/include/gds/replay.inc.h`; `Replay::end_of_frame` in
+`harness.hpp` when this was written, before the port to C). `integrate` and each query are full
 passes. `archetype` walks the Position and Velocity columns once for
 `integrate` and again for every query that names them.
 

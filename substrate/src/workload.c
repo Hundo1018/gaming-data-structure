@@ -380,9 +380,11 @@ void gds_generate_workload(const GdsWorkloadSpec* spec, GdsWorkload* w) {
   FrameVec frames;
   gds_vec_init(frames);
 
+  /* std::max(0.0001f, sum) is (0.0001f < sum) ? sum : 0.0001f, so a NaN sum
+   * becomes the floor; the test is written that way round to keep it so. */
   float total_w = spec->w_create + spec->w_destroy + spec->w_add + spec->w_remove +
                   spec->w_get + spec->w_set;
-  if (total_w < 0.0001f) total_w = 0.0001f;
+  if (!(0.0001f < total_w)) total_w = 0.0001f;
 
   for (uint32_t i = 0; i < spec->initial_entities; ++i) emit_create(&g);
   GdsFrame f0 = {0, (uint32_t)g.ops.size};

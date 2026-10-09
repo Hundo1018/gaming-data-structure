@@ -516,10 +516,13 @@ static inline void delta_grid_scan_run_(const delta_grid* s, size_t b, size_t e,
  * box was computed inside the walk, was compiled out of line by the compiler's
  * own choice.
  *
- * Each query compiled its own out-of-line copy of the C++ template, with the
- * work per cell inlined into it; the four copies are written out here: the
- * radius scan and the k-nearest gather, each without and with the delta
- * lists. Each returns whether the box spans every cell. */
+ * The C++ template was compiled out of line once per query and delta flag; the
+ * four copies are written out here, the radius scan and the k-nearest gather,
+ * each without and with the delta lists, with the work per cell written into
+ * each. (GCC kept the per-cell lambda of the C++ k-nearest gather with delta
+ * lists out of line and called it once per cell; paired timing of the two
+ * builds on hs03, hs02 and s01 showed no difference from writing it in.) Each
+ * returns whether the box spans every cell. */
 static __attribute__((noinline)) bool delta_grid_radius_walk_(const delta_grid* s, Vec3 c,
                                                               float r, float r2,
                                                               RadiusDigest* d) {
@@ -646,11 +649,12 @@ static inline uint64_t delta_grid_knn_search_(delta_grid* s, Vec3 c, uint32_t k,
   }
 }
 
-/* Whether a query walks the delta lists is decided once per query, by which of
- * two out-of-line walks it calls (the C++ made it a template argument), rather
- * than tested in the per-cell loop: the k-nearest gather visits many mostly
- * empty cells, and a test there is reloaded after every push into the gather
- * vector, which measurably slowed it. */
+/* Whether a query walks the delta lists is decided by which of two out-of-line
+ * walks it calls, rather than tested in the per-cell loop: the k-nearest gather
+ * visits many mostly empty cells, and a test there is reloaded after every push
+ * into the gather vector, which measurably slowed it. The C++ made it a
+ * template argument, decided once per query; here a k-nearest query tests it
+ * once per doubling of its box. */
 static inline uint64_t delta_grid_query_radius(delta_grid* s, Vec3 c, float r) {
   delta_grid_sync_(s);
   return s->delta_size > 0 ? delta_grid_radius_search_(s, c, r, true)

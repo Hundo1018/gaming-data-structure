@@ -32,6 +32,10 @@
  * report it and every measurement would be meaningless after it. */
 void* gds_vec_regrow_(void* data, size_t keep, size_t new_cap, size_t elem);
 
+/* The same without freeing `data`: the caller frees it once it is done reading
+ * from it. */
+void* gds_vec_alloc_copy_(const void* data, size_t keep, size_t new_cap, size_t elem);
+
 #define gds_vec_init(v) ((v).data = NULL, (v).size = 0, (v).cap = 0)
 
 #define gds_vec_reserve(v, n)                                                         \
@@ -43,14 +47,21 @@ void* gds_vec_regrow_(void* data, size_t keep, size_t new_cap, size_t elem);
     }                                                                                 \
   } while (0)
 
+/* When the push grows the block, the old one is freed only after x has been
+ * read, as libstdc++'s push_back does it: x may refer to an element of v
+ * itself, e.g. gds_vec_push(v, v.data[0]) or a pointer taken into v. */
 #define gds_vec_push(v, x)                                                            \
   do {                                                                                \
     if ((v).size == (v).cap) {                                                        \
       size_t gds_c_ = (v).cap ? 2 * (v).cap : 1;                                      \
-      (v).data = gds_vec_regrow_((v).data, (v).size, gds_c_, sizeof(*(v).data));      \
+      void* gds_old_ = (v).data;                                                      \
+      (v).data = gds_vec_alloc_copy_((v).data, (v).size, gds_c_, sizeof(*(v).data));  \
       (v).cap = gds_c_;                                                               \
+      (v).data[(v).size++] = (x);                                                     \
+      free(gds_old_);                                                                 \
+    } else {                                                                          \
+      (v).data[(v).size++] = (x);                                                     \
     }                                                                                 \
-    (v).data[(v).size++] = (x);                                                       \
   } while (0)
 
 #define gds_vec_resize(v, n)                                                          \

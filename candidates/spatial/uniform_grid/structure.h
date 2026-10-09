@@ -60,9 +60,11 @@ static inline uint32_t uniform_grid_cell_index_(const uniform_grid* s, Vec3 p) {
 static inline void uniform_grid_init(uniform_grid* s, const WorldConfig* cfg) {
   memset(s, 0, sizeof *s);
   s->bounds = cfg->bounds;
+  /* Both maxima keep std::max's operand order, (a < b) ? b : a, which is what
+   * decides the result when a radius is NaN. */
   float floor_cell = gds_bounds_largest_extent(&s->bounds) / 256.0f;
   if (floor_cell < 1e-4f) floor_cell = 1e-4f;
-  s->cell = cfg->typical_query_radius > floor_cell ? cfg->typical_query_radius : floor_cell;
+  s->cell = cfg->typical_query_radius < floor_cell ? floor_cell : cfg->typical_query_radius;
   s->inv_cell = 1.0f / s->cell;
   s->nx = uniform_grid_axis_cells_(s, gds_bounds_extent_x(&s->bounds));
   s->ny = uniform_grid_axis_cells_(s, gds_bounds_extent_y(&s->bounds));
