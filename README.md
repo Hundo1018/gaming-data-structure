@@ -29,8 +29,13 @@ benchmarks/                     results.json, report.md, scaling.json, scaling.m
 
 Entity and component management. Domain 1. The question is how to store which
 entities hold which components so that both point access and iteration are
-cheap. Candidates: `aos`, `soa`, `sparse_set`, `archetype`, a hash-map oracle,
-and `broken_recycle` as a negative control.
+cheap. Candidates: `aos`, `soa`, `sparse_set`, `archetype`, and three children
+of them — `bitset_soa` (packed occupancy bits over `soa`), `grouped_sparse_set`
+(an owning Position+Velocity group over `sparse_set`) and `fused_archetype`
+(integrate applied inside the next query's pass) — a hash-map oracle, and two
+negative controls: `broken_recycle`, which answers wrongly, and `query_memo`,
+which answered correctly without finding anything until the digests were
+salted.
 
 ### Track: spatial
 
@@ -42,7 +47,13 @@ an entity when every entity may move anywhere every tick, and how to put the
 world back the way it was N ticks ago.
 
 Candidates: `uniform_grid`, `grid_undo_log`, `spatial_hash`, `morton_sorted`,
-`axis_sorted`, and a linear-scan oracle.
+`axis_sorted`, a linear-scan oracle, and five added in the latest generation:
+`cell_sorted` (a counting sort into cells with a directory, rebuilt on demand),
+its child `cell_rows` (a query box read one row at a time), `grid_ring_knn`
+(`uniform_grid` with its k-nearest search replaced), `morton_lbvh` (a
+bounding-volume hierarchy over a radix-sorted Morton order, the first
+hierarchical candidate) and `delta_grid` (which chooses, per tick, how to store
+history and whether to patch or rebuild its index).
 
 A candidate declares whether it keeps its own history. One that does not is
 measured wrapped in `RebuildRewind`, which snapshots the world every tick and
@@ -88,8 +99,9 @@ landing on whichever ran during a slow minute. `orchestrate.py --verify-only`
 runs the compile and correctness gates and stops.
 
 Requirements: CMake 3.20+, a C++20 compiler, Python 3.9+ with PyYAML (used only
-to read candidate manifests). One run of the current population takes about four
-minutes on four cores.
+to read candidate manifests). On four shared cores `run_all.py` took 37 minutes
+for the current population: 24 for the suite, 1 for the floor, 12 for the
+sweeps.
 
 Single candidate, single workload:
 
@@ -198,12 +210,15 @@ decision about who consumes it. `documentation` is a legitimate answer; being
 one by accident is not.
 
 `brute_force` is the positive control: it looks at everything, so its query
-exponent has to be 1. It measures 1.009 with an r2 of 0.9999.
+exponent has to be 1. It measured 1.009 (r2 0.9999) in the first sweep and
+0.937 (r2 0.9996) in `sweep-20261009T044632Z`, on the same code: that spread is
+the precision every other exponent in `benchmarks/scaling.md` is read at.
 
 A disagreement between a claim and a measurement has two possible causes and the
 report says so rather than picking one. `brute_force` declares `O(1)` for move,
-which is true — one array write — and measures n^0.358, because 2000 random
-writes into an array growing from 16 KB to 2 MB stop hitting L1. The claim is
+which is true — one array write — and measures n^0.39 with the forcing query
+subtracted, because 2000 random writes into an array growing from 16 KB to
+2 MB stop hitting L1. The claim is
 right about operations and wrong about time. Claims are not edited to match
 measurements.
 
@@ -321,19 +336,20 @@ of one changed variable rather than of two separately written structures.
   instead, because a candidate that supplies its own tests defines its own
   notion of correct, and one that supplies its own benchmark defines its own
   measurement. Neither is comparable across a population.
-- **The LLM agent loop is not implemented.** Explorer, Mutator, Assumption
-  Breaker, Adversary and Historian exist as prompts in `prompts/` and as roles
-  in `PROJECT.md`. Nothing in this repository calls a model. The archive schema
-  carries `island`, `parents`, `origin` and `novelty_status` so a generation
-  loop can be added without migrating existing evidence, but the ten islands
-  currently hold hand-written baselines.
+- **The LLM agent loop is not in this repository.** Explorer, Mutator,
+  Assumption Breaker, Adversary and Historian exist as prompts in `prompts/` and
+  as roles in `PROJECT.md`, and nothing here calls a model. The latest
+  generation was produced by such a loop run from outside: a coordinating
+  session wrote each candidate's mechanism and predictions, a separate agent
+  implemented it, another attacked it with adversarial workloads and
+  differential fuzzing, and a third fixed what the attack found. That loop is
+  not reproducible from this repository; its products are, because every
+  candidate is verified and measured by the code here.
 - **Two tracks of six.** Domains 1, 2 and 3 have substrate. Event streams,
   graph and navigation, and streaming world partition do not.
-- **No hierarchical spatial candidate.** Every spatial candidate here is flat:
-  a grid, a hash of the same grid, or a sorted array. `s02_dense_clustered`
-  exists precisely because a flat structure has no answer to clustering, and it
-  is left unanswered on purpose — the workload states the gap that an octree,
-  a BVH or a k-d tree would be proposed against.
+- **One hierarchical spatial candidate.** `morton_lbvh` is the first; every
+  other spatial candidate is a grid, a hash of a grid, or a sorted array. No
+  octree, k-d tree or incrementally refitted hierarchy has been tried.
 
 ## Current results
 
@@ -346,15 +362,49 @@ machine in one sitting under one set of flags, and the machine is shared:
 absolute times moved about 40% between two runs a couple of days apart. What a
 run establishes is the orderings and the ratios inside it.
 
-Across the two tracks, five of the eight falsifiable predictions were falsified
-and one that an earlier run recorded as confirmed turned out not to survive a
-change of machine — see `candidates/ecs/soa/notes.md`, which now records it as
-untested rather than confirmed.
+Run `20261009T042136Z` and its sweeps measure the 19 candidates that passed
+every workload of their track, the two oracles among them; 53 preregistered
+predictions are judged in [`benchmarks/predictions.md`](benchmarks/predictions.md):
+38 held and 15 were falsified, and 13 of the 53 verdicts rest on a point closer
+to its bound than the repetition spread.
+[`benchmarks/floor.md`](benchmarks/floor.md) gives each candidate as a multiple of
+the irreducible cost of its workload.
 
-The result that answers the most: `grid_undo_log` is `uniform_grid` with its
-history strategy replaced and nothing else changed, and it predicted it would
-beat snapshot-and-rebuild when few entities move and lose when they all do. Both
-halves held. With 2% of entities moving per tick it is 3.0x better on p99 and
-uses 2.4x less memory; with every entity moving it is 2.0x worse on p99 and uses
-1.4x more. The choice is set by the movement rate, not by taste, and neither
-strategy is the right default without that number.
+What the latest generation established, each against a prediction written before
+it was measured:
+
+- **The clustered case has an answer.** `morton_lbvh` takes
+  `s02_dense_clustered` from 5061 us (`uniform_grid`) to 2812 us at 1.79 MB
+  against 5.84 MB, and carried the result to two held-out workloads written after
+  it: travelling crowds (0.58x) and crowds with rollback (0.71x). It loses where
+  the world is even or little moves; see its notes.
+- **The k-nearest cost on a grid was the search order.** `grid_ring_knn` changes
+  only that and takes `hs03_knn_heavy` from 15.1x to 5.8x the floor (0.39x its
+  parent).
+- **A layout rebuilt every tick beats an incremental one when everything
+  moves.** `cell_sorted` is `morton_sorted` with a counting sort and a cell
+  directory, and beats `uniform_grid` on every workload where all entities move
+  (0.66x to 0.91x) while losing 4.5x where 2% do, as predicted.
+- **The rollback crossover is located.** The undo log's rewind beats
+  snapshot-and-rebuild below somewhere between 10% and 20% of entities moving at
+  depth 6, and below depth 4 to 8 at 10% moving. `delta_grid`, which chooses per
+  tick, is on the lower envelope at both ends of the movement axis (at full
+  movement its rewind is 1.7x cheaper than snapshotting) and above it in the
+  middle, where its rebuild costs more than its cost argument assumed.
+- **In the ECS track a bitset over a flat index space is the generalist.**
+  `bitset_soa` is on 11 of 12 Pareto fronts, has the lowest frame on the
+  structural-churn workload, and matches `archetype` on iteration at `soa`'s
+  footprint. Grouping (`grouped_sparse_set`) closed 61% of `sparse_set`'s gap to
+  `archetype` on the sparse-component workload, answering the question
+  `sparse_set/notes.md` asked. Fusing integrate into the next query
+  (`fused_archetype`) bought nothing measurable: both of its main predictions
+  failed.
+- **`aos`'s founding claim, tested for the first time, fails in direction.**
+  On a controlled pair that differs only in how many components one access
+  touches, `aos`'s lead over `soa` shrinks from 8% to 4% as the access widens.
+
+And two findings about the measurement itself, which come before any of the
+above: an exploit candidate was 2.6x faster than every honest one by never
+finding its answers, until the digests were salted; and step percentiles
+included the load step, which made the p99 of a short run the load step itself,
+until it was reported apart.
