@@ -6,7 +6,7 @@ island: 0
 parents: [ecs_soa]
 origin: mutation
 mutation_operator: duplicate_information
-novelty_status: UNCERTAIN
+novelty_status: EXACT_REDISCOVERY
 expect_verify: pass
 
 hypothesis: >

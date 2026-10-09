@@ -6,7 +6,7 @@ island: 2
 parents: [ecs_archetype]
 origin: mutation
 mutation_operator: delayed_update
-novelty_status: UNCERTAIN
+novelty_status: KNOWN_VARIANT
 expect_verify: pass
 
 hypothesis: >

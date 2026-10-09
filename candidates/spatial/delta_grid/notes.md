@@ -69,3 +69,69 @@ The mutation the evidence points at is a periodic full checkpoint among the
 records, so a deep rewind restores the nearest one and unwinds only the frames
 after it, with the rebuild threshold set from the rebuild cost this run
 measured rather than from a ratio chosen in advance.
+
+## Historian
+
+Classified **KNOWN_COMPONENTS_NEW_COMBINATION** after measurement, by a
+Historian agent with literature search and a skeptic agent told to find closer
+prior work and to check every citation. The Historian said
+KNOWN_COMPONENTS_NEW_COMBINATION (medium confidence); the skeptic upheld it.
+
+Each half is known: the history half is mixed incremental and full state saving
+from optimistic (Time Warp) simulation, and the index half is a differential
+file, a read-optimised base with a write-optimised delta merged by rebuilding.
+No documented structure combines the two with the choice made per tick from
+counts. The skeptic found that hybrid checkpointing, periodic full saves among
+incremental logs, is published (Soliman and Elmaghraby 1998), which is the
+mutation this candidate's notes proposed next: it is a known remedy, not a new
+one.
+
+Closest known work, as cited (sources the agents report having read):
+
+- **Autonomic incremental / non-incremental log-restore for optimistic (Time
+  Warp) simulation.** R. Vitali, A. Pellegrini, F. Quaglia, 'Autonomic
+  Log/Restore for Advanced Optimistic Simulation Systems', IEEE MASCOTS 2010,
+  pp. 319-327, DOI 10.1109/MASCOTS.2010.40 (record:
+  https://art.torvergata.it/handle/2108/323642). Follow-up: A. Pellegrini, R.
+  Vitali, F. Quaglia, 'Autonomic State Management for Optimistic Simulation
+  Platforms', IEEE TPDS 26(6):1560-1569, 2015. Per-object tuning: same authors,
+  'An Evolutionary Algorithm to Optimize Log/Restore Operations within
+  Optimistic Simulation Platforms', SIMUTools 2011.
+- **Mixed (sparse + incremental) state saving with forward and backward
+  recovery.** V. Cortellessa, F. Quaglia, 'A checkpointing-recovery scheme for
+  Time Warp parallel simulation', Parallel Computing 27(9):1227-1252, 2001, DOI
+  10.1016/S0167-8191(01)00081-3. Background: R. Ronngren, M. Liljenstam, R.
+  Ayani, J. Montagnat, 'Transparent Incremental State Saving in Time Warp
+  Parallel Discrete Event Simulation', PADS 1996
+  (https://hal.archives-ouvertes.fr/hal-00691810).
+- **Differential file / main+delta (read-optimised base, write-optimised delta,
+  tombstones, merge by rebuild).** D. G. Severance, G. M. Lohman, 'Differential
+  Files: Their Application to the Maintenance of Large Databases', ACM TODS
+  1(3):256-267, 1976. P. O'Neil, E. Cheng, D. Gawlick, E. O'Neil, 'The
+  Log-Structured Merge-Tree (LSM-Tree)', Acta Informatica 33(4), 1996. M.
+  Stonebraker et al., 'C-Store: A Column-oriented DBMS', VLDB 2005 (read store +
+  write store + tuple mover, deletion marking). J. Krueger et al., 'Fast Updates
+  on Read-Optimized Databases Using Multi-Core CPUs', PVLDB 5(1):61-72, 2011
+  (SAP HANA main/delta merge).
+- **Static-to-dynamic transformation / global rebuilding.** J. L. Bentley, J. B.
+  Saxe, 'Decomposable Searching Problems I: Static-to-Dynamic Transformation',
+  Journal of Algorithms 1(4), 1980. M. H. Overmars, 'The Design of Dynamic Data
+  Structures', LNCS 156, Springer, 1983.
+- **Undo code blocks with Instruction/Object Dominance, a threshold switch to
+  per-chunk snapshots, and reverse scrubbing from a later checkpoint** (found by
+  the skeptic). D. Cingolani, A. Pellegrini, F. Quaglia, 'Transparently Mixing
+  Undo Logs and Software Reversibility for State Recovery in Optimistic PDES',
+  ACM TOMACS 27(2), article 11, 2017, DOI 10.1145/3077583 (conference version
+  SIGSIM-PADS 2015, DOI 10.1145/2769458.2769482). Open postprint:
+  iris.uniroma1.it handle 11573/1096541. I read the full text: Sections 2.1-2.3
+  and 3.4.
+- **Hybrid checkpointing (periodic full saves plus per-event incremental logs;
+  restore the nearest checkpoint before or after the target, then apply the
+  increments)** (found by the skeptic). H. M. Soliman, A. S. Elmaghraby, 'An
+  Analytical Model for Hybrid Checkpointing in Time Warp Distributed
+  Simulation', IEEE TPDS 9(10):947-951, 1998 (dblp pid 34/915). Its mechanism is
+  as summarised in the related work of A. Mazzucchi, 'Grid Checkpointing', arXiv
+  2609.05428 (2026), Section 4.1.
+
+Citations were checked by the second agent, not by the coordinating session; a
+reader relying on one should read it.

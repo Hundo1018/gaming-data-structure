@@ -403,6 +403,20 @@ it was measured:
   On a controlled pair that differs only in how many components one access
   touches, `aos`'s lead over `soa` shrinks from 8% to 4% as the access widens.
 
+None of the eight structures is new. After measurement a Historian agent with
+literature search classified each, and a skeptic agent searched for closer prior
+work and checked every citation: six are exact rediscoveries (`cell_sorted` is
+Lagae and Dutré's compact grid, `grid_ring_knn` is Brodu's spherical indexing,
+`grouped_sparse_set` is an EnTT owning group, `bitset_soa` a bit-sliced index
+with an existence bitmap, `cell_rows` DualSPHysics's range-per-row search, and
+`morton_lbvh` a packed space-filling-curve BVH), `fused_archetype` is a known
+variant of lazy evaluation with loop fusion, and `delta_grid` combines two known
+halves, Time Warp incremental state saving and a main-plus-delta index, in a way
+the search did not find documented. What is new in this generation is the
+evidence: where each one wins and loses on the same workloads, the crossovers,
+and the falsifications. That is the first success criterion in `PROJECT.md`,
+and it is not the same thing as a new data structure.
+
 And two findings about the measurement itself, which come before any of the
 above: an exploit candidate was 2.6x faster than every honest one by never
 finding its answers, until the digests were salted; and step percentiles

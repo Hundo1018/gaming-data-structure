@@ -35,3 +35,52 @@ on the ten original workloads, the widest gap 0.93x on `h05_sparse_component`.
 On `w06_point_narrow`, which never integrates, it is 1.02x `archetype`: there the
 mechanism is never engaged and only the pending-step test in each point
 operation differs.
+
+## Historian
+
+Classified **KNOWN_VARIANT** after measurement, by a Historian agent with
+literature search and a skeptic agent told to find closer prior work and to
+check every citation. The Historian said KNOWN_COMPONENTS_NEW_COMBINATION
+(medium confidence); the skeptic refuted it and proposed KNOWN_VARIANT, which is
+adopted as the stricter class.
+
+Deferred execution resolved on observation, with the deferred step fused into
+the next pass over the same data, is lazy evaluation with loop fusion
+(LazyTensor, Weld, Bohrium); the skeptic found ECS system fusion in an existing
+library, which makes it a known variant rather than a new combination.
+
+Closest known work, as cited (sources the agents report having read):
+
+- **Clock Scan (Crescando storage engine).** P. Unterbrunner, G. Giannikis, G.
+  Alonso, D. Fauser, D. Kossmann, "Predictable Performance for Unpredictable
+  Workloads", PVLDB 2(1):706-717, 2009. DOI 10.14778/1687627.1687707.
+  https://vldb.org/pvldb/vol2/vldb09-323.pdf
+- **LazyTensor (deferred execution until observation).** A. Suhan, D. Libenzi,
+  A. Zhang, P. Schuh, B. Saeta, J. Y. Sohn, D. Shabalin, "LazyTensor: combining
+  eager execution with domain-specific compilers", arXiv:2102.13267, 2021.
+- **Weld (lazy evaluation across library calls with loop fusion).** S. Palkar,
+  J. Thomas, A. Shanbhag, D. Narayanan, H. Pirk, M. Schwarzkopf, S. Amarasinghe,
+  M. Zaharia, "Weld: A Common Runtime for High Performance Data Analytics", CIDR
+  2017. https://commit.csail.mit.edu/papers/2017/cidr_weld.pdf
+- **Halide producer-consumer fusion at tile granularity (compute_at).** J.
+  Ragan-Kelley, C. Barnes, A. Adams, S. Paris, F. Durand, S. Amarasinghe,
+  "Halide: A Language and Compiler for Optimizing Parallelism, Locality, and
+  Recomputation in Image Processing Pipelines", PLDI 2013, pp. 519-530.
+  https://people.csail.mit.edu/jrk/halide-pldi13.pdf
+- **SubzeroECS v2 system fusion (runFused: one pass per partition, per-partition
+  subset dispatch, Tiled<N> executor)** (found by the skeptic). C. Hutchinson,
+  SubzeroECS (Sub0ECS), GitHub https://github.com/CraigHutchinson/Sub0ECS. PR
+  #4, "SubzeroECS v2: query-partition store, system fusion, new project layout"
+  (commits from 2026-09-30, merged 2026-10-05). Design notes
+  docs/research/fusion.md and docs/research/fusion-extension-points.md,
+  docs/FINDINGS.md section "Small systems and fusion", code
+  include/sub0ecs/store/world.hpp (runFused, dispatchSubset, fusedLoop) and
+  include/sub0ecs/fusion/executors/tiled.hpp.
+- **SubzeroECS split-phase executor design: lazy write-back with host access
+  paths that sync first** (found by the skeptic). C. Hutchinson, SubzeroECS,
+  docs/research/executor-async.md, sections 3, 4 and 6 (question E3), in the
+  same repository; it cites Kokkos DualView (modify/sync/need_sync) as its
+  closest prior art.
+
+Citations were checked by the second agent, not by the coordinating session; a
+reader relying on one should read it.

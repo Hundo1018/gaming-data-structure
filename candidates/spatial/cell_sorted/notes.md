@@ -47,3 +47,50 @@ each row of the box as one run, which `uniform_grid` cannot do, and the reviewer
 measured that change as about half of the margin over the grid on `s01`. The
 walk was put back to one range per cell, as the grid reads its list heads, and
 the row walk became its own candidate.
+
+## Historian
+
+Classified **EXACT_REDISCOVERY** after measurement, by a Historian agent with
+literature search and a skeptic agent told to find closer prior work and to
+check every citation. The Historian said EXACT_REDISCOVERY (high confidence);
+the skeptic upheld it.
+
+The counting-sort build with a cells+1 directory, the reverse placement pass and
+the rebuild-every-frame motivation are all in Lagae and Dutré (2008), and the
+move from a Morton or radix-sorted key to a counting sort on the exact bin is in
+Hoetzlein (2014). What this repository adds is the measurement against an
+incremental linked grid under rollback and churn.
+
+Closest known work, as cited (sources the agents report having read):
+
+- **Compact grid (counting-sort grid with a cells+1 offset array).** Ares Lagae
+  and Philip Dutré, "Compact, Fast and Robust Grids for Ray Tracing", Computer
+  Graphics Forum 27(4):1235-1244 (Eurographics Symposium on Rendering 2008),
+  doi:10.1111/j.1467-8659.2008.01262.x; text read from
+  https://cgweb.informatik.uni-freiburg.de/intern/seminar/dataStructures_Lagae%20-%20Grids%20-%202008.pdf
+- **Sort-based uniform grid for particles (CUDA 'particles' sample).** Simon
+  Green, "Particle Simulation using CUDA", NVIDIA CUDA SDK whitepaper, v1.0 Sept
+  2007, v1.3 May 2010;
+  https://developer.download.nvidia.com/assets/cuda/files/particles.pdf
+- **Fluids v3 counting-sort fixed-radius neighbour search.** Rama C. Hoetzlein
+  (NVIDIA), "Fast Fixed-Radius Nearest Neighbors: Interactive Million-Particle
+  Fluids", talk slides, GPU Technology Conference 2014;
+  https://ramakarl.com/pdfs/2014_Hoetzlein_Fast_Neighbors.pdf ; open-source
+  implementation Fluids v3, http://fluids3.com (zlib licence)
+- **Index sort (and its Z-index sort refinement).** Markus Ihmsen, Nadir Akinci,
+  Markus Becker, Matthias Teschner, "A Parallel SPH Implementation on Multi-Core
+  CPUs", Computer Graphics Forum 30(1):99-112, 2011;
+  https://cg.informatik.uni-freiburg.de/publications/2011_CGF_dataStructuresSPH.pdf
+- **Fluids v3 source: insertParticles + prefix sum + countingSortFull deep
+  copy** (found by the skeptic). Rama C. Hoetzlein, Fluids v3.0 (2012) source,
+  github.com/ramakarl/fluids3, files fluids3.0/fluids/fluid_system_kern.cu
+  (kernels insertParticles, countingSortFull) and HISTORY.txt
+- **Weak counting-sort reordering of positions into slabs for CPU cache locality
+  (molecular dynamics)** (found by the skeptic). Zhenhua Yao, Jian-Sheng Wang,
+  Gui-Rong Liu, Min Cheng, "Improved neighbor list algorithm in molecular
+  simulations using cell decomposition and data sorting method", Computer
+  Physics Communications 161(1-2):27-35, 2004; arXiv:physics/0311055 (Algorithm
+  1)
+
+Citations were checked by the second agent, not by the coordinating session; a
+reader relying on one should read it.

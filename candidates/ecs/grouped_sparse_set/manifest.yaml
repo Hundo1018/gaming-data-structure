@@ -6,7 +6,7 @@ island: 1
 parents: [ecs_sparse_set]
 origin: mutation
 mutation_operator: indirection_removal
-novelty_status: UNCERTAIN
+novelty_status: EXACT_REDISCOVERY
 expect_verify: pass
 
 hypothesis: >

@@ -6,7 +6,7 @@ island: 3
 parents: [spatial_cell_sorted, spatial_grid_undo_log]
 origin: mutation
 mutation_operator: delayed_update
-novelty_status: UNCERTAIN
+novelty_status: KNOWN_COMPONENTS_NEW_COMBINATION
 expect_verify: pass
 
 hypothesis: >

@@ -64,3 +64,56 @@ behind `cell_sorted`, which rebuilds the same way into flat cells. The pair
 `morton_lbvh` / `cell_sorted` is the cleanest available test of
 hierarchy-against-flat at equal maintenance strategy: both rebuild per tick
 from a sort, and they part exactly where the clumps are.
+
+## Historian
+
+Classified **EXACT_REDISCOVERY** after measurement, by a Historian agent with
+literature search and a skeptic agent told to find closer prior work and to
+check every citation. The Historian said KNOWN_VARIANT (high confidence); the
+skeptic refuted it and proposed EXACT_REDISCOVERY, which is adopted as the
+stricter class.
+
+The Historian placed it as a variant of the Morton-packed R-tree (Kamel and
+Faloutsos 1993; Qi et al. 2018); the skeptic found a library structure that
+matches it on every axis the Historian used to separate them, so the stricter
+class is adopted.
+
+Closest known work, as cited (sources the agents report having read):
+
+- **Z-order (Morton) packed R-tree: sort points by Z-order, pack every B
+  consecutive points into a leaf, pack every B consecutive nodes into a parent,
+  bottom-up.** Jianzhong Qi, Yufei Tao, Yanchuan Chang, Rui Zhang,
+  'Theoretically Optimal and Empirically Efficient R-trees with Strong
+  Parallelizability', PVLDB 11(5):621-634, 2018
+  (https://www.vldb.org/pvldb/vol11/p621-qi.pdf); journal version 'Packing
+  R-trees with Space-filling Curves: Theoretical Optimality, Empirical
+  Efficiency, and Bulk-loading Parallelizability', ACM TODS 2020
+- **Packed Hilbert R-tree (sort-based bottom-up R-tree packing).** Ibrahim
+  Kamel, Christos Faloutsos, 'On Packing R-trees', Proc. CIKM 1993, pp. 490-499
+  (UMD tech report 'Packed R-trees Using Fractals', 1992); predecessor: N.
+  Roussopoulos, D. Leifker, 'Direct Spatial Search on Pictorial Databases Using
+  Packed R-trees', SIGMOD 1985
+- **Flatbush (static packed Hilbert R-tree in flat arrays).** Vladimir Agafonkin
+  (mourner), Flatbush, JavaScript library, https://github.com/mourner/flatbush
+  (source read: index.js)
+- **packed_spatial_index (Rust crate: packed static Hilbert R-tree for 2D/3D
+  AABBs with SoA SIMD search).** Filyus, packed_spatial_index crate,
+  https://docs.rs/crate/packed_spatial_index/latest, source
+  https://github.com/Filyus/packed_spatial_index (only the docs.rs page was
+  read; node size and exact layout not verified)
+- **EBGeometry PackedBVH, direct space-filling-curve constructor
+  PackedBVH<T,P,K>(primsAndBVs, targetLeafSize), with ChildAABBSoA SIMD node
+  boxes and pruneTraverse()** (found by the skeptic). Robert Marskar (SINTEF),
+  EBGeometry C++ library, https://github.com/rmrsk/EBGeometry. Read:
+  Source/EBGeometry_BVHImplem.hpp (constructor body), Source/EBGeometry_BVH.hpp
+  (DefaultBranchingRatio, ChildAABBSoA), Source/EBGeometry_SFC.hpp and
+  SFCImplem.hpp (computeBins), Docs/Sphinx/source/ImplemBVH.rst and
+  SIMDClasses.rst. Direct builder added in commit 30b8809, 2026-07-11 (PR #106).
+  SIMD support in 19cda54, 2026-07-08 (#88). pruneTraverse in 890b78f,
+  2026-07-09 (#95). All three predate the candidate (2026-10-08).
+- **EBGeometry TreeBVH::bottomUpSortAndPartition<SFC::Morton>()** (found by the
+  skeptic). Robert Marskar, EBGeometry, commit 7446d4c 'Add SFC-based bottom-up
+  construction of BVHs (#67)', 2024-08-26 (read via git show)
+
+Citations were checked by the second agent, not by the coordinating session; a
+reader relying on one should read it.

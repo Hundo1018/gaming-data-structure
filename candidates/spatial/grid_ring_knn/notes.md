@@ -46,3 +46,50 @@ gain there is small. That is the expected shape for a candidate that changed one
 operation; it is recorded because the report computes it, not because it shows
 tuning. A natural next mutation is the same search order in `cell_sorted` or
 `morton_lbvh`, whose k-nearest searches still widen a box.
+
+## Historian
+
+Classified **EXACT_REDISCOVERY** after measurement, by a Historian agent with
+literature search and a skeptic agent told to find closer prior work and to
+check every citation. The Historian said EXACT_REDISCOVERY (medium confidence);
+the skeptic upheld it.
+
+A precomputed table of cell offsets ordered by their minimum distance, walked
+with an early stop once the k-th distance is proven, is Brodu's spherical
+indexing (2006) and the cell technique of Bentley, Weide and Yao (1980) before
+it.
+
+Closest known work, as cited (sources the agents report having read):
+
+- **Spherical indexing: a precomputed cell-offset table sorted by the minimum
+  inter-cell distance, used for k-NN with early cutoff.** Nicolas Brodu,
+  "Spherical Indexing for Neighborhood Queries", arXiv:cs/0608108 (cs.DS/cs.CG),
+  2006. I found no journal or conference version.
+  https://arxiv.org/abs/cs/0608108
+- **NEARPT3: a uniform grid with a compile-time-generated, distance-sorted table
+  of cells in one symmetric sector, reflected at query time.** W. Randolph
+  Franklin, "Nearest Point Query on 184,088,599 Points in E^3 with a Uniform
+  Grid", manuscript dated 2006; its header is an IEEE TVCG template, and I could
+  not confirm a venue. https://wrfranklin.org/p/105-nearpt3.pdf ; code:
+  http://wrfranklin.org/Research/nearpt3/
+- **Spiral search (cell technique) for nearest-neighbour searching.** Jon L.
+  Bentley, Bruce W. Weide, Andrew C. Yao, "Optimal Expected-Time Algorithms for
+  Closest Point Problems", ACM Transactions on Mathematical Software
+  6(4):563-580, 1980. Related: John G. Cleary, "Analysis of an Algorithm for
+  Finding Nearest Neighbors in Euclidean Space", ACM TOMS 5(2):183-192, 1979.
+- **CircularTrip: grid k-NN visiting cells in ascending mindist(cell, q).**
+  Muhammad Aamir Cheema, Yidong Yuan, Xuemin Lin, "CircularTrip: An Effective
+  Algorithm for Continuous kNN Queries", DASFAA 2007, LNCS 4443, pp. 863-869,
+  Springer. https://cgi.cse.unsw.edu.au/~lxue/paper/DASFAA07.pdf
+- **Elias's algorithm (bucket best-match search in increasing distance order
+  with stop when the distance index exceeds the best found)** (found by the
+  skeptic). R. L. Rivest, "On the Optimality of Elias's Algorithm for Performing
+  Best-Match Searches", Information Processing 74 (IFIP Congress, Stockholm),
+  North-Holland, pp. 678-681, 1974.
+- **CircularTrip, grid k-NN in ascending mindist(c,q)** (found by the skeptic).
+  M. A. Cheema, Y. Yuan, X. Lin, "CircularTrip: An Effective Algorithm for
+  Continuous kNN Queries", DASFAA 2007, LNCS 4443 (PDF at
+  https://cgi.cse.unsw.edu.au/~lxue/paper/DASFAA07.pdf; I read its text).
+
+Citations were checked by the second agent, not by the coordinating session; a
+reader relying on one should read it.

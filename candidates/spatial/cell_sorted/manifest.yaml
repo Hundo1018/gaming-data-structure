@@ -6,7 +6,7 @@ island: 2
 parents: [spatial_morton_sorted]
 origin: mutation
 mutation_operator: change_layout
-novelty_status: UNCERTAIN
+novelty_status: EXACT_REDISCOVERY
 expect_verify: pass
 
 hypothesis: >
