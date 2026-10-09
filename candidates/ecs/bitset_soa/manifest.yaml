@@ -1,0 +1,77 @@
+id: ecs_bitset_soa
+name: bitset_soa
+track: ecs
+binary: gds_ecs_bitset_soa
+island: 0
+parents: [ecs_soa]
+origin: mutation
+mutation_operator: duplicate_information
+novelty_status: UNCERTAIN
+expect_verify: pass
+
+hypothesis: >
+  soa's query and integrate test every slot's liveness and mask, so a query
+  naming a component held by 2% of entities still visits every slot. Holding
+  the same membership a second time as one bit per slot per component and one
+  per slot for liveness, packed into 64-bit words, lets a query AND a few words
+  per 64 slots, skip the zero words and visit only the set bits. Its work falls
+  from O(slots) to O(slots/64 + matches), which should bring h05_sparse_component
+  to at most 0.6x soa's median frame time while leaving the dense workloads
+  within 10% of soa and peak memory within 5% above it.
+
+representation: >
+  soa, unchanged: the same index space and handles, and generation, mask,
+  liveness and the four component arrays as parallel vectors indexed by slot,
+  with the same free list. Added beside it, five bit planes: one for liveness
+  and one per component, each a vector of 64-bit words in which bit (i mod 64)
+  of word (i / 64) is set exactly when slot i is live, or holds that component.
+  The planes duplicate the liveness and mask bytes, which point access keeps
+  using; only query and integrate read the planes.
+
+operations:
+  create: as soa, plus one word appended to each plane per 64 new slots, and the slot's five bits written from its mask
+  destroy: as soa, plus the slot's five bits cleared
+  get_set: as soa; one generation check, then a single-component load from one array
+  add_remove: as soa, plus one bit set or cleared in that component's plane
+  query: >
+    per 64 slots, AND the liveness word with the word of each required
+    component; skip a zero word; visit the set bits in order with countr_zero
+    and gather only the named component arrays, as soa does
+  integrate: the same walk over liveness, Position and Velocity, then p += v*dt as soa does
+
+assumptions:
+  - the cost of soa's query on a sparse mask is the slots it visits, not the matches it loads
+  - a word of membership per 64 slots per component is small enough beside the columns not to move peak memory
+  - mutations are rare enough beside iteration that one extra read-modify-write of a word per structural change does not show
+
+expected_advantages:
+  - a query over a rare component costs a pass over slots/64 words and then its matches, instead of a pass over every slot
+  - dead slots cost nothing beyond their share of a word, whatever their number
+  - the per-slot branch on liveness and mask, mispredicted wherever matches are mixed with non-matches, is replaced by a loop over set bits
+
+expected_disadvantages:
+  - with dense masks almost every word is non-zero and the scan does the same work as soa's, so there is nothing to gain there
+  - membership is held twice, and every structural change writes both copies
+  - five more vectors that grow and are reported
+
+complexity:
+  create: amortised O(1), plus one word appended to each of five planes per 64 new slots
+  destroy: O(1)
+  get_set: O(1)
+  add_remove: O(1)
+  query: O(n)
+
+notes: >
+  The query claim is O(n) because at fixed component probabilities both terms
+  of O(slots/64 + matches) grow in proportion to the population, which is what
+  the population regime varies; the finer form is the claim the predictions
+  test. soa's query is linear in the same regime, so this machine-checked line
+  does not tell bitset_soa from its parent: what separates them is the
+  constant, one word per 64 slots plus the matches instead of every slot, and
+  that is tested by P1 on h05_sparse_component, not by the sweep. soa's code is reproduced rather than included by path, because every
+  member of Soa is private, and query and integrate need its column arrays by
+  slot index, which its public interface does not expose; a wrapper would have
+  to keep a handle per slot and resolve it per match. duplicate_information
+  rather than change_layout because the liveness and mask bytes stay where soa
+  keeps them and still serve point access; the planes are a second copy kept
+  exact on every mutation, read only by iteration.
