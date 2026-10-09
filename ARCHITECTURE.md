@@ -47,6 +47,7 @@ candidates/<track>/<name>/      manifest.yaml hypothesis.md structure.hpp
 workloads/public/               workloads a search may see
 workloads/hidden/               held out, used to detect overfitting
 workloads/sweep/                scaling experiment templates and sweeps.yaml
+workloads/port_review/          edge cases from the C port's review; run only with --extra
 runner/
   run_all.py                    the whole experiment, serially, in order
   orchestrate.py                build, verify, measure, Pareto, report
@@ -54,9 +55,12 @@ runner/
   sweep.py                      growth with population; families that vary a key
   predictions.py                preregistered predictions judged against results
   verify.py  ab.py              one binary against its track; interleaved A/B
+  equivalence.py  build_ab.py   two builds: same answers? then paired timing
+  rank_stability.py             two builds: same candidate order, within the noise?
   archive.py pareto.py report.py scaling_report.py manifest.py
 benchmarks/                     results.json report.md floor.json floor.md
                                 scaling.json scaling.md predictions.json predictions.md
+                                language_port.md port_timing.* port_ranking.md
 archive/                        SQLite, git-ignored
 ```
 

@@ -1,0 +1,34 @@
+# grid_ring_knn's covers-the-grid exit, which no suite workload reaches. Cells
+# of edge 10 over a 128 x 128 x 15 world give a 13 x 13 x 2 grid: the table
+# covers it (largest Q is 242), the walk uses the by_z order with lead 1, and
+# every shell is clipped. Forty entities in two clumps and k = 37, so the k-th
+# is often past the last shell's bound while a farther clump cell is pruned by
+# its own gap. Rebuild rewinds construct fresh instances that find the shared
+# table already built.
+id: r1_covers_flat_rewind
+visibility: hidden
+track: spatial
+seed: 9305
+world_size: 128
+world_height: 15
+initial_entities: 40
+ticks: 120
+inserts_per_tick: 1
+removes_per_tick: 1
+move_fraction: 1.0
+speed_min: 0.5
+speed_max: 6.0
+placement: clustered
+clusters: 2
+cluster_radius: 12
+radius_queries_per_tick: 4
+entity_radius_queries_per_tick: 4
+knn_queries_per_tick: 64
+query_radius_min: 10
+query_radius_max: 10
+knn_k: 37
+query_focus: uniform
+rewind_every: 9
+rewind_depth: 3
+history_ticks: 4
+verify_sweep_ticks: 2

@@ -1,0 +1,33 @@
+# Removals outpace inserts until the world is empty, and it stays empty for
+# the last third of the run: rebuilds with n == 0 after being populated
+# (levels 0, every vector keeping its capacity), knn and radius queries
+# taking their live_count == 0 returns, and on the way down single-leaf
+# trees padded with NaN in all but a few slots, with k = 3 above the
+# population. Rewinds every tenth tick restore an older population into a
+# freshly initialised index whose vectors start empty.
+id: xb2_drain_refill
+visibility: public
+track: spatial
+seed: 6102
+world_size: 30
+world_height: 30
+initial_entities: 60
+ticks: 70
+inserts_per_tick: 2
+removes_per_tick: 4
+move_fraction: 1.0
+speed_min: 0.0
+speed_max: 8.0
+teleport_ratio: 0.3
+placement: uniform
+radius_queries_per_tick: 12
+entity_radius_queries_per_tick: 12
+knn_queries_per_tick: 12
+query_radius_min: 0
+query_radius_max: 30
+knn_k: 3
+query_focus: uniform
+rewind_every: 10
+rewind_depth: 3
+history_ticks: 4
+verify_sweep_ticks: 1

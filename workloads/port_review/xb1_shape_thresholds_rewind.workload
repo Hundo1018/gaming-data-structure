@@ -1,0 +1,34 @@
+# The tree's shape thresholds under churn and rollback. The population starts
+# at two and grows by about two a tick, so it passes 16|17 (one leaf, the
+# levels == 1 path, to two), 128|129 (a full group of eight leaves to a third
+# level) and 256|257, while a rewind every fifth tick throws two ticks away and
+# the rebuild wrapper re-initialises the index. knn_k of 150 is above the
+# population for the first seventy ticks and above a full group of leaves
+# after, so the search runs to an empty frontier and settles the kth best
+# across levels. Radii from 0 to most of the world, teleports included.
+id: xb1_shape_thresholds_rewind
+visibility: public
+track: spatial
+seed: 6101
+world_size: 40
+world_height: 10
+initial_entities: 2
+ticks: 170
+inserts_per_tick: 3
+removes_per_tick: 1
+move_fraction: 1.0
+speed_min: 0.0
+speed_max: 3.0
+teleport_ratio: 0.2
+placement: uniform
+radius_queries_per_tick: 12
+entity_radius_queries_per_tick: 12
+knn_queries_per_tick: 8
+query_radius_min: 0
+query_radius_max: 20
+knn_k: 150
+query_focus: uniform
+rewind_every: 5
+rewind_depth: 2
+history_ticks: 3
+verify_sweep_ticks: 1

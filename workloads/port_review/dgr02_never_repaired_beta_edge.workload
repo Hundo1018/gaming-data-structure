@@ -1,0 +1,39 @@
+# The only queries ask for zero neighbours, and query_knn returns the empty fold
+# before it repairs the index, so the index is built by no query at all: the
+# dirty list fills past its limit on the load tick, the rebuild flag stays set
+# for the whole run, and every rewind unwinds history into arrays that no index
+# reflects. Only entity counts and position sweeps observe the state.
+# Flocking movers are distinct, so a tick's records are exactly its changed
+# ids: 439 movers plus 8 inserts and 8 removes is 455, one past the pre-image
+# limit of 3632 / 8 = 454, unless an inserted id is also drawn as a mover. That
+# happens in about two ticks of three, so frames alternate between records and
+# pre-images at the threshold itself. Rewinds every 5, 4 deep, cross both kinds.
+id: dgr02_never_repaired_beta_edge
+visibility: public
+track: spatial
+seed: 9202
+world_size: 256
+world_height: 64
+initial_entities: 3000
+ticks: 80
+inserts_per_tick: 8
+removes_per_tick: 8
+moves_per_tick: 439
+movement: flock
+flock_speed: 1.5
+speed_min: 0.2
+speed_max: 2.0
+placement: clustered
+clusters: 5
+cluster_radius: 12
+radius_queries_per_tick: 0
+entity_radius_queries_per_tick: 0
+knn_queries_per_tick: 16
+knn_k: 0
+query_radius_min: 3
+query_radius_max: 8
+query_focus: clustered
+rewind_every: 5
+rewind_depth: 4
+history_ticks: 4
+verify_sweep_ticks: 1

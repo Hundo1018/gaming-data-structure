@@ -1,0 +1,33 @@
+# Destroy-dominant: starts at 1500 mixed-mask entities and drains to an empty
+# or near-empty structure that keeps being refilled by a few creates. The first
+# query names neither Position nor Velocity, so in fused_archetype every group
+# holding the pair but no Tag is stepped and not matched, and every Tag group
+# without the pair is digested and not stepped; later queries take the parent's
+# loop. Remove-heavy point ops create mask-0 entities; zipf access, wide
+# accesses and stale handles; sweeps every frame.
+id: xa03_drain_offpair_queries
+visibility: public
+track: ecs
+seed: 7703
+initial_entities: 1500
+max_entities: 1500
+frames: 300
+ops_per_frame: 120
+w_create: 0.3
+w_destroy: 2.5
+w_add: 1.0
+w_remove: 2.0
+w_get: 1.0
+w_set: 1.0
+access: zipf
+zipf_exponent: 1.3
+access_width: 3
+stale_access_ratio: 0.4
+integrate_per_frame: true
+dt: 2.5
+query_masks: tag, health+tag, velocity, position+velocity+health+tag
+p_position: 0.6
+p_velocity: 0.6
+p_health: 0.5
+p_tag: 0.5
+verify_sweep_frames: 1

@@ -1,0 +1,31 @@
+# Every one of the fifteen non-empty query masks, under heavy add/remove churn:
+# entities lose every component and regain them, adds hit present components
+# (overwrite) and removes hit absent ones, a third of accesses are stale, point
+# accesses are four wide, and the oracle sweeps every frame. Masks without
+# Position are never marked stale by integrate, so query_memo keeps crediting
+# them across frames, and sparse_set drives from every set in turn.
+id: x01_all_masks_churn
+visibility: public
+track: ecs
+seed: 9101
+initial_entities: 600
+max_entities: 900
+frames: 120
+ops_per_frame: 400
+w_create: 1.0
+w_destroy: 1.0
+w_add: 3.0
+w_remove: 3.0
+w_get: 1.5
+w_set: 1.5
+access: uniform
+access_width: 4
+stale_access_ratio: 0.3
+integrate_per_frame: true
+dt: 0.25
+query_masks: position, velocity, health, tag, position+velocity, position+health, position+tag, velocity+health, velocity+tag, health+tag, position+velocity+health, position+velocity+tag, position+health+tag, velocity+health+tag, position+velocity+health+tag
+p_position: 0.6
+p_velocity: 0.5
+p_health: 0.4
+p_tag: 0.3
+verify_sweep_frames: 1

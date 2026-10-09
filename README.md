@@ -98,6 +98,14 @@ rounds, so drift on a shared machine is spread across all of them instead of
 landing on whichever ran during a slow minute. `orchestrate.py --verify-only`
 runs the compile and correctness gates and stops.
 
+Three tools compare two builds rather than two candidates, for a change of
+compiler, flags or language: `runner/equivalence.py` checks that every binary
+gives the same answers in both, `runner/build_ab.py` times them in interleaved
+pairs, and `runner/rank_stability.py` asks whether the two builds order the
+candidates the same way and how much of that question the noise lets through.
+They were written for the C11 port and are kept for the next change of
+toolchain.
+
 Requirements: CMake 3.20+, a C++20 compiler, Python 3.9+ with PyYAML (used only
 to read candidate manifests). On four shared cores `run_all.py` took 37 minutes
 for the current population: 24 for the suite, 1 for the floor, 12 for the
@@ -350,6 +358,43 @@ of one changed variable rather than of two separately written structures.
 - **One hierarchical spatial candidate.** `morton_lbvh` is the first; every
   other spatial candidate is a grid, a hash of a grid, or a sorted array. No
   octree, k-d tree or incrementally refitted hierarchy has been tried.
+
+## The language
+
+The suite is C++20, as `PROJECT.md` specifies. It was ported to C11 once, at
+the user's request, and reverted on the evidence in
+[`benchmarks/language_port.md`](benchmarks/language_port.md).
+
+Over 1,206 comparisons the C build gave the same checksums as the C++ build
+wherever both finished; 7 bench runs timed out in both. It also gave the same
+bytes and allocation counts for every candidate but the ECS oracle. Wherever
+both builds' timings separated two candidates, they ranked them the same way:
+372 of 372 pairs on `step_ns_p50`. A few pairs that only one build separated
+came out the other way, and so did one pair by instruction count.
+
+The deciding points were these:
+- The third-party baselines a reviewer would expect (EnTT, nanoflann,
+  Boost.Geometry, PhysX, Jolt) have no first-party C API. PhysX and Jolt have
+  third-party C wrappers. C would reach them through a call boundary.
+- The C allocation tracker depended on glibc's private `__libc_*` entry
+  points. It did not link against musl, had no forwarding target in Apple's
+  sources, and on the one candidate tried it crashed AddressSanitizer or hid
+  errors from it.
+- Every result from before the port was measured in C++.
+
+Over five single-repetition rounds, the median run-to-run spread on this
+machine was about 29% for `step_ns_p50` and 26% for `total_ns`.
+
+The port also found three defects in the C++ suite that no suite workload
+reaches:
+- a NaN radius hangs six candidates' k-nearest search;
+- a world 3e38 across makes nine candidates answer wrongly;
+- `delta_grid`'s k-nearest search goes wrong once distances overflow.
+
+It found two latent defects as well: `sparse_set`'s query of an empty mask, and
+undefined float-to-integer conversions in `spatial_hash` and `morton_sorted`.
+All of these are recorded there, and `workloads/port_review/` reproduces the
+first two.
 
 ## Current results
 

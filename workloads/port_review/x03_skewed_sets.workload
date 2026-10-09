@@ -1,0 +1,29 @@
+# Skewed component populations so every query driver is chosen at some point:
+# Position only arrives by add (or the fallback mask), Velocity is everywhere,
+# Health and Tag are rare. Zipf access and burst frames.
+id: x03_skewed_sets
+visibility: public
+track: ecs
+seed: 7003
+initial_entities: 2000
+max_entities: 2100
+frames: 120
+ops_per_frame: 300
+w_create: 0.5
+w_destroy: 0.5
+w_add: 2.0
+w_remove: 2.0
+w_get: 1.0
+w_set: 1.0
+access: zipf
+zipf_exponent: 1.2
+burst_frame_ratio: 0.2
+burst_multiplier: 4
+stale_access_ratio: 0.1
+integrate_per_frame: true
+query_masks: health, velocity+tag, position+velocity+health, position+velocity+tag, velocity, position+health+tag, position
+p_position: 0.0
+p_velocity: 1.0
+p_health: 0.03
+p_tag: 0.02
+verify_sweep_frames: 4

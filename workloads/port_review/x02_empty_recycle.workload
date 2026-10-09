@@ -1,0 +1,28 @@
+# Starts empty, so frame 0 integrates and queries a structure with no slots.
+# A tiny population cap with create and destroy dominant recycles the same few
+# slots thousands of times through the free list; most accesses are stale.
+# Velocity, Health and Tag are rare, so their sets are empty or near empty.
+id: x02_empty_recycle
+visibility: public
+track: ecs
+seed: 9102
+initial_entities: 0
+max_entities: 48
+frames: 200
+ops_per_frame: 150
+w_create: 2.0
+w_destroy: 2.0
+w_add: 1.0
+w_remove: 1.0
+w_get: 1.0
+w_set: 1.0
+access: recent
+recency_window: 8
+stale_access_ratio: 0.6
+integrate_per_frame: true
+query_masks: tag, health+tag, velocity+health+tag, position+velocity+health+tag, position
+p_position: 0.0
+p_velocity: 0.05
+p_health: 0.05
+p_tag: 0.02
+verify_sweep_frames: 1

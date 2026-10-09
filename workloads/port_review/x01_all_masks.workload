@@ -1,0 +1,25 @@
+# Every one of the 15 non-empty query masks, heavy add/remove churn so
+# entities move in and out of the Position+Velocity group, and stale handles.
+id: x01_all_masks
+visibility: public
+track: ecs
+seed: 7001
+initial_entities: 300
+max_entities: 700
+frames: 150
+ops_per_frame: 400
+w_create: 1.0
+w_destroy: 1.0
+w_add: 3.0
+w_remove: 3.0
+w_get: 1.0
+w_set: 1.0
+access: uniform
+stale_access_ratio: 0.3
+integrate_per_frame: true
+query_masks: position, velocity, health, tag, position+velocity, position+health, position+tag, velocity+health, velocity+tag, health+tag, position+velocity+health, position+velocity+tag, position+health+tag, velocity+health+tag, position+velocity+health+tag
+p_position: 0.6
+p_velocity: 0.6
+p_health: 0.4
+p_tag: 0.3
+verify_sweep_frames: 1

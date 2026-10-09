@@ -1,0 +1,36 @@
+# A population that grows from nothing: 300 inserts a tick and no removes, and
+# everything moves, so every query pass rebuilds and the sorted arrays are
+# resized to a larger count each tick, growing their capacity by vector
+# growth (size + max(size, added)) again and again. The id space is
+# 69 x 300 = 20700, so a tick becomes a pre-image past 2587 records: the 300
+# inserts and the 63% of the population that movers drawn with replacement
+# reach pass that from about tick 12, and earlier ticks are kept as records.
+# Rewinds every 9, 6 deep, shrink the population back, which leaves the arrays
+# at their capacity, and the next rebuilds grow it past that. k-nearest with k
+# above the early population widens to the whole world.
+id: dgr03_growing_population
+visibility: public
+track: spatial
+seed: 9203
+world_size: 192
+world_height: 48
+initial_entities: 0
+ticks: 70
+inserts_per_tick: 300
+removes_per_tick: 0
+move_fraction: 1.0
+speed_min: 0.5
+speed_max: 4.0
+teleport_ratio: 0.05
+placement: uniform
+radius_queries_per_tick: 16
+entity_radius_queries_per_tick: 16
+knn_queries_per_tick: 8
+knn_k: 500
+query_radius_min: 3
+query_radius_max: 9
+query_focus: uniform
+rewind_every: 9
+rewind_depth: 6
+history_ticks: 7
+verify_sweep_ticks: 1

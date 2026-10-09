@@ -1,0 +1,31 @@
+# Zero world width: x = y = 0 for everyone, so the grid is a single column of
+# 257 cells (zero query radius, so the cell is the 300/256 floor). Distances in
+# x and y tie exactly and the k-nearest order between entities at equal z rests
+# on ids. grid_ring_knn walks by_xy with lead 0: every step that moves across
+# ends its shell at once. Zero-radius queries accept only exact coincidences,
+# and query_radius_of must cancel its own hit exactly.
+id: r4_zero_width_column
+visibility: hidden
+track: spatial
+seed: 9331
+world_size: 0
+world_height: 300
+initial_entities: 600
+ticks: 40
+inserts_per_tick: 5
+removes_per_tick: 5
+move_fraction: 0.5
+speed_min: 0.0
+speed_max: 3.0
+teleport_ratio: 0.1
+placement: clustered
+clusters: 3
+cluster_radius: 4
+radius_queries_per_tick: 16
+entity_radius_queries_per_tick: 32
+knn_queries_per_tick: 32
+query_radius_min: 0
+query_radius_max: 0
+knn_k: 9
+query_focus: clustered
+verify_sweep_ticks: 1
