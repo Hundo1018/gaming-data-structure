@@ -52,9 +52,9 @@ static inline bool cell_rows_position_of(cell_rows* s, EntityId id, Vec3* out) {
   return cell_sorted_position_of(&s->base, id, out);
 }
 
-/* The same box as cell_sorted's walk, every row of it as one run: a caller
- * reads the row from start[row + x0] to start[row + x1 + 1]. */
-
+/* The same box as cell_sorted's walk, every row of it as one run,
+ * [start[row + x0], start[row + x1 + 1]). This query and the k-nearest search
+ * below each walk it inline. */
 static inline uint64_t cell_rows_query_radius(cell_rows* s, Vec3 c, float r) {
   cell_sorted* g = &s->base;
   cell_sorted_rebuild_if_needed_(g);
