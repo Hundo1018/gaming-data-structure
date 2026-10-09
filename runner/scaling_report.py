@@ -362,7 +362,7 @@ def _rank_word(rank):
 def p99_rank(ticks):
     """Which tick, counted from the costliest, the harness's p99 is.
 
-    substrate/src/measure.c interpolates the sorted tick times at
+    substrate/include/gds/measure.hpp interpolates the sorted tick times at
     0.99 * (ticks - 1). Returns the rank from the top of the tick that carries
     most of the weight, and the rank of the other one when the weight is split
     closely enough that neither describes it.

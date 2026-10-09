@@ -8,11 +8,12 @@ taken while timing). A checksum is a 64-bit fold of every query result and
 every read, so two builds that agree on it agree on every answer, and a
 workload generator that drifted by one random draw would change it.
 
-It was written to accept the C port against the C++ suite it replaced, and is
+It was written to accept a C11 port of the suite against the C++ build
+(benchmarks/language_port.md; the port was accepted, then reverted), and is
 kept because the same question comes back whenever the toolchain changes: a
 new compiler, new flags, or a substrate refactor must not change any answer.
 
-    python3 runner/equivalence.py --a build-cpp --b build
+    python3 runner/equivalence.py --a build-old --b build
     python3 runner/equivalence.py --a build-cpp --b build gds_spatial_uniform_grid \\
         --modes verify --extra /tmp/more/*.workload --json out.json
 
@@ -29,6 +30,7 @@ of either build did not complete.
 import argparse
 import concurrent.futures
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -42,6 +44,11 @@ STRICT_VERIFY = ["status", "checksum", "ops_checked", "sweeps", "rewinds", "tota
 STRICT_BENCH = ["checksum", "final_entities", "total_ops", "rewind_strategy", "rewind_steps"]
 # Expected to differ between toolchains; reported, never failed on.
 SOFT_BENCH = ["reported_bytes", "peak_bytes", "alloc_count", "bytes_per_entity"]
+
+
+def is_binary(path):
+    """An executable file: a build directory also holds gds_build_info.txt."""
+    return path.is_file() and os.access(path, os.X_OK)
 
 
 def track_of(binary_name):
@@ -120,7 +127,7 @@ def main():
     a_dir, b_dir = Path(args.a), Path(args.b)
     names = args.binaries or sorted(
         p.name for p in a_dir.glob("gds_*")
-        if p.is_file() and (b_dir / p.name).is_file() and track_of(p.name)
+        if is_binary(p) and is_binary(b_dir / p.name) and track_of(p.name)
         and not p.name.startswith("gds_floor"))
     if not names:
         sys.exit("no binaries present in both build directories")

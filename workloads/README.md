@@ -17,9 +17,9 @@ category error would show up as a parse failure rather than as what it is.
 
 Flat `key: value`, one per line, `#` starts a comment. An unknown key is an
 error, not a warning: a silently ignored field would make two different
-experiments look like the same one. The C parsers
-(`substrate/src/workload.c` for the ECS track,
-`substrate/src/spatial_workload.c` for the spatial track) and the Python one
+experiments look like the same one. The C++ parsers
+(`substrate/src/workload.cpp` for the ECS track,
+`substrate/src/spatial_workload.cpp` for the spatial track) and the Python one
 (`runner/orchestrate.py`) read the same grammar.
 
 ## ECS track keys

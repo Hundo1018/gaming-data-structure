@@ -161,7 +161,7 @@ def check_rewind_schedule(spec, where):
         raise SystemExit(
             f"{where}: rewind_depth {depth} >= rewind_every {every}, so some of its "
             "rewinds target a tick the previous one discarded and do nothing on "
-            "either side of the verifier (substrate/src/spatial_workload.c)")
+            "either side of the verifier (substrate/src/spatial_workload.cpp)")
     history = _whole(spec, "history_ticks", where)
     if "history_ticks" in spec and history < depth:
         raise SystemExit(

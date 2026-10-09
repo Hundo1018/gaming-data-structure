@@ -116,12 +116,11 @@ families:
 
   # Parameter sweeps of the history strategy.
   #
-  # A candidate that keeps no history of its own is measured inside the
-  # rebuild wrapper (substrate/include/gds/spatial/rebuild_rewind.inc.h): a
-  # snapshot of the whole world every tick, and a rebuild of the index on
-  # rewind. A candidate with <prefix>_native_rewind set keeps its own, and
-  # grid_undo_log is uniform_grid with a log of what changed in place of the
-  # snapshot. Each measured row records the
+  # A candidate that keeps no history of its own is measured inside
+  # RebuildRewind (substrate/include/gds/spatial/entry.hpp): a snapshot of the
+  # whole world every tick, and a rebuild of the index on rewind. A candidate
+  # with kNativeRewind keeps its own, and grid_undo_log is uniform_grid with a
+  # log of what changed in place of the snapshot. Each measured row records the
   # strategy the binary reported, so the curves say which strategy they are of.
   #
   # The snapshot costs the same however little moves, and its rewind re-inserts
@@ -178,7 +177,7 @@ families:
       key: rewind_depth
       values: [1, 2, 4, 8, 16, 32]
     # The schedule has to be chosen for the deepest rewind, because two rules in
-    # substrate/src/spatial_workload.c decide whether a rewind happens:
+    # substrate/src/spatial_workload.cpp decide whether a rewind happens:
     #
     # - a rewind is scheduled at tick t when t is a multiple of rewind_every and
     #   t > rewind_depth, and goes back to t - rewind_depth - 1;
