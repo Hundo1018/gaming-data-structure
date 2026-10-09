@@ -62,3 +62,16 @@ That is the argument for measuring rather than declaring, and it is why
 manifest unread. The claim stays as written: it is a correct statement about
 operation counts, and editing it to match a machine would destroy the comparison
 that produced the finding.
+
+## Run `20261009T042136Z`
+
+Suite `20261009T042136Z` and sweeps `sweep-20261009T044632Z`, same machine class, GCC 13.3.0, 5 repetitions, under the salted query contract. Step times below are medians across repetitions, the estimator `runner/predictions.py` judges with.
+
+The positive control came out lower this time: query exponent **0.937** at
+fixed density (r2 0.9996) and 0.949 at fixed world, against 1.01 in the earlier
+run. The pairwise slopes are 1.01, 0.94, 0.97, 0.95, 0.84, 0.91, 0.99: one low
+pair, between 16000 and 32000 entities, pulls the fit down. A scan of every
+entity is linear in operations, so a fitted 0.94 is the measurement's own error
+on this machine in this sitting, and it bounds how far any other exponent in
+`benchmarks/scaling.md` should be read: differences of a few hundredths are
+not findings.

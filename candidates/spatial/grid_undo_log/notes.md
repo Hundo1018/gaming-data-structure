@@ -67,3 +67,33 @@ The sweep does not exercise rewind — no family in it rewinds — so it says no
 about the history strategy itself. The experiment that would is a sweep of
 `move_fraction` at fixed rewind depth, and then of `rewind_depth` at fixed
 movement, which is the open question `hs01` and `hs02` leave at two points.
+
+## Run `20261009T042136Z`
+
+Suite `20261009T042136Z` and sweeps `sweep-20261009T044632Z`, same machine class, GCC 13.3.0, 5 repetitions, under the salted query contract. Step times below are medians across repetitions, the estimator `runner/predictions.py` judges with.
+
+### The crossover these notes asked for
+
+The two endpoints `hs01` and `hs02` left the crossing between this structure and
+snapshot-and-rebuild somewhere between 2% and 100% of entities moving. The
+parameter sweeps in `benchmarks/scaling.md` measure the cost of the rewind tick
+itself, now reported apart from ordinary ticks:
+
+- **Against the movement rate**, at depth 6: the log's rewind tick is below
+  `uniform_grid`'s under snapshot-and-rebuild at 0.1 of entities moving (0.87x)
+  and above it at 0.2 (1.28x). The crossing is between 10% and 20% moving.
+- **Against depth**, at 10% moving: below at depth 4 (0.67x), level at depth 8
+  (1.01x). The log's rewind grows linearly with depth (298 us at depth 1, 2035 us
+  at 32) and the snapshot's does not move (700 to 745 us).
+
+So the log wins when the product of movement rate and depth is small; somewhere
+around a tenth of the population moving for six to eight ticks, it stops
+winning. Neither strategy is the right default without both numbers, which is a
+sharper form of the conclusion above.
+
+`delta_grid` chooses between records and full pre-images per tick and patches
+or rebuilds its index by how much is dirty; it is on the lower envelope at both
+ends of the movement axis and above it in the middle. See its notes.
+
+The three predictions encoded from the prose all held: `hs02` tail latency
+0.33x and memory 0.41x the snapshot strategy's, and `hs01` tail latency 1.84x.

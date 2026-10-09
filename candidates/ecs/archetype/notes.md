@@ -56,3 +56,14 @@ as a measurement of archetype ECS libraries.
 removed, and it has the lowest realistic-frame exponent of the five at n^0.696
 against the oracle's n^0.795. Its memory grows at n^0.887, which is the group
 bookkeeping: a row index stored per entity, and one column per component held.
+
+## Run `20261009T042136Z`
+
+Suite `20261009T042136Z` and sweeps `sweep-20261009T044632Z`, same machine class, GCC 13.3.0, 5 repetitions, under the salted query contract. Step times below are medians across repetitions, the estimator `runner/predictions.py` judges with.
+
+`hypothesis.md`'s prediction that `sparse_set` would beat it on
+`w03_structural_churn` is falsified again, now by the judge: `archetype` at
+0.707x `sparse_set`. The new candidates moved the churn workload's front:
+`bitset_soa` (268.1 us) and `grouped_sparse_set` (296.9 us) are both ahead of
+`archetype` (343.9 us), and both keep a flat index space where `archetype`
+copies the entity into another group.

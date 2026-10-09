@@ -61,3 +61,27 @@ operation grows more slowly with the population. The effect is small in absolute
 terms and the two remain within noise of each other on frame time — see the
 machine-change correction above — but the growth rates separate where the levels
 did not.
+
+## Run `20261009T042136Z`
+
+Suite `20261009T042136Z` and sweeps `sweep-20261009T044632Z`, same machine class, GCC 13.3.0, 5 repetitions, under the salted query contract. Step times below are medians across repetitions, the estimator `runner/predictions.py` judges with.
+
+### Predictions encoded from the prose
+
+| | prediction | measured | verdict |
+|---|---|---:|---|
+| P1 | narrow queries faster than `aos` (`w02_query_heavy`) | 1.108x | **falsified** |
+| P2 | multi-component point access slower than `aos` (`w07_point_wide`) | 1.046x | held (within noise) |
+| P3 | smaller footprint than `aos` on every ECS workload | 0.524x | held |
+
+P1 is now falsified rather than untested: on `w02` `soa` takes 4788.8 us
+against `aos`'s 4320.3 us. Under the salted contract a query digests every
+matching entity with several hash mixes per component, so the bytes `soa`
+avoids loading are a smaller share of the query than they were.
+
+P2 held by 4.6%, inside the repetition spread. See `aos/notes.md`: the controlled
+pair says `soa` gains more from wider access than `aos` does, so the direction
+held while the mechanism the prose assumed did not.
+
+`bitset_soa`, this layout with packed occupancy bits, is ahead of it on all
+twelve ECS workloads, at 1.007x its memory.

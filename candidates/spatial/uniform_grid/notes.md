@@ -82,3 +82,41 @@ population and the cells grow with it linearly. A game that keeps its map and
 adds entities pays almost nothing extra for the grid itself; one that streams a
 larger world pays for every cell of it, occupied or not. That is the trade
 `spatial_hash` exists to attack, and the sweep is where its size is visible.
+
+## Run `20261009T042136Z`
+
+Suite `20261009T042136Z` and sweeps `sweep-20261009T044632Z`, same machine class, GCC 13.3.0, 5 repetitions, under the salted query contract. Step times below are medians across repetitions, the estimator `runner/predictions.py` judges with.
+
+### Latent defects found by the new generation's reviewers
+
+Three candidates built on this one (`grid_ring_knn`, `delta_grid`, `cell_rows`
+through `cell_sorted`'s copy of its geometry) were reviewed with differential
+fuzzers, and the reviewers found three defects in code they inherit from here.
+None is reachable from any workload file, which is why the gate has never seen
+them; all three are wrong answers all the same.
+
+1. **The query box is not conservative by one ulp.** Its bound `c.x - r` is
+   computed in float. When that rounds up onto a cell boundary, a point one ulp
+   below the boundary is in the excluded cell although its float `dist2` rounds
+   to exactly `r*r` and the shared test accepts it. Minimal case: bounds x in
+   [-3, 3], cell edge 2, an entity at `nextafter(-1, -inf)`, a query at
+   `nextafter(1, 0)` with r = 2; the oracle finds it and this structure does not.
+2. **An infinite radius collapses the box**: `static_cast<int>(floor(+inf))` is
+   undefined and gives INT_MIN on x86, so the box shrinks to one column.
+3. **k-nearest stops widening at twice the largest extent**, which is wrong for
+   a query centre far outside the world.
+
+`delta_grid` fixed all three in its own walk without touching this code, by
+widening each side of the box by a slack proportional to `|c| + r`, clamping the
+cell index in float before converting, and requiring the box to span the grid
+before the k-nearest search may stop. This structure is left as it was, so that
+its results stay comparable with earlier runs; the defects are recorded rather
+than silently repaired.
+
+### This run
+
+Its one encoded prediction, the fastest candidate on `s01_steady_uniform` among
+those it was written against, held. It is no longer the fastest there:
+`cell_rows`, `grid_ring_knn` and `cell_sorted` are each ahead of it (0.86x to
+0.91x), and it is on four of thirteen Pareto fronts, where the previous run had
+it on seven of ten.

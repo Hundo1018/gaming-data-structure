@@ -55,3 +55,27 @@ manifest claims `O(1) with two dependent loads`, which the automatic check
 cannot verify because of the qualifier — but the exponent sits between `soa`'s
 n^0.059 and the hash map's n^0.129, which is where a design with one more
 indirection than a direct index and one fewer than a hash lookup belongs.
+
+## Run `20261009T042136Z`
+
+Suite `20261009T042136Z` and sweeps `sweep-20261009T044632Z`, same machine class, GCC 13.3.0, 5 repetitions, under the salted query contract. Step times below are medians across repetitions, the estimator `runner/predictions.py` judges with.
+
+### The falsification recorded above was against a paraphrase
+
+The prediction in `hypothesis.md` is that on a workload where one queried
+component is held by a small fraction of entities, `sparse_set` "should beat
+every layout that scans the whole index space". `aos` and `soa` scan the whole
+index space; `archetype` does not. The notes above recorded the prediction as
+falsified because `archetype` won, which tests a stronger claim, "wins
+`h05_sparse_component`", than the one written. Judged as written by
+`runner/predictions.py`, it held in the earlier run and holds again: 0.57x
+`soa`'s and 0.83x `aos`'s median on `h05`. The second half of the prose, that the
+margin should grow with the ratio of entities to holders, is untested: no
+workload varies that ratio.
+
+### The test these notes asked for
+
+`grouped_sparse_set` is this candidate with an EnTT-style owning group over
+Position and Velocity and nothing else changed. On `h05` it closed 61% of the
+gap to `archetype` (996.7 us to 665.6 us, against 452.6 us), so most of what was
+lost there was alignment rather than packed arrays. See its notes.
