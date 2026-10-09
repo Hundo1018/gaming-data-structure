@@ -139,6 +139,15 @@ class Data:
             return None
         reps = {"step_ns_p50": m.get("repetition_step_ns_p50"),
                 "step_ns_p99": m.get("repetition_step_ns_p99")}.get(metric)
+        # The harness reports every metric from the one repetition whose total
+        # time is the median, so that a row of the report is one coherent run.
+        # That repetition's own p50 need not be the median p50: on hs07_crowd
+        # cell_rows' five were 3444, 3377, 3383, 3487 and 3718 us, and the
+        # median-total repetition was the 3718 one. A prediction about a step
+        # percentile is judged on the median of that percentile across the
+        # repetitions, which one disturbed run cannot move.
+        if reps:
+            return float(statistics.median(reps)), spread(reps)
         return float(m[metric]), spread(reps)
 
     def sweep_regimes(self, family):

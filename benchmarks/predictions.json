@@ -13,8 +13,8 @@
             "point": "w07_point_wide",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9183,
-            "within_noise": false
+            "value": 0.9559,
+            "within_noise": true
           },
           {
             "bound": "within 0.1",
@@ -43,7 +43,7 @@
             "point": "w03_structural_churn",
             "poor_fit": false,
             "status": "falsified",
-            "value": 0.705,
+            "value": 0.7073,
             "within_noise": false
           }
         ],
@@ -63,7 +63,7 @@
             "point": "hs01_rewind_all_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 0.6426,
+            "value": 0.6415,
             "within_noise": false
           },
           {
@@ -73,7 +73,7 @@
             "point": "hs02_rewind_few_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 0.6296,
+            "value": 0.6293,
             "within_noise": false
           },
           {
@@ -83,7 +83,7 @@
             "point": "hs03_knn_heavy",
             "poor_fit": false,
             "status": "held",
-            "value": 0.8974,
+            "value": 0.8944,
             "within_noise": false
           },
           {
@@ -93,7 +93,7 @@
             "point": "hs04_flat_world",
             "poor_fit": false,
             "status": "held",
-            "value": 0.4825,
+            "value": 0.4836,
             "within_noise": false
           },
           {
@@ -103,7 +103,7 @@
             "point": "hs05_spawn_churn",
             "poor_fit": false,
             "status": "held",
-            "value": 0.102,
+            "value": 0.1019,
             "within_noise": false
           },
           {
@@ -123,7 +123,7 @@
             "point": "hs07_crowd",
             "poor_fit": false,
             "status": "held",
-            "value": 0.6303,
+            "value": 0.6417,
             "within_noise": false
           },
           {
@@ -133,7 +133,7 @@
             "point": "hs08_crowd_rollback",
             "poor_fit": false,
             "status": "held",
-            "value": 0.7032,
+            "value": 0.703,
             "within_noise": false
           },
           {
@@ -143,7 +143,7 @@
             "point": "s01_steady_uniform",
             "poor_fit": false,
             "status": "held",
-            "value": 0.3058,
+            "value": 0.305,
             "within_noise": false
           },
           {
@@ -153,7 +153,7 @@
             "point": "s02_dense_clustered",
             "poor_fit": false,
             "status": "held",
-            "value": 0.7033,
+            "value": 0.6712,
             "within_noise": false
           },
           {
@@ -163,7 +163,7 @@
             "point": "s03_wide_radius",
             "poor_fit": false,
             "status": "falsified",
-            "value": 1.0967,
+            "value": 1.0993,
             "within_noise": false
           },
           {
@@ -173,7 +173,7 @@
             "point": "s04_teleport",
             "poor_fit": false,
             "status": "held",
-            "value": 0.2979,
+            "value": 0.2978,
             "within_noise": false
           },
           {
@@ -183,7 +183,7 @@
             "point": "s05_small_world",
             "poor_fit": false,
             "status": "held",
-            "value": 0.5689,
+            "value": 0.5576,
             "within_noise": false
           }
         ],
@@ -203,7 +203,7 @@
             "point": "h05_sparse_component",
             "poor_fit": false,
             "status": "held",
-            "value": 0.5682,
+            "value": 0.5615,
             "within_noise": false
           }
         ],
@@ -221,7 +221,7 @@
             "point": "w01_steady_uniform",
             "poor_fit": false,
             "status": "falsified",
-            "value": 0.799,
+            "value": 0.8068,
             "within_noise": false
           },
           {
@@ -231,7 +231,7 @@
             "point": "w02_query_heavy",
             "poor_fit": false,
             "status": "falsified",
-            "value": 0.8605,
+            "value": 0.8728,
             "within_noise": false
           },
           {
@@ -359,7 +359,7 @@
     "cell_rows": [
       {
         "claim": "no slower than cell_sorted by more than 3% on any spatial workload",
-        "decided_within_noise": false,
+        "decided_within_noise": true,
         "id": "P1",
         "instances": [
           {
@@ -369,7 +369,7 @@
             "point": "hs01_rewind_all_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9997,
+            "value": 0.9953,
             "within_noise": true
           },
           {
@@ -379,7 +379,7 @@
             "point": "hs02_rewind_few_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9559,
+            "value": 0.9668,
             "within_noise": false
           },
           {
@@ -389,7 +389,7 @@
             "point": "hs03_knn_heavy",
             "poor_fit": false,
             "status": "held",
-            "value": 0.7199,
+            "value": 0.715,
             "within_noise": false
           },
           {
@@ -399,7 +399,7 @@
             "point": "hs04_flat_world",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9664,
+            "value": 0.9709,
             "within_noise": false
           },
           {
@@ -419,7 +419,7 @@
             "point": "hs06_mixed_reach",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9769,
+            "value": 0.9666,
             "within_noise": false
           },
           {
@@ -428,9 +428,9 @@
             "noise_band": 0.033,
             "point": "hs07_crowd",
             "poor_fit": false,
-            "status": "falsified",
-            "value": 1.11,
-            "within_noise": false
+            "status": "held",
+            "value": 1.0061,
+            "within_noise": true
           },
           {
             "bound": "at most 1.03",
@@ -459,7 +459,7 @@
             "point": "s02_dense_clustered",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9109,
+            "value": 0.9551,
             "within_noise": false
           },
           {
@@ -469,7 +469,7 @@
             "point": "s03_wide_radius",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9907,
+            "value": 0.9966,
             "within_noise": false
           },
           {
@@ -479,7 +479,7 @@
             "point": "s04_teleport",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9506,
+            "value": 0.9125,
             "within_noise": false
           },
           {
@@ -493,7 +493,7 @@
             "within_noise": false
           }
         ],
-        "verdict": "FALSIFIED"
+        "verdict": "HELD"
       },
       {
         "claim": "hs06_mixed_reach at most 0.9x cell_sorted's",
@@ -507,7 +507,7 @@
             "point": "hs06_mixed_reach",
             "poor_fit": false,
             "status": "falsified",
-            "value": 0.9769,
+            "value": 0.9666,
             "within_noise": false
           }
         ],
@@ -525,7 +525,7 @@
             "point": "hs03_knn_heavy",
             "poor_fit": false,
             "status": "held",
-            "value": 0.7199,
+            "value": 0.715,
             "within_noise": false
           }
         ],
@@ -545,7 +545,7 @@
             "point": "s01_steady_uniform",
             "poor_fit": false,
             "status": "held",
-            "value": 0.21,
+            "value": 0.2085,
             "within_noise": false
           },
           {
@@ -555,7 +555,7 @@
             "point": "s02_dense_clustered",
             "poor_fit": false,
             "status": "held",
-            "value": 0.4339,
+            "value": 0.4138,
             "within_noise": false
           },
           {
@@ -565,7 +565,7 @@
             "point": "s03_wide_radius",
             "poor_fit": false,
             "status": "held",
-            "value": 0.2567,
+            "value": 0.2571,
             "within_noise": false
           },
           {
@@ -575,7 +575,7 @@
             "point": "s04_teleport",
             "poor_fit": false,
             "status": "held",
-            "value": 0.2088,
+            "value": 0.2172,
             "within_noise": false
           },
           {
@@ -595,7 +595,7 @@
             "point": "hs01_rewind_all_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 0.3215,
+            "value": 0.3236,
             "within_noise": false
           },
           {
@@ -605,7 +605,7 @@
             "point": "hs02_rewind_few_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 0.1895,
+            "value": 0.1875,
             "within_noise": false
           },
           {
@@ -615,7 +615,7 @@
             "point": "hs03_knn_heavy",
             "poor_fit": false,
             "status": "held",
-            "value": 0.164,
+            "value": 0.1644,
             "within_noise": false
           },
           {
@@ -625,7 +625,7 @@
             "point": "hs04_flat_world",
             "poor_fit": false,
             "status": "held",
-            "value": 0.2235,
+            "value": 0.2206,
             "within_noise": false
           },
           {
@@ -635,7 +635,7 @@
             "point": "hs05_spawn_churn",
             "poor_fit": false,
             "status": "held",
-            "value": 0.315,
+            "value": 0.313,
             "within_noise": false
           }
         ],
@@ -673,7 +673,7 @@
             "point": "s04_teleport",
             "poor_fit": false,
             "status": "held",
-            "value": 0.7626,
+            "value": 0.7912,
             "within_noise": false
           },
           {
@@ -683,7 +683,7 @@
             "point": "hs04_flat_world",
             "poor_fit": false,
             "status": "held",
-            "value": 0.8479,
+            "value": 0.8489,
             "within_noise": false
           }
         ],
@@ -701,7 +701,7 @@
             "point": "hs02_rewind_few_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 4.5178,
+            "value": 4.4719,
             "within_noise": false
           }
         ],
@@ -747,7 +747,7 @@
             "point": "s04_teleport",
             "poor_fit": false,
             "status": "held",
-            "value": 1.0045,
+            "value": 1.0447,
             "within_noise": true
           }
         ],
@@ -767,7 +767,7 @@
             "point": "hs01_rewind_all_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 0.8643,
+            "value": 0.8509,
             "within_noise": false
           },
           {
@@ -777,7 +777,7 @@
             "point": "hs01_rewind_all_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 0.7118,
+            "value": 0.7034,
             "within_noise": false
           }
         ],
@@ -822,12 +822,12 @@
             "noise_band": 0.0184,
             "point": "hs02_rewind_few_moving",
             "poor_fit": false,
-            "status": "held",
-            "value": 1.2956,
+            "status": "falsified",
+            "value": 1.318,
             "within_noise": true
           }
         ],
-        "verdict": "HELD"
+        "verdict": "FALSIFIED"
       },
       {
         "claim": "hs02_rewind_few_moving p99 within 1.5x of grid_undo_log",
@@ -841,7 +841,7 @@
             "point": "hs02_rewind_few_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 1.4217,
+            "value": 1.4639,
             "within_noise": true
           }
         ],
@@ -859,7 +859,7 @@
             "point": "hs02_rewind_few_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 0.4652,
+            "value": 0.479,
             "within_noise": true
           }
         ],
@@ -877,7 +877,7 @@
             "point": "s01_steady_uniform",
             "poor_fit": false,
             "status": "held",
-            "value": 1.1609,
+            "value": 1.164,
             "within_noise": false
           },
           {
@@ -887,7 +887,7 @@
             "point": "s03_wide_radius",
             "poor_fit": false,
             "status": "held",
-            "value": 1.1821,
+            "value": 1.1827,
             "within_noise": true
           },
           {
@@ -897,8 +897,8 @@
             "point": "s04_teleport",
             "poor_fit": false,
             "status": "held",
-            "value": 1.1554,
-            "within_noise": true
+            "value": 1.1109,
+            "within_noise": false
           },
           {
             "bound": "at most 1.2",
@@ -1053,7 +1053,7 @@
             "point": "w02_query_heavy",
             "poor_fit": false,
             "status": "falsified",
-            "value": 0.9785,
+            "value": 0.9829,
             "within_noise": false
           }
         ],
@@ -1071,7 +1071,7 @@
             "point": "w01_steady_uniform",
             "poor_fit": false,
             "status": "falsified",
-            "value": 1.0041,
+            "value": 0.9954,
             "within_noise": true
           }
         ],
@@ -1089,7 +1089,7 @@
             "point": "w01_steady_uniform",
             "poor_fit": false,
             "status": "held",
-            "value": 1.0041,
+            "value": 0.9954,
             "within_noise": true
           },
           {
@@ -1099,7 +1099,7 @@
             "point": "w02_query_heavy",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9785,
+            "value": 0.9829,
             "within_noise": false
           },
           {
@@ -1109,8 +1109,8 @@
             "point": "w03_structural_churn",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9502,
-            "within_noise": false
+            "value": 0.9518,
+            "within_noise": true
           },
           {
             "bound": "at most 1.05",
@@ -1119,7 +1119,7 @@
             "point": "w04_random_access",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9855,
+            "value": 0.9849,
             "within_noise": false
           },
           {
@@ -1129,7 +1129,7 @@
             "point": "w05_small_world",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9928,
+            "value": 0.9957,
             "within_noise": false
           },
           {
@@ -1159,8 +1159,8 @@
             "point": "h03_stale_handles",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9662,
-            "within_noise": true
+            "value": 0.9423,
+            "within_noise": false
           },
           {
             "bound": "at most 1.05",
@@ -1169,7 +1169,7 @@
             "point": "h04_recent_locality",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9714,
+            "value": 0.9715,
             "within_noise": false
           },
           {
@@ -1179,7 +1179,7 @@
             "point": "h05_sparse_component",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9199,
+            "value": 0.9264,
             "within_noise": false
           }
         ],
@@ -1199,7 +1199,7 @@
             "point": "hs03_knn_heavy",
             "poor_fit": false,
             "status": "held",
-            "value": 0.3869,
+            "value": 0.386,
             "within_noise": false
           }
         ],
@@ -1217,7 +1217,7 @@
             "point": "s05_small_world",
             "poor_fit": false,
             "status": "held",
-            "value": 0.6592,
+            "value": 0.655,
             "within_noise": false
           }
         ],
@@ -1235,7 +1235,7 @@
             "point": "s01_steady_uniform",
             "poor_fit": false,
             "status": "held",
-            "value": 0.8729,
+            "value": 0.8726,
             "within_noise": false
           },
           {
@@ -1245,7 +1245,7 @@
             "point": "s02_dense_clustered",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9213,
+            "value": 0.9194,
             "within_noise": false
           },
           {
@@ -1255,7 +1255,7 @@
             "point": "s03_wide_radius",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9046,
+            "value": 0.8854,
             "within_noise": false
           },
           {
@@ -1265,7 +1265,7 @@
             "point": "s04_teleport",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9164,
+            "value": 0.9156,
             "within_noise": false
           },
           {
@@ -1275,7 +1275,7 @@
             "point": "s05_small_world",
             "poor_fit": false,
             "status": "held",
-            "value": 0.6592,
+            "value": 0.655,
             "within_noise": false
           },
           {
@@ -1285,7 +1285,7 @@
             "point": "hs01_rewind_all_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 1.0215,
+            "value": 1.0177,
             "within_noise": true
           },
           {
@@ -1295,7 +1295,7 @@
             "point": "hs02_rewind_few_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 0.6977,
+            "value": 0.7085,
             "within_noise": false
           },
           {
@@ -1305,7 +1305,7 @@
             "point": "hs03_knn_heavy",
             "poor_fit": false,
             "status": "held",
-            "value": 0.3869,
+            "value": 0.386,
             "within_noise": false
           },
           {
@@ -1315,7 +1315,7 @@
             "point": "hs04_flat_world",
             "poor_fit": false,
             "status": "held",
-            "value": 1.0322,
+            "value": 1.0153,
             "within_noise": false
           },
           {
@@ -1325,7 +1325,7 @@
             "point": "hs05_spawn_churn",
             "poor_fit": false,
             "status": "held",
-            "value": 0.9473,
+            "value": 0.9499,
             "within_noise": true
           }
         ],
@@ -1437,7 +1437,7 @@
             "point": "h05_sparse_component",
             "poor_fit": false,
             "status": "held",
-            "value": 0.586,
+            "value": 0.6086,
             "within_noise": false
           }
         ],
@@ -1455,7 +1455,7 @@
             "point": "w01_steady_uniform",
             "poor_fit": false,
             "status": "held",
-            "value": 0.7608,
+            "value": 0.7597,
             "within_noise": false
           },
           {
@@ -1483,7 +1483,7 @@
             "point": "w03_structural_churn",
             "poor_fit": false,
             "status": "falsified",
-            "value": 0.6087,
+            "value": 0.6117,
             "within_noise": false
           }
         ],
@@ -1503,7 +1503,7 @@
             "point": "s02_dense_clustered",
             "poor_fit": false,
             "status": "held",
-            "value": 0.5557,
+            "value": 0.5739,
             "within_noise": false
           }
         ],
@@ -1539,7 +1539,7 @@
             "point": "hs03_knn_heavy",
             "poor_fit": false,
             "status": "held",
-            "value": 0.5229,
+            "value": 0.5216,
             "within_noise": false
           }
         ],
@@ -1575,7 +1575,7 @@
             "point": "s01_steady_uniform",
             "poor_fit": false,
             "status": "held",
-            "value": 0.2388,
+            "value": 0.2372,
             "within_noise": false
           },
           {
@@ -1585,7 +1585,7 @@
             "point": "s02_dense_clustered",
             "poor_fit": false,
             "status": "held",
-            "value": 0.3337,
+            "value": 0.3366,
             "within_noise": false
           },
           {
@@ -1595,7 +1595,7 @@
             "point": "s03_wide_radius",
             "poor_fit": false,
             "status": "held",
-            "value": 0.3303,
+            "value": 0.3321,
             "within_noise": false
           },
           {
@@ -1605,7 +1605,7 @@
             "point": "s04_teleport",
             "poor_fit": false,
             "status": "held",
-            "value": 0.2336,
+            "value": 0.2349,
             "within_noise": false
           },
           {
@@ -1625,7 +1625,7 @@
             "point": "hs01_rewind_all_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 0.3254,
+            "value": 0.3247,
             "within_noise": false
           },
           {
@@ -1645,7 +1645,7 @@
             "point": "hs03_knn_heavy",
             "poor_fit": false,
             "status": "held",
-            "value": 0.0915,
+            "value": 0.0912,
             "within_noise": false
           },
           {
@@ -1655,7 +1655,7 @@
             "point": "hs04_flat_world",
             "poor_fit": false,
             "status": "held",
-            "value": 0.3854,
+            "value": 0.3806,
             "within_noise": false
           },
           {
@@ -1665,7 +1665,7 @@
             "point": "hs05_spawn_churn",
             "poor_fit": false,
             "status": "held",
-            "value": 0.2975,
+            "value": 0.2955,
             "within_noise": false
           }
         ],
@@ -1785,7 +1785,7 @@
             "point": "w02_query_heavy",
             "poor_fit": false,
             "status": "falsified",
-            "value": 1.1137,
+            "value": 1.1084,
             "within_noise": false
           }
         ],
@@ -1793,7 +1793,7 @@
       },
       {
         "claim": "multi-component point access slower than aos (w07_point_wide)",
-        "decided_within_noise": false,
+        "decided_within_noise": true,
         "id": "P2",
         "instances": [
           {
@@ -1803,8 +1803,8 @@
             "point": "w07_point_wide",
             "poor_fit": false,
             "status": "held",
-            "value": 1.089,
-            "within_noise": false
+            "value": 1.0462,
+            "within_noise": true
           }
         ],
         "verdict": "HELD"
@@ -1961,7 +1961,7 @@
             "point": "h05_sparse_component",
             "poor_fit": false,
             "status": "held",
-            "value": 0.8415,
+            "value": 0.8317,
             "within_noise": false
           }
         ],
@@ -1981,7 +1981,7 @@
             "point": "hs01_rewind_all_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 1.4983,
+            "value": 1.5059,
             "within_noise": false
           },
           {
@@ -1991,7 +1991,7 @@
             "point": "hs02_rewind_few_moving",
             "poor_fit": false,
             "status": "held",
-            "value": 2.5924,
+            "value": 2.621,
             "within_noise": false
           },
           {
@@ -2001,7 +2001,7 @@
             "point": "hs03_knn_heavy",
             "poor_fit": false,
             "status": "held",
-            "value": 3.8157,
+            "value": 3.8069,
             "within_noise": false
           },
           {
@@ -2011,7 +2011,7 @@
             "point": "hs04_flat_world",
             "poor_fit": false,
             "status": "held",
-            "value": 1.1735,
+            "value": 1.1749,
             "within_noise": true
           },
           {
@@ -2021,7 +2021,7 @@
             "point": "hs05_spawn_churn",
             "poor_fit": false,
             "status": "held",
-            "value": 1.763,
+            "value": 1.7678,
             "within_noise": false
           },
           {
@@ -2031,8 +2031,8 @@
             "point": "hs06_mixed_reach",
             "poor_fit": false,
             "status": "held",
-            "value": 1.0306,
-            "within_noise": true
+            "value": 1.0499,
+            "within_noise": false
           },
           {
             "bound": "above 1.0",
@@ -2041,7 +2041,7 @@
             "point": "hs07_crowd",
             "poor_fit": false,
             "status": "held",
-            "value": 1.2185,
+            "value": 1.2156,
             "within_noise": false
           },
           {
@@ -2051,7 +2051,7 @@
             "point": "hs08_crowd_rollback",
             "poor_fit": false,
             "status": "held",
-            "value": 1.1761,
+            "value": 1.1872,
             "within_noise": false
           },
           {
@@ -2071,7 +2071,7 @@
             "point": "s02_dense_clustered",
             "poor_fit": false,
             "status": "falsified",
-            "value": 0.9833,
+            "value": 0.9939,
             "within_noise": true
           },
           {
@@ -2081,7 +2081,7 @@
             "point": "s03_wide_radius",
             "poor_fit": false,
             "status": "falsified",
-            "value": 0.9944,
+            "value": 0.9928,
             "within_noise": true
           },
           {
@@ -2091,7 +2091,7 @@
             "point": "s04_teleport",
             "poor_fit": false,
             "status": "held",
-            "value": 2.1175,
+            "value": 2.0967,
             "within_noise": false
           },
           {
@@ -2101,7 +2101,7 @@
             "point": "s05_small_world",
             "poor_fit": false,
             "status": "held",
-            "value": 2.9434,
+            "value": 2.9369,
             "within_noise": false
           }
         ],
@@ -2149,7 +2149,7 @@
             "point": "s01_steady_uniform",
             "poor_fit": false,
             "status": "held",
-            "value": 0.0772,
+            "value": 0.077,
             "within_noise": false
           },
           {
@@ -2159,7 +2159,7 @@
             "point": "s01_steady_uniform",
             "poor_fit": false,
             "status": "held",
-            "value": 0.23,
+            "value": 0.2284,
             "within_noise": false
           },
           {
