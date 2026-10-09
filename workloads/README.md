@@ -90,18 +90,61 @@ population, the world size and the query radius together, so no curve can be
 fitted through it and anything else.
 
 `sweep/sweeps.yaml` declares the families, the regimes and the populations;
-`runner/sweep.py` applies them. The rule that makes the numbers mean anything is
-that **the number of operations per step is held constant while the population
-grows** — with `moves_per_tick` rather than `move_fraction`, with a fixed count
-of queries per tick, and with `ops_per_frame` fixed on the ECS side. If the
-operation count grew with the population, every candidate would measure linear
-regardless of what it does.
+`runner/sweep.py` applies them. The rule that makes a population family's
+numbers mean anything is that **the number of operations per step is held
+constant while the population grows** — with `moves_per_tick` rather than
+`move_fraction`, with a fixed count of queries per tick, and with
+`ops_per_frame` fixed on the ECS side. If the operation count grew with the
+population, every candidate would measure linear regardless of what it does.
+The parameter sweeps below hold the population fixed instead, so the rule is
+not theirs: a sweep of `move_fraction` changes the moves per tick because that
+is what it varies.
 
 Two regimes exist because they answer different questions. Holding the world
 fixed lets density grow, so a query of fixed radius returns proportionally more
 and the exponent includes the growth of the answer. Growing the world as the
 cube root of the population holds density constant, so the exponent is the cost
 of finding the answer — which is what a complexity claim is about.
+
+### Parameter sweeps
+
+A family that declares `vary: {key, values}` in place of regimes is a parameter
+sweep. Its template fixes the population and the world; `runner/sweep.py` gives
+the one named key each listed value in turn, verifies every candidate of the
+track at every value, and then measures the candidates in turn at each value,
+so that a slow minute on a shared machine falls on both sides of a comparison.
+Nothing is fitted, because the axis is not a size and no complexity claim is
+about it. `benchmarks/scaling.md` prints a table per objective — median tick,
+p99 tick, peak bytes — with the rewind strategy each binary reported, and for
+every pair of candidates whose order changes, the two measured values on either
+side of the change. The crossing is stated as that interval and never placed
+inside it: nothing between the two values was run.
+
+The p99 tick is the harness's 99th percentile over every tick of the run, the
+load tick included. It is the cost of a rewind only where a candidate's rewinds
+are its costliest ticks; where a rewind costs about what an ordinary tick does,
+the p99 is an ordinary tick, and a p99 crossing is one of the tick tail. The
+report says which tick of each family's run the p99 is, and `sweeps.yaml` says
+where that falls among the rewinds.
+
+Two parameter sweeps compare history strategies on the spatial track, at 30000
+entities with the churn and query mix of `hs01`:
+
+- **`rewind_move_fraction`** varies `move_fraction` from 0.01 to 1.0 with a
+  rewind every 10 ticks, 6 deep.
+- **`rewind_depth`** varies `rewind_depth` from 1 to 32 at a `move_fraction` of
+  0.1. It rewinds every 40 ticks rather than every 10, because a rewind at
+  least as deep as the interval since the previous one targets a tick that the
+  previous rewind discarded. Neither the oracle nor the candidate can rewind to
+  it, both say so, verification passes, and the rewind silently does not
+  happen. `sweep.py` refuses such a workload. `history_ticks` is 32 at every
+  depth, so the retained history is the same at every point.
+
+Both give every value the same 9 rewinds. `sweep.py` also refuses a sweep
+point that sets `history_ticks` below its `rewind_depth`, which the parser
+would raise without saying so, and a depth of 0 with no history, on which the
+oracle and the substrate's history wrappers disagree. `sweeps.yaml` states each
+constant and its reason.
 
 ## Dimensions the current set does not cover
 
@@ -125,7 +168,13 @@ claim nobody has tested:
 - **Spatial: correlated movement.** Entities move independently. Nothing tests
   a crowd moving together, which is what would keep a cluster dense while it
   travels rather than letting it diffuse.
-- **Spatial: rewind under churn shape.** `hs01` and `hs02` vary how much moves.
-  Nothing varies rewind depth against a fixed movement rate, which is the other
-  axis of the same trade. No sweep family rewinds at all, so the history
-  strategies have a comparison at two points and no curve.
+- **Spatial: the rest of the rewind trade.** The two parameter sweeps give the
+  history strategies a curve against movement rate at depth 6 and against depth
+  at 10% moving, at one population, in a uniform world, with no teleports.
+  Nothing varies how often a rewind happens, how much history is retained
+  against how much is used, or the population under rewind, and nothing rewinds
+  deeper than 32 ticks or in a clustered world. The movement sweep also passes
+  through the regime of `hs01` at 1.0 and close to that of `hs02` at 0.02
+  (different seed, fewer ticks, and `hs01`'s churn rather than `hs02`'s), so
+  those two no longer hold a rewind regime out: no hidden workload tests a
+  history strategy somewhere the public set does not already reach.

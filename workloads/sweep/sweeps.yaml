@@ -5,14 +5,28 @@
 # population — s05_small_world changes the world size and the query radius too.
 # This file defines the experiments that do differ in exactly one thing.
 #
-# Each family isolates one operation and holds the number of those operations
-# per step constant while the population grows. That is what separates the cost
-# of one operation from the number of them: if the operation count grew with the
-# population, every candidate would look linear regardless of what it does.
+# Each population family (the `regimes` form below) isolates one operation and
+# holds the number of those operations per step constant while the population
+# grows. That is what separates the cost of one operation from the number of
+# them: if the operation count grew with the population, every candidate would
+# look linear regardless of what it does.
 #
 # Read together with `runner/sweep.py`, which applies these rules, and with each
 # candidate's `manifest.yaml`, whose `complexity:` field is the claim these
 # experiments check.
+#
+# A family takes one of two forms. With `regimes`, it varies the population and
+# fits a growth exponent. With `vary: {key, values}`, it is a parameter sweep:
+# the population and the world are whatever its template says, one workload key
+# takes each listed value in turn, and nothing is fitted, because the axis is
+# not a size and no complexity claim is about it. What a parameter sweep reports
+# instead is where two candidates change order, as the interval between the
+# nearest values on either side of the change at which both were measured.
+# Values must be numbers in increasing order, so that "on either side" means
+# something. The rule about a constant operation count is for population
+# families: the population of a parameter sweep does not change, and when its
+# key is itself a share or a count, as move_fraction is, the operations per tick
+# change with it because that is what is being varied.
 
 sizes: [1000, 2000, 4000, 8000, 16000, 32000, 64000, 128000]
 base_size: 8000
@@ -99,3 +113,122 @@ families:
       exponent is expected to sit between the point-operation family's and 1,
       because a frame is a fixed number of operations plus two linear passes.
     checks: nothing directly; it is the curve a game would actually see
+
+  # Parameter sweeps of the history strategy.
+  #
+  # A candidate that keeps no history of its own is measured inside
+  # RebuildRewind (substrate/include/gds/spatial/entry.hpp): a snapshot of the
+  # whole world every tick, and a rebuild of the index on rewind. A candidate
+  # with kNativeRewind keeps its own, and grid_undo_log is uniform_grid with a
+  # log of what changed in place of the snapshot. Each measured row records the
+  # strategy the binary reported, so the curves say which strategy they are of.
+  #
+  # The snapshot costs the same however little moves, and its rewind re-inserts
+  # every live entity however far back it goes. A log costs in proportion to
+  # what moved, both when recording and when unwinding, and its unwind also
+  # grows with the number of ticks unwound. hs01 and hs02 compare the two at 100%
+  # and 2% moving and nowhere between; these two families are the curve between
+  # those points and the second axis of the same trade.
+  #
+  # Both use 30000 entities in a 1024 x 1024 x 256 world, entities moving 0.5 to
+  # 4 units per tick, 20 inserts and 15 removes per tick, and per tick 48 radius
+  # queries, 48 entity-radius queries and 12 k-nearest queries (k = 8), radius 8
+  # to 16 — the churn and query mix of hs01, with seed 4006 rather than hs01's
+  # and fewer ticks, so that one candidate's pass over both families takes
+  # minutes rather than tens of minutes.
+
+  - id: rewind_move_fraction
+    track: spatial
+    template: rewind_move_fraction.template
+    vary:
+      key: move_fraction
+      values: [0.01, 0.02, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75, 1.0]
+    # A rewind every 10 ticks, 6 deep, 12 ticks of history, 100 ticks: 9
+    # rewinds at every value, at ticks 10 to 90. The values roughly double at
+    # the low end and step evenly at the high end: what a log records is
+    # proportional to what moves, so at small fractions the ratio between two
+    # neighbours is what changes its cost, and at large ones the difference.
+    #
+    # The harness's p99 interpolates the sorted tick times at 0.99 * (n - 1)
+    # over all n ticks, tick 0 included, so at 100 ticks it is the second
+    # costliest tick. Tick 0 inserts all 30000 entities and costs about as much
+    # as a rewind. The run is kept to half of hs01's 200 ticks so that one
+    # candidate's pass over both families takes minutes. At any count below 200
+    # the p99 would still be the second or third costliest tick, so a longer
+    # run short of hs01's length buys at most one place of slack and does not
+    # change what the p99 is.
+    measures: >
+      Two history strategies against the share of entities that move each
+      tick, with the rollback schedule fixed. The median tick does not rewind:
+      it is the cost of keeping history while the world moves. The p99 tick is
+      the second costliest of the 100 ticks, and the costly ones are expected
+      to be the load tick, which inserts the population, and the 9 rewinds.
+      Where every rewind costs more than any ordinary tick, the p99 is the
+      costliest rewind if the load tick costs more still, and otherwise the
+      load tick or the second costliest rewind. One ordinary tick slowed by the
+      machine above the costliest rewind is enough to make the p99 that tick
+      or the load tick. Where a strategy's
+      rewind costs about what an ordinary tick does, as a log's may when little
+      moves, the p99 is an ordinary tick and says nothing about the rewind.
+    checks: no manifest field; it locates where the history strategies change order between the two points hs01 and hs02 measure
+
+  - id: rewind_depth
+    track: spatial
+    template: rewind_depth.template
+    vary:
+      key: rewind_depth
+      values: [1, 2, 4, 8, 16, 32]
+    # The schedule has to be chosen for the deepest rewind, because two rules in
+    # substrate/src/spatial_workload.cpp decide whether a rewind happens:
+    #
+    # - a rewind is scheduled at tick t when t is a multiple of rewind_every and
+    #   t > rewind_depth, and goes back to t - rewind_depth - 1;
+    # - it must also go back less far than the time since the previous rewind.
+    #   With rewind_depth >= rewind_every the target is a tick that the previous
+    #   rewind discarded. No history holds it, the oracle and the candidate both
+    #   return false, and the rewind happens on neither side, which the verifier
+    #   cannot see because the two agree. Measured with the oracle on a probe
+    #   workload: at rewind_every 32 and depth 32, 5 of 11 rewinds did nothing.
+    #   runner/sweep.py refuses a generated workload with rewind_depth >=
+    #   rewind_every for that reason.
+    #
+    # So rewind_every is 40, above the deepest value with room to spare, and the
+    # same at every depth: each depth first rewinds at tick 40 and then every 40,
+    # and 400 ticks give each the same 9 rewinds that rewind_move_fraction has.
+    # history_ticks is 32 at every depth rather than following it, so the
+    # retained window, and the memory both strategies hold for it, is the same
+    # at every point; only how far each rewind goes changes. move_fraction is
+    # 0.1, where hs01 and hs02 leave the order of the two strategies unknown.
+    #
+    # The cost of the longer interval is in the p99. The harness's p99
+    # interpolates the sorted tick times at 0.99 * (n - 1) over all n ticks,
+    # tick 0 included: at 400 ticks the fifth costliest, at 100 the second.
+    # Counting the load tick, 10 of the 400 ticks here are expected to be
+    # costly, against 10 of 100 in rewind_move_fraction. So where rewinds are
+    # the costliest ticks, this family's p99 is the fourth or fifth costliest
+    # of its 9 rewinds, about the middle of them, and that family's is its
+    # costliest rewind, its load tick or its second costliest rewind. The two
+    # families' p99 rows are not the same statistic; compare within one.
+    #
+    # A longer run would not move the p99 to another part of the rewinds. The
+    # p99 is about 0.01 * n ticks from the top and the rewinds are n /
+    # rewind_every of the ticks, so it sits about 0.01 * rewind_every of the
+    # way down them whatever n is. It would make the load tick count for less,
+    # but ticks slowed by the machine grow with n as well, and it would double
+    # the time of a family that is already the longer of the two. A p99 over
+    # the rewind ticks alone would need the harness to report one.
+    measures: >
+      Two history strategies against how far back a rewind goes, at 10% of
+      entities moving each tick. The median tick does not rewind and should
+      not move with depth for either strategy. The p99 tick is the fifth
+      costliest of the 400 ticks, and the costly ones are expected to be the
+      load tick, which inserts the population, and the 9 rewinds. Where every
+      rewind costs more than any ordinary tick, that is the fourth or fifth
+      costliest rewind, about the middle of them, with room for the load tick
+      and three ordinary ticks slowed by the machine above it. Where a
+      strategy's rewind costs about what an ordinary tick does, as a log's may
+      at shallow depth, the p99 is an ordinary tick or the load tick, and a
+      p99 crossing there is one of the tick tail rather than of the rewind.
+      Deeper, the p99 is where a log that unwinds tick by tick and a rebuild
+      that does not are expected to part.
+    checks: no manifest field; it is the second axis of the history trade, against which a log's cost grows and a rebuild's does not

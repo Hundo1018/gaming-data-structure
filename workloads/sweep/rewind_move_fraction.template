@@ -1,0 +1,32 @@
+# Sweep template for a parameter sweep. See sweeps.yaml.
+#
+# runner/sweep.py overrides id and move_fraction and nothing else, so every
+# point of the curve has the same population, world, churn, query mix and
+# rollback schedule. Runnable on its own at the value set here.
+#
+# The rollback schedule is a rewind every 10 ticks, 6 ticks deep, with 12 ticks
+# of history retained. 100 ticks give 9 rewinds, at ticks 10 to 90.
+id: sweep_rewind_move_fraction
+visibility: public
+track: spatial
+seed: 4006
+world_size: 1024
+world_height: 256
+initial_entities: 30000
+ticks: 100
+inserts_per_tick: 20
+removes_per_tick: 15
+move_fraction: 0.1
+speed_min: 0.5
+speed_max: 4.0
+placement: uniform
+radius_queries_per_tick: 48
+entity_radius_queries_per_tick: 48
+knn_queries_per_tick: 12
+knn_k: 8
+query_radius_min: 8
+query_radius_max: 16
+query_focus: uniform
+rewind_every: 10
+rewind_depth: 6
+history_ticks: 12
