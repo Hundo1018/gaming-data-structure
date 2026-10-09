@@ -98,12 +98,24 @@ def validate_predictions(preds, where):
 
 
 def spread(xs):
-    """Relative spread of repeated measurements: (max - min) / median."""
-    xs = [x for x in (xs or []) if x is not None]
+    """Relative spread of repeated measurements, robust to one disturbed run.
+
+    (max - min) / median over the repetitions, after dropping the highest and
+    the lowest when there are at least five. The first version used the full
+    range, and the first run judged with it showed why not: on a shared machine
+    a single repetition lands in a slow minute (cell_sorted on s01 ran
+    1021, 762, 760, 748, 748 us), and one such run set the band for everything
+    compared with it. The reported value is already the median repetition, so
+    the band describes the repetitions around it. The band only marks a point;
+    it never changes a verdict.
+    """
+    xs = sorted(x for x in (xs or []) if x is not None)
     if len(xs) < 2:
         return 0.0
     med = statistics.median(xs)
-    return (max(xs) - min(xs)) / med if med else 0.0
+    if len(xs) >= 5:
+        xs = xs[1:-1]
+    return (xs[-1] - xs[0]) / med if med else 0.0
 
 
 class Data:
