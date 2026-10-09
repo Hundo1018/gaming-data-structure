@@ -363,20 +363,38 @@ of one changed variable rather than of two separately written structures.
 
 The suite is C++20, as `PROJECT.md` specifies. It was ported to C11 once, at
 the user's request, and reverted on the evidence in
-[`benchmarks/language_port.md`](benchmarks/language_port.md). Over 1,206
-comparisons the C build gave the same checksums as the C++ build, and the same
-bytes and allocation counts for every candidate but the ECS oracle. Wherever
-the timing could tell two candidates apart, the two builds ranked them the same
-way (372 of 372 pairs on `step_ns_p50`). The deciding points were these:
-- The third-party baselines a reviewer would expect (EnTT, nanoflann,
-  Boost.Geometry, PhysX, Jolt) are C++ only, and C would reach them through a
-  call boundary.
-- The C allocation tracker worked only on glibc and disabled AddressSanitizer.
-- Every existing result was measured in C++.
+[`benchmarks/language_port.md`](benchmarks/language_port.md).
 
-The port also showed that run-to-run spread on this machine is about 29%. It
-found three defects in the C++ suite that no suite workload reaches. All three
-are recorded there, and `workloads/port_review/` reproduces two of them.
+Over 1,206 comparisons the C build gave the same checksums as the C++ build
+wherever both finished; 7 bench runs timed out in both. It also gave the same
+bytes and allocation counts for every candidate but the ECS oracle. Wherever
+both builds' timings separated two candidates, they ranked them the same way:
+372 of 372 pairs on `step_ns_p50`. A few pairs that only one build separated
+came out the other way, and so did one pair by instruction count.
+
+The deciding points were these:
+- The third-party baselines a reviewer would expect (EnTT, nanoflann,
+  Boost.Geometry, PhysX, Jolt) have no first-party C API. PhysX and Jolt have
+  third-party C wrappers. C would reach them through a call boundary.
+- The C allocation tracker depended on glibc's private `__libc_*` entry
+  points. It did not link against musl, had no forwarding target in Apple's
+  sources, and on the one candidate tried it crashed AddressSanitizer or hid
+  errors from it.
+- Every result from before the port was measured in C++.
+
+Over five single-repetition rounds, the median run-to-run spread on this
+machine was about 29% for `step_ns_p50` and 26% for `total_ns`.
+
+The port also found three defects in the C++ suite that no suite workload
+reaches:
+- a NaN radius hangs six candidates' k-nearest search;
+- a world 3e38 across makes nine candidates answer wrongly;
+- `delta_grid`'s k-nearest search goes wrong once distances overflow.
+
+It found two latent defects as well: `sparse_set`'s query of an empty mask, and
+undefined float-to-integer conversions in `spatial_hash` and `morton_sorted`.
+All of these are recorded there, and `workloads/port_review/` reproduces the
+first two.
 
 ## Current results
 

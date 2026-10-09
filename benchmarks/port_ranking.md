@@ -4,7 +4,7 @@ Metric `step_ns_p50`, medians over the rounds in `benchmarks/port_timing.json`. 
 
 Median tau-b 0.822, lowest 0.378; 86 of 837 candidate pairs change order, 0 of them robustly.
 
-Resolution, the part of the comparison the noise lets through: C++ separates 414 pairs and C 438 (per-round ranges that do not overlap); of the pairs both separate, 372 are in the same order and 0 in opposite orders.
+Resolution, the part of the comparison the noise lets through: C++ separates 414 pairs and C 438 (per-round ranges that do not overlap); of the pairs both separate, 372 are in the same order and 0 in opposite orders. 2 pairs that only one build separates come out the other way in the other build, inside its noise.
 
 Run-to-run spread, (max - min) / median over the rounds per candidate and workload: C++ median 29.4% (p25 19.7%, p75 42.3%); C median 29.3% (p25 20.5%, p75 42.3%).
 
@@ -42,7 +42,7 @@ Metric `total_ns`, medians over the rounds in `benchmarks/port_timing.json`. Exc
 
 Median tau-b 0.867, lowest 0.429; 75 of 837 candidate pairs change order, 0 of them robustly.
 
-Resolution, the part of the comparison the noise lets through: C++ separates 450 pairs and C 458 (per-round ranges that do not overlap); of the pairs both separate, 400 are in the same order and 0 in opposite orders.
+Resolution, the part of the comparison the noise lets through: C++ separates 450 pairs and C 458 (per-round ranges that do not overlap); of the pairs both separate, 400 are in the same order and 0 in opposite orders. 3 pairs that only one build separates come out the other way in the other build, inside its noise.
 
 Run-to-run spread, (max - min) / median over the rounds per candidate and workload: C++ median 26.1% (p25 16.4%, p75 36.6%); C median 25.7% (p25 17.6%, p75 36.4%).
 

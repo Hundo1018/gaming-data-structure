@@ -60,13 +60,15 @@ three latent defects in `uniform_grid` that no workload can reach.
 
 ## The C port, and its reversal
 
-The same kind of loop ported the whole suite to C11 and back. The
-coordinating session wrote the C substrate and five candidates itself. Paired
-agents then ported the other sixteen, a porter and then an adversarial
-reviewer for each group. The porter iterated until `runner/equivalence.py`
-showed the C++ build's checksums on every workload. The reviewer read the C
-against the C++ function by function and wrote edge-case workloads, now in
-`workloads/port_review/`.
+The same kind of loop ported the whole suite to C11. The return to C++20
+restored the sources of `83a58a6` rather than porting back. The coordinating
+session wrote the C substrate and five candidates itself. Paired agents then
+ported the other sixteen, a porter and then an adversarial reviewer for each
+group. Each porter's work was accepted only once `runner/equivalence.py` showed
+the C++ build's checksums on every workload; every recorded equivalence run of
+the porters showed no difference. The reviewer read the C against the C++
+function by function and wrote edge-case workloads. Those, together with six
+that one porter wrote, are now in `workloads/port_review/`.
 
 A second round of six agents then gathered the evidence for keeping C or not.
 Five measured, and a skeptic re-ran their headline numbers and corrected seven

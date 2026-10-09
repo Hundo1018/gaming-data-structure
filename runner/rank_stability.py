@@ -84,15 +84,20 @@ def main():
     # How much the test can see: a pair is resolved by a build when that build's
     # per-round ranges for the two candidates do not overlap. Only pairs both
     # builds resolve can show a disagreement that is not a tie.
-    resolved = {"a": 0, "b": 0, "both_agree": 0, "both_disagree": 0}
+    resolved = {"a": 0, "b": 0, "both_agree": 0, "both_disagree": 0,
+                "one_disagree": 0}
     for w, cands in sorted(by_workload.items()):
         for x, y in itertools.combinations(cands, 2):
             ra, rb = separated(x, y, "a"), separated(x, y, "b")
             resolved["a"] += ra
             resolved["b"] += rb
+            same = (x["a_med"] < y["a_med"]) == (x["b_med"] < y["b_med"])
             if ra and rb:
-                same = (x["a_med"] < y["a_med"]) == (x["b_med"] < y["b_med"])
                 resolved["both_agree" if same else "both_disagree"] += 1
+            elif (ra or rb) and not same:
+                # One build is sure of the order and the other, inside its own
+                # noise, leans the other way.
+                resolved["one_disagree"] += 1
     for w, cands in sorted(by_workload.items()):
         tau = kendall_tau_b([c["a_med"] for c in cands], [c["b_med"] for c in cands])
         flips = []
@@ -131,6 +136,7 @@ def main():
         "resolved_by_b": resolved["b"],
         "resolved_by_both_agree": resolved["both_agree"],
         "resolved_by_both_disagree": resolved["both_disagree"],
+        "resolved_by_one_disagree": resolved["one_disagree"],
     }
     s = out["summary"]
     print(f"metric {metric}: {s['workloads']} workloads, median tau-b {s['median_tau_b']}, "
@@ -138,7 +144,8 @@ def main():
           f"{s['robust_flips']} robustly")
     print(f"  resolved (ranges do not overlap): {args.a_label} {s['resolved_by_a']}, "
           f"{args.b_label} {s['resolved_by_b']}; by both: {s['resolved_by_both_agree']} agree, "
-          f"{s['resolved_by_both_disagree']} disagree")
+          f"{s['resolved_by_both_disagree']} disagree; separated by one build only and "
+          f"reversed by the other: {s['resolved_by_one_disagree']}")
     for side, label in (("a", args.a_label), ("b", args.b_label)):
         n = noise[side]
         if n:
@@ -163,7 +170,9 @@ def main():
                  f"{args.a_label} separates {s['resolved_by_a']} pairs and {args.b_label} "
                  f"{s['resolved_by_b']} (per-round ranges that do not overlap); of the pairs "
                  f"both separate, {s['resolved_by_both_agree']} are in the same order and "
-                 f"{s['resolved_by_both_disagree']} in opposite orders.", "",
+                 f"{s['resolved_by_both_disagree']} in opposite orders. "
+                 f"{s['resolved_by_one_disagree']} pairs that only one build separates come "
+                 "out the other way in the other build, inside its noise.", "",
                  "Run-to-run spread, (max - min) / median over the rounds per candidate and "
                  "workload: " + "; ".join(
                      f"{lab} median {noise[sd]['median']:.1%} (p25 {noise[sd]['p25']:.1%}, "
