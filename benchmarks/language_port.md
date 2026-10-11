@@ -198,7 +198,14 @@ files, after which all 21 candidates compile as C++20 and reproduce all 263
 verify results. On top of that it needed a portable allocator and a full
 re-measurement.
 
-## Defects in the C++ suite that the port found (open)
+## Defects in the C++ suite that the port found
+
+*Fixed after this record was written, in `7e3f30b`: both parsers refuse NaN and
+infinity, the spatial parser refuses any length outside [0, 1e18], so 1 to 3
+below can no longer be reached, and `sparse_set` (and `grouped_sparse_set`,
+which had the same defect and is not listed below) answers the empty mask.
+`workloads/regression/` holds the tests. The text below is the state at the
+time of the port.*
 
 The port's reviewers found these with workloads and probes the suite does not
 have. Where both builds were run, they failed identically. None is reachable
@@ -270,7 +277,7 @@ medians should be steadier than these single-repetition rounds.
 "within noise". The spread from one run to the next was never measured, so
 whether its verdicts near a bound would survive a re-run is unknown. Reducing
 and quantifying that spread is the next change in measurement, and it does not
-depend on the language.
+depend on the language. *That work is in `benchmarks/noise.md`.*
 
 ## Sources
 

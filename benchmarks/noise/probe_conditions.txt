@@ -1,0 +1,53 @@
+round 1/8 done
+round 2/8 done
+round 3/8 done
+round 4/8 done
+round 5/8 done
+round 6/8 done
+round 7/8 done
+round 8/8 done
+binary                       workload               condition      total within  between    iqr   p50 within  between    iqr  steal
+noise_control                compute                plain                  3.9%    20.0%   4.3%         3.6%    22.2%   3.4%  40
+noise_control                compute                pinned                 3.9%     6.0%   4.1%         2.7%     5.2%   3.8%  46
+noise_control                compute                noaslr                 3.9%     8.2%   3.6%         3.6%     7.1%   2.7%  40
+noise_control                compute                pinned_noaslr          3.5%     9.1%   3.8%         3.1%     7.6%   2.6%  26
+noise_control                cache                  plain                 12.8%    21.5%   6.3%        14.3%    21.1%   8.3%  29
+noise_control                cache                  pinned                10.8%     9.9%   2.9%        12.4%     7.3%   3.0%  41
+noise_control                cache                  noaslr                10.0%    13.0%   4.6%         9.9%    11.9%   2.6%  39
+noise_control                cache                  pinned_noaslr         14.9%    13.7%  10.0%        15.5%    15.8%   9.8%  52
+noise_control                memory                 plain                 10.4%    20.1%   7.3%        12.7%    19.5%   6.3%  40
+noise_control                memory                 pinned                10.8%    13.1%   4.9%        11.0%    15.8%   5.5%  56
+noise_control                memory                 noaslr                14.0%    12.6%   4.1%        11.7%    13.4%   5.3%  46
+noise_control                memory                 pinned_noaslr         15.6%    17.3%   7.3%        15.7%    15.9%   9.0%  54
+gds_ecs_aos                  w01_steady_uniform     plain                 22.3%    34.4%  23.0%        31.0%    35.8%  16.8%  44
+gds_ecs_aos                  w01_steady_uniform     pinned                18.8%    51.9%  22.1%        17.8%    54.3%  26.3%  34
+gds_ecs_aos                  w01_steady_uniform     noaslr                29.0%    52.3%  11.8%        28.7%    57.2%  10.2%  33
+gds_ecs_aos                  w01_steady_uniform     pinned_noaslr         23.1%    34.9%  22.4%        31.8%    42.2%  31.5%  45
+gds_ecs_aos                  w04_random_access      plain                 15.3%    29.5%  14.5%        13.8%    31.3%  22.4%  109
+gds_ecs_aos                  w04_random_access      pinned                17.1%    14.8%   8.3%        22.4%    19.4%   6.1%  104
+gds_ecs_aos                  w04_random_access      noaslr                18.8%    30.4%  21.7%        21.4%    33.8%  30.9%  139
+gds_ecs_aos                  w04_random_access      pinned_noaslr         22.3%    22.1%  15.3%        29.3%    25.7%  17.5%  104
+gds_ecs_archetype            w01_steady_uniform     plain                 21.9%    26.7%   8.4%        29.6%    31.6%  17.1%  43
+gds_ecs_archetype            w01_steady_uniform     pinned                35.1%    31.2%  22.8%        39.3%    39.1%  26.3%  46
+gds_ecs_archetype            w01_steady_uniform     noaslr                31.5%    34.9%  16.1%        42.1%    45.0%  28.6%  33
+gds_ecs_archetype            w01_steady_uniform     pinned_noaslr         23.4%    39.2%  23.7%        27.8%    40.4%  22.3%  29
+gds_ecs_archetype            w04_random_access      plain                 29.1%    30.2%  11.3%        34.4%    34.6%  15.9%  99
+gds_ecs_archetype            w04_random_access      pinned                26.4%    17.5%  12.8%        38.9%    29.3%  23.2%  111
+gds_ecs_archetype            w04_random_access      noaslr                18.4%    35.3%  27.5%        14.5%    43.4%  38.2%  102
+gds_ecs_archetype            w04_random_access      pinned_noaslr         24.4%    25.5%  19.7%        31.1%    33.7%  27.9%  156
+gds_spatial_uniform_grid     s01_steady_uniform     plain                 30.9%    19.3%  15.5%        32.2%    22.9%  15.1%  17
+gds_spatial_uniform_grid     s01_steady_uniform     pinned                18.3%    40.4%  26.6%        16.7%    36.8%  27.2%  26
+gds_spatial_uniform_grid     s01_steady_uniform     noaslr                25.7%    48.6%  16.6%        27.8%    56.5%  20.8%  18
+gds_spatial_uniform_grid     s01_steady_uniform     pinned_noaslr         32.8%    51.0%  20.5%        34.9%    60.7%  16.5%  23
+gds_spatial_uniform_grid     hs03_knn_heavy         plain                 19.8%    27.6%  10.6%        21.7%    32.1%  11.8%  83
+gds_spatial_uniform_grid     hs03_knn_heavy         pinned                18.5%    35.5%  10.3%        23.1%    39.9%  14.5%  74
+gds_spatial_uniform_grid     hs03_knn_heavy         noaslr                20.9%    25.3%  16.5%        23.0%    26.7%  18.0%  121
+gds_spatial_uniform_grid     hs03_knn_heavy         pinned_noaslr         16.7%    28.1%  13.9%        20.6%    34.0%  19.1%  106
+gds_spatial_morton_lbvh      s01_steady_uniform     plain                 29.8%    41.4%  30.3%        31.4%    40.3%  34.6%  26
+gds_spatial_morton_lbvh      s01_steady_uniform     pinned                21.3%    34.4%  20.3%        23.2%    37.5%  24.6%  22
+gds_spatial_morton_lbvh      s01_steady_uniform     noaslr                21.4%    34.3%  26.3%        24.7%    33.8%  25.4%  22
+gds_spatial_morton_lbvh      s01_steady_uniform     pinned_noaslr         23.6%    33.8%  16.4%        31.4%    39.2%  25.0%  26
+gds_spatial_morton_lbvh      hs03_knn_heavy         plain                 20.2%    41.1%  12.9%        19.4%    42.0%  12.0%  42
+gds_spatial_morton_lbvh      hs03_knn_heavy         pinned                24.0%    34.0%  17.7%        32.9%    37.4%  22.6%  56
+gds_spatial_morton_lbvh      hs03_knn_heavy         noaslr                19.1%    34.5%  25.0%        16.4%    35.7%  26.4%  38
+gds_spatial_morton_lbvh      hs03_knn_heavy         pinned_noaslr         22.4%    45.5%  17.2%        23.0%    56.2%  21.8%  46

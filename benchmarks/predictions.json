@@ -2,12 +2,18 @@
   "candidates": {
     "aos": [
       {
+        "ci": "resolved",
         "claim": "on point access to whole entities (w07_point_wide) within noise of the layouts that split components apart",
         "decided_within_noise": false,
         "id": "P1",
         "instances": [
           {
             "bound": "within 0.1",
+            "ci95": [
+              0.9035,
+              0.9866
+            ],
+            "ci_resolved": true,
             "compared": "/ soa",
             "noise_band": 0.066,
             "point": "w07_point_wide",
@@ -18,6 +24,11 @@
           },
           {
             "bound": "within 0.1",
+            "ci95": [
+              0.6104,
+              0.6585
+            ],
+            "ci_resolved": true,
             "compared": "/ sparse_set",
             "noise_band": 0.0401,
             "point": "w07_point_wide",
@@ -32,12 +43,18 @@
     ],
     "archetype": [
       {
+        "ci": "resolved",
         "claim": "beaten by sparse_set on w03_structural_churn",
         "decided_within_noise": false,
         "id": "P2",
         "instances": [
           {
             "bound": "above 1.0",
+            "ci95": [
+              0.6746,
+              0.7234
+            ],
+            "ci_resolved": true,
             "compared": "/ sparse_set",
             "noise_band": 0.0478,
             "point": "w03_structural_churn",
@@ -52,12 +69,18 @@
     ],
     "axis_sorted": [
       {
+        "ci": "resolved",
         "claim": "better than scanning everything, on every spatial workload",
         "decided_within_noise": false,
         "id": "P1",
         "instances": [
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.6324,
+              0.652
+            ],
+            "ci_resolved": true,
             "compared": "/ brute_force",
             "noise_band": 0.0148,
             "point": "hs01_rewind_all_moving",
@@ -68,6 +91,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.619,
+              0.6477
+            ],
+            "ci_resolved": true,
             "compared": "/ brute_force",
             "noise_band": 0.0307,
             "point": "hs02_rewind_few_moving",
@@ -78,6 +106,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.8746,
+              0.9023
+            ],
+            "ci_resolved": true,
             "compared": "/ brute_force",
             "noise_band": 0.0172,
             "point": "hs03_knn_heavy",
@@ -88,6 +121,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.4639,
+              0.4872
+            ],
+            "ci_resolved": true,
             "compared": "/ brute_force",
             "noise_band": 0.021,
             "point": "hs04_flat_world",
@@ -98,6 +136,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.0999,
+              0.1028
+            ],
+            "ci_resolved": true,
             "compared": "/ brute_force",
             "noise_band": 0.0092,
             "point": "hs05_spawn_churn",
@@ -108,6 +151,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.532,
+              0.5486
+            ],
+            "ci_resolved": true,
             "compared": "/ brute_force",
             "noise_band": 0.0237,
             "point": "hs06_mixed_reach",
@@ -118,6 +166,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.6246,
+              0.6589
+            ],
+            "ci_resolved": true,
             "compared": "/ brute_force",
             "noise_band": 0.0417,
             "point": "hs07_crowd",
@@ -128,6 +181,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.684,
+              0.7248
+            ],
+            "ci_resolved": true,
             "compared": "/ brute_force",
             "noise_band": 0.0259,
             "point": "hs08_crowd_rollback",
@@ -138,6 +196,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.3023,
+              0.3091
+            ],
+            "ci_resolved": true,
             "compared": "/ brute_force",
             "noise_band": 0.0091,
             "point": "s01_steady_uniform",
@@ -148,6 +211,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.65,
+              0.6963
+            ],
+            "ci_resolved": true,
             "compared": "/ brute_force",
             "noise_band": 0.0431,
             "point": "s02_dense_clustered",
@@ -158,6 +226,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              1.0812,
+              1.1187
+            ],
+            "ci_resolved": true,
             "compared": "/ brute_force",
             "noise_band": 0.0244,
             "point": "s03_wide_radius",
@@ -168,6 +241,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.2952,
+              0.3007
+            ],
+            "ci_resolved": true,
             "compared": "/ brute_force",
             "noise_band": 0.0065,
             "point": "s04_teleport",
@@ -178,6 +256,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.4666,
+              0.5682
+            ],
+            "ci_resolved": true,
             "compared": "/ brute_force",
             "noise_band": 0.0301,
             "point": "s05_small_world",
@@ -192,12 +275,18 @@
     ],
     "bitset_soa": [
       {
+        "ci": "unresolved",
         "claim": "h05_sparse_component at most 0.6x soa's",
         "decided_within_noise": false,
         "id": "P1",
         "instances": [
           {
             "bound": "at most 0.6",
+            "ci95": [
+              0.5325,
+              0.6252
+            ],
+            "ci_resolved": false,
             "compared": "/ soa",
             "noise_band": 0.0392,
             "point": "h05_sparse_component",
@@ -210,12 +299,18 @@
         "verdict": "HELD"
       },
       {
+        "ci": "unresolved",
         "claim": "dense-mask workloads within 10% of soa either way",
         "decided_within_noise": false,
         "id": "P2",
         "instances": [
           {
             "bound": "within 0.1",
+            "ci95": [
+              0.7806,
+              0.9316
+            ],
+            "ci_resolved": false,
             "compared": "/ soa",
             "noise_band": 0.0369,
             "point": "w01_steady_uniform",
@@ -226,6 +321,11 @@
           },
           {
             "bound": "within 0.1",
+            "ci95": [
+              0.8591,
+              0.9124
+            ],
+            "ci_resolved": false,
             "compared": "/ soa",
             "noise_band": 0.0497,
             "point": "w02_query_heavy",
@@ -236,6 +336,11 @@
           },
           {
             "bound": "within 0.1",
+            "ci95": [
+              0.8662,
+              0.9339
+            ],
+            "ci_resolved": false,
             "compared": "/ soa",
             "noise_band": 0.0324,
             "point": "w04_random_access",
@@ -248,6 +353,7 @@
         "verdict": "FALSIFIED"
       },
       {
+        "ci": "no interval",
         "claim": "peak memory within 5% above soa's on every ECS workload",
         "decided_within_noise": false,
         "id": "P3",
@@ -358,12 +464,18 @@
     ],
     "cell_rows": [
       {
+        "ci": "unresolved",
         "claim": "no slower than cell_sorted by more than 3% on any spatial workload",
         "decided_within_noise": true,
         "id": "P1",
         "instances": [
           {
             "bound": "at most 1.03",
+            "ci95": [
+              0.9449,
+              1.1145
+            ],
+            "ci_resolved": false,
             "compared": "/ cell_sorted",
             "noise_band": 0.1072,
             "point": "hs01_rewind_all_moving",
@@ -374,6 +486,11 @@
           },
           {
             "bound": "at most 1.03",
+            "ci95": [
+              0.957,
+              1.001
+            ],
+            "ci_resolved": true,
             "compared": "/ cell_sorted",
             "noise_band": 0.033,
             "point": "hs02_rewind_few_moving",
@@ -384,6 +501,11 @@
           },
           {
             "bound": "at most 1.03",
+            "ci95": [
+              0.6721,
+              0.7337
+            ],
+            "ci_resolved": true,
             "compared": "/ cell_sorted",
             "noise_band": 0.0676,
             "point": "hs03_knn_heavy",
@@ -394,6 +516,11 @@
           },
           {
             "bound": "at most 1.03",
+            "ci95": [
+              0.8583,
+              0.983
+            ],
+            "ci_resolved": true,
             "compared": "/ cell_sorted",
             "noise_band": 0.0323,
             "point": "hs04_flat_world",
@@ -404,6 +531,11 @@
           },
           {
             "bound": "at most 1.03",
+            "ci95": [
+              0.7528,
+              0.9968
+            ],
+            "ci_resolved": true,
             "compared": "/ cell_sorted",
             "noise_band": 0.012,
             "point": "hs05_spawn_churn",
@@ -414,6 +546,11 @@
           },
           {
             "bound": "at most 1.03",
+            "ci95": [
+              0.7129,
+              1.2554
+            ],
+            "ci_resolved": false,
             "compared": "/ cell_sorted",
             "noise_band": 0.0104,
             "point": "hs06_mixed_reach",
@@ -424,6 +561,11 @@
           },
           {
             "bound": "at most 1.03",
+            "ci95": [
+              0.9845,
+              1.0862
+            ],
+            "ci_resolved": false,
             "compared": "/ cell_sorted",
             "noise_band": 0.033,
             "point": "hs07_crowd",
@@ -434,6 +576,11 @@
           },
           {
             "bound": "at most 1.03",
+            "ci95": [
+              0.9921,
+              1.2971
+            ],
+            "ci_resolved": false,
             "compared": "/ cell_sorted",
             "noise_band": 0.0507,
             "point": "hs08_crowd_rollback",
@@ -444,6 +591,11 @@
           },
           {
             "bound": "at most 1.03",
+            "ci95": [
+              0.6978,
+              0.9696
+            ],
+            "ci_resolved": true,
             "compared": "/ cell_sorted",
             "noise_band": 0.0379,
             "point": "s01_steady_uniform",
@@ -454,6 +606,11 @@
           },
           {
             "bound": "at most 1.03",
+            "ci95": [
+              0.8944,
+              0.9934
+            ],
+            "ci_resolved": true,
             "compared": "/ cell_sorted",
             "noise_band": 0.0587,
             "point": "s02_dense_clustered",
@@ -464,6 +621,11 @@
           },
           {
             "bound": "at most 1.03",
+            "ci95": [
+              0.9856,
+              1.006
+            ],
+            "ci_resolved": true,
             "compared": "/ cell_sorted",
             "noise_band": 0.0117,
             "point": "s03_wide_radius",
@@ -474,6 +636,11 @@
           },
           {
             "bound": "at most 1.03",
+            "ci95": [
+              0.8848,
+              1.2925
+            ],
+            "ci_resolved": false,
             "compared": "/ cell_sorted",
             "noise_band": 0.0519,
             "point": "s04_teleport",
@@ -484,6 +651,11 @@
           },
           {
             "bound": "at most 1.03",
+            "ci95": [
+              0.7765,
+              0.8458
+            ],
+            "ci_resolved": true,
             "compared": "/ cell_sorted",
             "noise_band": 0.0488,
             "point": "s05_small_world",
@@ -496,12 +668,18 @@
         "verdict": "HELD"
       },
       {
+        "ci": "unresolved",
         "claim": "hs06_mixed_reach at most 0.9x cell_sorted's",
         "decided_within_noise": false,
         "id": "P2",
         "instances": [
           {
             "bound": "at most 0.9",
+            "ci95": [
+              0.7129,
+              1.2554
+            ],
+            "ci_resolved": false,
             "compared": "/ cell_sorted",
             "noise_band": 0.0104,
             "point": "hs06_mixed_reach",
@@ -514,12 +692,18 @@
         "verdict": "FALSIFIED"
       },
       {
+        "ci": "resolved",
         "claim": "hs03_knn_heavy at most 0.9x cell_sorted's",
         "decided_within_noise": false,
         "id": "P3",
         "instances": [
           {
             "bound": "at most 0.9",
+            "ci95": [
+              0.6721,
+              0.7337
+            ],
+            "ci_resolved": true,
             "compared": "/ cell_sorted",
             "noise_band": 0.0676,
             "point": "hs03_knn_heavy",
@@ -534,12 +718,18 @@
     ],
     "cell_sorted": [
       {
+        "ci": "resolved",
         "claim": "beats morton_sorted on all ten spatial workloads",
         "decided_within_noise": false,
         "id": "P1",
         "instances": [
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.2022,
+              0.2804
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0327,
             "point": "s01_steady_uniform",
@@ -550,6 +740,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.4002,
+              0.4482
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0888,
             "point": "s02_dense_clustered",
@@ -560,6 +755,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.2497,
+              0.2596
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0108,
             "point": "s03_wide_radius",
@@ -570,6 +770,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.208,
+              0.224
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.046,
             "point": "s04_teleport",
@@ -580,6 +785,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.1645,
+              0.1674
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0093,
             "point": "s05_small_world",
@@ -590,6 +800,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.3209,
+              0.3392
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0256,
             "point": "hs01_rewind_all_moving",
@@ -600,6 +815,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.1841,
+              0.1918
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0267,
             "point": "hs02_rewind_few_moving",
@@ -610,6 +830,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.1614,
+              0.1749
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0683,
             "point": "hs03_knn_heavy",
@@ -620,6 +845,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.2174,
+              0.2496
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0408,
             "point": "hs04_flat_world",
@@ -630,6 +860,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.2905,
+              0.4014
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0363,
             "point": "hs05_spawn_churn",
@@ -642,12 +877,18 @@
         "verdict": "HELD"
       },
       {
+        "ci": "unresolved",
         "claim": "beats uniform_grid where every entity moves every tick",
         "decided_within_noise": false,
         "id": "P2",
         "instances": [
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.8922,
+              1.2278
+            ],
+            "ci_resolved": false,
             "compared": "/ uniform_grid",
             "noise_band": 0.0261,
             "point": "s01_steady_uniform",
@@ -658,6 +899,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.631,
+              0.6898
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0519,
             "point": "s03_wide_radius",
@@ -668,6 +914,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.7563,
+              0.8159
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.048,
             "point": "s04_teleport",
@@ -678,6 +929,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.8407,
+              0.9603
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0245,
             "point": "hs04_flat_world",
@@ -690,12 +946,18 @@
         "verdict": "HELD"
       },
       {
+        "ci": "resolved",
         "claim": "loses to uniform_grid on hs02_rewind_few_moving by at least 1.5x",
         "decided_within_noise": false,
         "id": "P3",
         "instances": [
           {
             "bound": "at least 1.5",
+            "ci95": [
+              3.223,
+              4.5178
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.1467,
             "point": "hs02_rewind_few_moving",
@@ -708,6 +970,7 @@
         "verdict": "HELD"
       },
       {
+        "ci": "no interval",
         "claim": "spatial_move time exponent at least 0.8 in both regimes",
         "decided_within_noise": false,
         "id": "P4",
@@ -736,12 +999,18 @@
         "verdict": "FALSIFIED"
       },
       {
+        "ci": "unresolved",
         "claim": "s04_teleport within 5% of its own s01_steady_uniform",
         "decided_within_noise": true,
         "id": "P5",
         "instances": [
           {
             "bound": "within 0.05",
+            "ci95": [
+              0.7769,
+              1.0773
+            ],
+            "ci_resolved": false,
             "compared": "/ own s01_steady_uniform",
             "noise_band": 0.061,
             "point": "s04_teleport",
@@ -756,12 +1025,18 @@
     ],
     "delta_grid": [
       {
+        "ci": "resolved",
         "claim": "hs01_rewind_all_moving median below uniform_grid and grid_undo_log",
         "decided_within_noise": false,
         "id": "P1a",
         "instances": [
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.7522,
+              0.8611
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.023,
             "point": "hs01_rewind_all_moving",
@@ -772,6 +1047,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.6917,
+              0.7173
+            ],
+            "ci_resolved": true,
             "compared": "/ grid_undo_log",
             "noise_band": 0.0233,
             "point": "hs01_rewind_all_moving",
@@ -784,12 +1064,18 @@
         "verdict": "HELD"
       },
       {
+        "ci": "unresolved",
         "claim": "hs01_rewind_all_moving p99 below uniform_grid and grid_undo_log",
         "decided_within_noise": true,
         "id": "P1b",
         "instances": [
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.5833,
+              1.056
+            ],
+            "ci_resolved": false,
             "compared": "/ uniform_grid",
             "noise_band": 0.3859,
             "point": "hs01_rewind_all_moving",
@@ -800,6 +1086,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.3677,
+              0.5381
+            ],
+            "ci_resolved": true,
             "compared": "/ grid_undo_log",
             "noise_band": 0.2714,
             "point": "hs01_rewind_all_moving",
@@ -812,12 +1103,18 @@
         "verdict": "HELD"
       },
       {
+        "ci": "unresolved",
         "claim": "hs02_rewind_few_moving median within 1.3x of grid_undo_log",
         "decided_within_noise": true,
         "id": "P2a",
         "instances": [
           {
             "bound": "at most 1.3",
+            "ci95": [
+              1.287,
+              1.4223
+            ],
+            "ci_resolved": false,
             "compared": "/ grid_undo_log",
             "noise_band": 0.0184,
             "point": "hs02_rewind_few_moving",
@@ -830,12 +1127,18 @@
         "verdict": "FALSIFIED"
       },
       {
+        "ci": "unresolved",
         "claim": "hs02_rewind_few_moving p99 within 1.5x of grid_undo_log",
         "decided_within_noise": true,
         "id": "P2b",
         "instances": [
           {
             "bound": "at most 1.5",
+            "ci95": [
+              1.1162,
+              2.2987
+            ],
+            "ci_resolved": false,
             "compared": "/ grid_undo_log",
             "noise_band": 0.7429,
             "point": "hs02_rewind_few_moving",
@@ -848,12 +1151,18 @@
         "verdict": "HELD"
       },
       {
+        "ci": "resolved",
         "claim": "hs02_rewind_few_moving p99 below uniform_grid under snapshot-and-rebuild",
         "decided_within_noise": true,
         "id": "P2c",
         "instances": [
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.3345,
+              0.8085
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 1.0024,
             "point": "hs02_rewind_few_moving",
@@ -866,12 +1175,18 @@
         "verdict": "HELD"
       },
       {
+        "ci": "unresolved",
         "claim": "within 1.2x of cell_sorted where everything moves and nothing rewinds",
         "decided_within_noise": true,
         "id": "P3",
         "instances": [
           {
             "bound": "at most 1.2",
+            "ci95": [
+              0.8656,
+              1.1846
+            ],
+            "ci_resolved": true,
             "compared": "/ cell_sorted",
             "noise_band": 0.0213,
             "point": "s01_steady_uniform",
@@ -882,6 +1197,11 @@
           },
           {
             "bound": "at most 1.2",
+            "ci95": [
+              1.1567,
+              1.2296
+            ],
+            "ci_resolved": false,
             "compared": "/ cell_sorted",
             "noise_band": 0.0281,
             "point": "s03_wide_radius",
@@ -892,6 +1212,11 @@
           },
           {
             "bound": "at most 1.2",
+            "ci95": [
+              1.0772,
+              1.1619
+            ],
+            "ci_resolved": true,
             "compared": "/ cell_sorted",
             "noise_band": 0.0519,
             "point": "s04_teleport",
@@ -902,6 +1227,11 @@
           },
           {
             "bound": "at most 1.2",
+            "ci95": [
+              1.048,
+              1.2139
+            ],
+            "ci_resolved": false,
             "compared": "/ cell_sorted",
             "noise_band": 0.0464,
             "point": "hs04_flat_world",
@@ -914,6 +1244,7 @@
         "verdict": "HELD"
       },
       {
+        "ci": "no interval",
         "claim": "spatial_move time exponent at most 0.3 in both regimes",
         "decided_within_noise": false,
         "id": "P4",
@@ -942,6 +1273,7 @@
         "verdict": "HELD"
       },
       {
+        "ci": "no interval",
         "claim": "rewind_move_fraction p99 within 1.2x of the better history strategy at every value",
         "decided_within_noise": false,
         "id": "P5",
@@ -1042,12 +1374,18 @@
     ],
     "fused_archetype": [
       {
+        "ci": "resolved",
         "claim": "w02_query_heavy at most 0.95x archetype's",
         "decided_within_noise": false,
         "id": "P1",
         "instances": [
           {
             "bound": "at most 0.95",
+            "ci95": [
+              0.9592,
+              1.0025
+            ],
+            "ci_resolved": true,
             "compared": "/ archetype",
             "noise_band": 0.0295,
             "point": "w02_query_heavy",
@@ -1060,12 +1398,18 @@
         "verdict": "FALSIFIED"
       },
       {
+        "ci": "resolved",
         "claim": "w01_steady_uniform at most 0.95x archetype's",
         "decided_within_noise": true,
         "id": "P2",
         "instances": [
           {
             "bound": "at most 0.95",
+            "ci95": [
+              0.9533,
+              1.0337
+            ],
+            "ci_resolved": true,
             "compared": "/ archetype",
             "noise_band": 0.0678,
             "point": "w01_steady_uniform",
@@ -1078,12 +1422,18 @@
         "verdict": "FALSIFIED"
       },
       {
+        "ci": "unresolved",
         "claim": "no ECS workload slower than archetype by more than 5%",
         "decided_within_noise": true,
         "id": "P3",
         "instances": [
           {
             "bound": "at most 1.05",
+            "ci95": [
+              0.9533,
+              1.0337
+            ],
+            "ci_resolved": true,
             "compared": "/ archetype",
             "noise_band": 0.0678,
             "point": "w01_steady_uniform",
@@ -1094,6 +1444,11 @@
           },
           {
             "bound": "at most 1.05",
+            "ci95": [
+              0.9592,
+              1.0025
+            ],
+            "ci_resolved": true,
             "compared": "/ archetype",
             "noise_band": 0.0295,
             "point": "w02_query_heavy",
@@ -1104,6 +1459,11 @@
           },
           {
             "bound": "at most 1.05",
+            "ci95": [
+              0.9128,
+              1.0175
+            ],
+            "ci_resolved": true,
             "compared": "/ archetype",
             "noise_band": 0.095,
             "point": "w03_structural_churn",
@@ -1114,6 +1474,11 @@
           },
           {
             "bound": "at most 1.05",
+            "ci95": [
+              0.952,
+              1.0049
+            ],
+            "ci_resolved": true,
             "compared": "/ archetype",
             "noise_band": 0.0392,
             "point": "w04_random_access",
@@ -1124,6 +1489,11 @@
           },
           {
             "bound": "at most 1.05",
+            "ci95": [
+              0.9691,
+              1.3674
+            ],
+            "ci_resolved": false,
             "compared": "/ archetype",
             "noise_band": 0.0085,
             "point": "w05_small_world",
@@ -1134,6 +1504,11 @@
           },
           {
             "bound": "at most 1.05",
+            "ci95": [
+              0.9794,
+              1.0734
+            ],
+            "ci_resolved": false,
             "compared": "/ archetype",
             "noise_band": 0.0609,
             "point": "h01_zipf_hotspot",
@@ -1144,6 +1519,11 @@
           },
           {
             "bound": "at most 1.05",
+            "ci95": [
+              0.9044,
+              0.9962
+            ],
+            "ci_resolved": true,
             "compared": "/ archetype",
             "noise_band": 0.0429,
             "point": "h02_bursty_spawn",
@@ -1154,6 +1534,11 @@
           },
           {
             "bound": "at most 1.05",
+            "ci95": [
+              0.8194,
+              0.9806
+            ],
+            "ci_resolved": true,
             "compared": "/ archetype",
             "noise_band": 0.0918,
             "point": "h03_stale_handles",
@@ -1164,6 +1549,11 @@
           },
           {
             "bound": "at most 1.05",
+            "ci95": [
+              0.9645,
+              1.5025
+            ],
+            "ci_resolved": false,
             "compared": "/ archetype",
             "noise_band": 0.0201,
             "point": "h04_recent_locality",
@@ -1174,6 +1564,11 @@
           },
           {
             "bound": "at most 1.05",
+            "ci95": [
+              0.8894,
+              0.943
+            ],
+            "ci_resolved": true,
             "compared": "/ archetype",
             "noise_band": 0.0239,
             "point": "h05_sparse_component",
@@ -1188,12 +1583,18 @@
     ],
     "grid_ring_knn": [
       {
+        "ci": "resolved",
         "claim": "hs03_knn_heavy at most 0.5x uniform_grid's",
         "decided_within_noise": false,
         "id": "P1",
         "instances": [
           {
             "bound": "at most 0.5",
+            "ci95": [
+              0.3836,
+              0.3882
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0064,
             "point": "hs03_knn_heavy",
@@ -1206,12 +1607,18 @@
         "verdict": "HELD"
       },
       {
+        "ci": "resolved",
         "claim": "s05_small_world at most 0.7x uniform_grid's",
         "decided_within_noise": false,
         "id": "P2",
         "instances": [
           {
             "bound": "at most 0.7",
+            "ci95": [
+              0.6529,
+              0.6617
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0068,
             "point": "s05_small_world",
@@ -1224,12 +1631,18 @@
         "verdict": "HELD"
       },
       {
+        "ci": "unresolved",
         "claim": "on no spatial workload slower than uniform_grid by more than 10%",
         "decided_within_noise": true,
         "id": "P3",
         "instances": [
           {
             "bound": "at most 1.1",
+            "ci95": [
+              0.8571,
+              0.8754
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0108,
             "point": "s01_steady_uniform",
@@ -1240,6 +1653,11 @@
           },
           {
             "bound": "at most 1.1",
+            "ci95": [
+              0.8076,
+              0.9561
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0632,
             "point": "s02_dense_clustered",
@@ -1250,6 +1668,11 @@
           },
           {
             "bound": "at most 1.1",
+            "ci95": [
+              0.8422,
+              0.9261
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0608,
             "point": "s03_wide_radius",
@@ -1260,6 +1683,11 @@
           },
           {
             "bound": "at most 1.1",
+            "ci95": [
+              0.9095,
+              0.9186
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0068,
             "point": "s04_teleport",
@@ -1270,6 +1698,11 @@
           },
           {
             "bound": "at most 1.1",
+            "ci95": [
+              0.6529,
+              0.6617
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0068,
             "point": "s05_small_world",
@@ -1280,6 +1713,11 @@
           },
           {
             "bound": "at most 1.1",
+            "ci95": [
+              0.8996,
+              1.4687
+            ],
+            "ci_resolved": false,
             "compared": "/ uniform_grid",
             "noise_band": 0.0893,
             "point": "hs01_rewind_all_moving",
@@ -1290,6 +1728,11 @@
           },
           {
             "bound": "at most 1.1",
+            "ci95": [
+              0.5106,
+              0.7422
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.1555,
             "point": "hs02_rewind_few_moving",
@@ -1300,6 +1743,11 @@
           },
           {
             "bound": "at most 1.1",
+            "ci95": [
+              0.3836,
+              0.3882
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0064,
             "point": "hs03_knn_heavy",
@@ -1310,6 +1758,11 @@
           },
           {
             "bound": "at most 1.1",
+            "ci95": [
+              0.9922,
+              1.0334
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0169,
             "point": "hs04_flat_world",
@@ -1320,6 +1773,11 @@
           },
           {
             "bound": "at most 1.1",
+            "ci95": [
+              0.9388,
+              1.2064
+            ],
+            "ci_resolved": false,
             "compared": "/ uniform_grid",
             "noise_band": 0.2161,
             "point": "hs05_spawn_churn",
@@ -1332,6 +1790,7 @@
         "verdict": "HELD"
       },
       {
+        "ci": "no interval",
         "claim": "spatial_knn fixed_world at population 1000 at least 3x faster than uniform_grid",
         "decided_within_noise": false,
         "id": "P4a",
@@ -1350,6 +1809,7 @@
         "verdict": "FALSIFIED"
       },
       {
+        "ci": "no interval",
         "claim": "spatial_knn fixed_density time exponent no higher than uniform_grid's",
         "decided_within_noise": false,
         "id": "P4b",
@@ -1370,12 +1830,18 @@
     ],
     "grid_undo_log": [
       {
+        "ci": "resolved",
         "claim": "hs02_rewind_few_moving tail latency below uniform_grid under snapshot-and-rebuild",
         "decided_within_noise": true,
         "id": "P1",
         "instances": [
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.2227,
+              0.4433
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.7295,
             "point": "hs02_rewind_few_moving",
@@ -1388,6 +1854,7 @@
         "verdict": "HELD"
       },
       {
+        "ci": "no interval",
         "claim": "hs02_rewind_few_moving memory below uniform_grid under snapshot-and-rebuild",
         "decided_within_noise": false,
         "id": "P2",
@@ -1406,12 +1873,18 @@
         "verdict": "HELD"
       },
       {
+        "ci": "resolved",
         "claim": "hs01_rewind_all_moving tail latency above uniform_grid's (the log should lose)",
         "decided_within_noise": false,
         "id": "P3",
         "instances": [
           {
             "bound": "above 1.0",
+            "ci95": [
+              1.247,
+              2.163
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.2066,
             "point": "hs01_rewind_all_moving",
@@ -1426,12 +1899,18 @@
     ],
     "grouped_sparse_set": [
       {
+        "ci": "unresolved",
         "claim": "h05_sparse_component closes at least half the gap from sparse_set to archetype",
         "decided_within_noise": false,
         "id": "P1",
         "instances": [
           {
             "bound": "at least 0.5",
+            "ci95": [
+              0.4464,
+              0.6342
+            ],
+            "ci_resolved": false,
             "compared": "gap sparse_set to archetype closed",
             "noise_band": 0.0376,
             "point": "h05_sparse_component",
@@ -1444,12 +1923,18 @@
         "verdict": "HELD"
       },
       {
+        "ci": "resolved",
         "claim": "w01 and w02 at least 15% faster than sparse_set",
         "decided_within_noise": false,
         "id": "P2",
         "instances": [
           {
             "bound": "at most 0.85",
+            "ci95": [
+              0.7344,
+              0.7807
+            ],
+            "ci_resolved": true,
             "compared": "/ sparse_set",
             "noise_band": 0.0263,
             "point": "w01_steady_uniform",
@@ -1460,6 +1945,11 @@
           },
           {
             "bound": "at most 0.85",
+            "ci95": [
+              0.8502,
+              0.9082
+            ],
+            "ci_resolved": true,
             "compared": "/ sparse_set",
             "noise_band": 0.0308,
             "point": "w02_query_heavy",
@@ -1472,12 +1962,18 @@
         "verdict": "FALSIFIED"
       },
       {
+        "ci": "resolved",
         "claim": "w03_structural_churn within 15% of sparse_set either way",
         "decided_within_noise": false,
         "id": "P3",
         "instances": [
           {
             "bound": "within 0.15",
+            "ci95": [
+              0.6071,
+              0.6378
+            ],
+            "ci_resolved": true,
             "compared": "/ sparse_set",
             "noise_band": 0.0116,
             "point": "w03_structural_churn",
@@ -1492,12 +1988,18 @@
     ],
     "morton_lbvh": [
       {
+        "ci": "resolved",
         "claim": "s02_dense_clustered median tick lower than uniform_grid's",
         "decided_within_noise": false,
         "id": "P1a",
         "instances": [
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.5041,
+              0.6174
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0483,
             "point": "s02_dense_clustered",
@@ -1510,6 +2012,7 @@
         "verdict": "HELD"
       },
       {
+        "ci": "no interval",
         "claim": "s02_dense_clustered peak memory at most half of uniform_grid's",
         "decided_within_noise": false,
         "id": "P1b",
@@ -1528,12 +2031,18 @@
         "verdict": "HELD"
       },
       {
+        "ci": "resolved",
         "claim": "hs03_knn_heavy median tick lower than uniform_grid's",
         "decided_within_noise": false,
         "id": "P2",
         "instances": [
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.5183,
+              0.5471
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0058,
             "point": "hs03_knn_heavy",
@@ -1546,12 +2055,18 @@
         "verdict": "HELD"
       },
       {
+        "ci": "resolved",
         "claim": "s01_steady_uniform within 1.5x of uniform_grid",
         "decided_within_noise": false,
         "id": "P3",
         "instances": [
           {
             "bound": "at most 1.5",
+            "ci95": [
+              1.02,
+              1.0677
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0193,
             "point": "s01_steady_uniform",
@@ -1564,12 +2079,18 @@
         "verdict": "HELD"
       },
       {
+        "ci": "resolved",
         "claim": "beats morton_sorted on all ten spatial workloads",
         "decided_within_noise": false,
         "id": "P4",
         "instances": [
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.231,
+              0.2438
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0259,
             "point": "s01_steady_uniform",
@@ -1580,6 +2101,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.332,
+              0.3621
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0523,
             "point": "s02_dense_clustered",
@@ -1590,6 +2116,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.3226,
+              0.3379
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.013,
             "point": "s03_wide_radius",
@@ -1600,6 +2131,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.2306,
+              0.2692
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0551,
             "point": "s04_teleport",
@@ -1610,6 +2146,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.1722,
+              0.1767
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0109,
             "point": "s05_small_world",
@@ -1620,6 +2161,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.3214,
+              0.3327
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0108,
             "point": "hs01_rewind_all_moving",
@@ -1630,6 +2176,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.1971,
+              0.2541
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0261,
             "point": "hs02_rewind_few_moving",
@@ -1640,6 +2191,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.0907,
+              0.0956
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0047,
             "point": "hs03_knn_heavy",
@@ -1650,6 +2206,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.3775,
+              0.3923
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0346,
             "point": "hs04_flat_world",
@@ -1660,6 +2221,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.2743,
+              0.301
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0423,
             "point": "hs05_spawn_churn",
@@ -1672,6 +2238,7 @@
         "verdict": "HELD"
       },
       {
+        "ci": "no interval",
         "claim": "spatial_move time exponent at least 0.8",
         "decided_within_noise": false,
         "id": "P5a",
@@ -1700,6 +2267,7 @@
         "verdict": "HELD"
       },
       {
+        "ci": "no interval",
         "claim": "spatial_query_radius fixed_density time exponent at most 0.25",
         "decided_within_noise": false,
         "id": "P5b",
@@ -1718,6 +2286,7 @@
         "verdict": "HELD"
       },
       {
+        "ci": "no interval",
         "claim": "spatial_move fixed_world memory exponent at least 0.9",
         "decided_within_noise": false,
         "id": "P6a",
@@ -1736,6 +2305,7 @@
         "verdict": "HELD"
       },
       {
+        "ci": "no interval",
         "claim": "spatial_query_radius fixed_world memory exponent at least 0.9",
         "decided_within_noise": false,
         "id": "P6b",
@@ -1754,6 +2324,7 @@
         "verdict": "HELD"
       },
       {
+        "ci": "no interval",
         "claim": "spatial_knn fixed_world memory exponent at least 0.9",
         "decided_within_noise": false,
         "id": "P6c",
@@ -1774,12 +2345,18 @@
     ],
     "soa": [
       {
+        "ci": "resolved",
         "claim": "narrow queries faster than aos (w02_query_heavy)",
         "decided_within_noise": false,
         "id": "P1",
         "instances": [
           {
             "bound": "below 1.0",
+            "ci95": [
+              1.0343,
+              1.1261
+            ],
+            "ci_resolved": true,
             "compared": "/ aos",
             "noise_band": 0.0357,
             "point": "w02_query_heavy",
@@ -1792,12 +2369,18 @@
         "verdict": "FALSIFIED"
       },
       {
+        "ci": "resolved",
         "claim": "multi-component point access slower than aos (w07_point_wide)",
         "decided_within_noise": true,
         "id": "P2",
         "instances": [
           {
             "bound": "above 1.0",
+            "ci95": [
+              1.0136,
+              1.1068
+            ],
+            "ci_resolved": true,
             "compared": "/ aos",
             "noise_band": 0.066,
             "point": "w07_point_wide",
@@ -1810,6 +2393,7 @@
         "verdict": "HELD"
       },
       {
+        "ci": "no interval",
         "claim": "smaller footprint than aos on every ECS workload",
         "decided_within_noise": false,
         "id": "P3",
@@ -1940,12 +2524,18 @@
     ],
     "sparse_set": [
       {
+        "ci": "resolved",
         "claim": "on h05_sparse_component beats every layout that scans the whole index space",
         "decided_within_noise": false,
         "id": "P1",
         "instances": [
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.4991,
+              0.5885
+            ],
+            "ci_resolved": true,
             "compared": "/ aos",
             "noise_band": 0.0361,
             "point": "h05_sparse_component",
@@ -1956,6 +2546,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.7887,
+              0.8468
+            ],
+            "ci_resolved": true,
             "compared": "/ soa",
             "noise_band": 0.0223,
             "point": "h05_sparse_component",
@@ -1970,12 +2565,18 @@
     ],
     "spatial_hash": [
       {
+        "ci": "unresolved",
         "claim": "slower than uniform_grid on every spatial workload",
         "decided_within_noise": true,
         "id": "P1",
         "instances": [
           {
             "bound": "above 1.0",
+            "ci95": [
+              1.3311,
+              1.5428
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.034,
             "point": "hs01_rewind_all_moving",
@@ -1986,6 +2587,11 @@
           },
           {
             "bound": "above 1.0",
+            "ci95": [
+              1.889,
+              2.6851
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.1498,
             "point": "hs02_rewind_few_moving",
@@ -1996,6 +2602,11 @@
           },
           {
             "bound": "above 1.0",
+            "ci95": [
+              3.7328,
+              3.8356
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0077,
             "point": "hs03_knn_heavy",
@@ -2006,6 +2617,11 @@
           },
           {
             "bound": "above 1.0",
+            "ci95": [
+              1.1638,
+              1.495
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.2049,
             "point": "hs04_flat_world",
@@ -2016,6 +2632,11 @@
           },
           {
             "bound": "above 1.0",
+            "ci95": [
+              1.7462,
+              1.8043
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0182,
             "point": "hs05_spawn_churn",
@@ -2026,6 +2647,11 @@
           },
           {
             "bound": "above 1.0",
+            "ci95": [
+              1.0306,
+              1.0796
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0417,
             "point": "hs06_mixed_reach",
@@ -2036,6 +2662,11 @@
           },
           {
             "bound": "above 1.0",
+            "ci95": [
+              1.1712,
+              1.2773
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0644,
             "point": "hs07_crowd",
@@ -2046,6 +2677,11 @@
           },
           {
             "bound": "above 1.0",
+            "ci95": [
+              1.1468,
+              1.2221
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0155,
             "point": "hs08_crowd_rollback",
@@ -2056,6 +2692,11 @@
           },
           {
             "bound": "above 1.0",
+            "ci95": [
+              2.0718,
+              2.1979
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0269,
             "point": "s01_steady_uniform",
@@ -2066,6 +2707,11 @@
           },
           {
             "bound": "above 1.0",
+            "ci95": [
+              0.8731,
+              1.1084
+            ],
+            "ci_resolved": false,
             "compared": "/ uniform_grid",
             "noise_band": 0.0496,
             "point": "s02_dense_clustered",
@@ -2076,6 +2722,11 @@
           },
           {
             "bound": "above 1.0",
+            "ci95": [
+              0.9443,
+              1.0369
+            ],
+            "ci_resolved": false,
             "compared": "/ uniform_grid",
             "noise_band": 0.061,
             "point": "s03_wide_radius",
@@ -2086,6 +2737,11 @@
           },
           {
             "bound": "above 1.0",
+            "ci95": [
+              2.0757,
+              2.1173
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0154,
             "point": "s04_teleport",
@@ -2096,6 +2752,11 @@
           },
           {
             "bound": "above 1.0",
+            "ci95": [
+              2.8617,
+              2.9926
+            ],
+            "ci_resolved": true,
             "compared": "/ uniform_grid",
             "noise_band": 0.0276,
             "point": "s05_small_world",
@@ -2108,6 +2769,7 @@
         "verdict": "FALSIFIED"
       },
       {
+        "ci": "no interval",
         "claim": "less memory than uniform_grid on s02_dense_clustered",
         "decided_within_noise": false,
         "id": "P2",
@@ -2128,12 +2790,18 @@
     ],
     "uniform_grid": [
       {
+        "ci": "resolved",
         "claim": "the fastest candidate on an evenly spread world (s01_steady_uniform)",
         "decided_within_noise": false,
         "id": "P1",
         "instances": [
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.2492,
+              0.2571
+            ],
+            "ci_resolved": true,
             "compared": "/ axis_sorted",
             "noise_band": 0.0146,
             "point": "s01_steady_uniform",
@@ -2144,6 +2812,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.0766,
+              0.0784
+            ],
+            "ci_resolved": true,
             "compared": "/ brute_force",
             "noise_band": 0.0116,
             "point": "s01_steady_uniform",
@@ -2154,6 +2827,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.2225,
+              0.2325
+            ],
+            "ci_resolved": true,
             "compared": "/ morton_sorted",
             "noise_band": 0.0236,
             "point": "s01_steady_uniform",
@@ -2164,6 +2842,11 @@
           },
           {
             "bound": "below 1.0",
+            "ci95": [
+              0.455,
+              0.4827
+            ],
+            "ci_resolved": true,
             "compared": "/ spatial_hash",
             "noise_band": 0.0269,
             "point": "s01_steady_uniform",
