@@ -8,18 +8,20 @@ porter of the cell-based candidates wrote `x1` to `x6`, which have no header.
 The header of `dgr01_nan_typical_radius` describes the C build before
 `a6804f7`; both builds now behave as the table below says.
 
-They are not part of the measured suite. `runner/orchestrate.py`, `verify.py`
-and `equivalence.py` read only `public/` and `hidden/`. `verify.py` and
-`equivalence.py` take these files with `--extra`. `verify.py` does not filter
-`--extra` by track, so pass only the files of the binary's track. Also leave
-out `dgr01_nan_typical_radius`, or set a short `--timeout`, for the candidates
-it hangs:
+They are not part of the measured suite. `runner/orchestrate.py` and
+`equivalence.py` read only `public/` and `hidden/`, and `verify.py` reads
+those and `regression/`. `verify.py` and `equivalence.py` take these files
+with `--extra`. `verify.py` does not filter `--extra` by track, so pass only
+the files of the binary's track. `dgr01_nan_typical_radius` and
+`xb4_overflow_world` are now refused, so they report `workload_error`:
 
     python3 runner/verify.py gds_spatial_morton_lbvh --timeout 60 \
         --extra $(grep -l '^track: spatial' workloads/port_review/*.workload)
 
-Both the C and the C++ builds fail two of these files in the same way. These
-failures are open defects of the C++ suite:
+Both the C and the C++ builds failed two of these files in the same way. Since
+`7e3f30b` the parser refuses both files (`status: workload_error`), and
+`workloads/regression/rejected/` keeps a copy of each that `runner/verify.py`
+checks is refused. What the two files did before that:
 
 | workload | what happens | candidates |
 |---|---|---|

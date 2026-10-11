@@ -106,6 +106,18 @@ candidates the same way and how much of that question the noise lets through.
 They were written for the C11 port and are kept for the next change of
 toolchain.
 
+Two tools measure the measurement: `runner/noise_probe.py` runs one binary on
+one workload many times under several conditions (pinned to a CPU, without
+ASLR, with glibc keeping freed memory) next to `runner/noise_control.cpp`, a
+control with no candidate in it, and `runner/noise_stats.py` says from that
+data whether the noise is slow or fast and how many repetitions a claim of a
+given size needs. `runner/replication_compare.py` compares two judgments of
+the same predictions, e.g. an original run and a replication, against a
+forecast written before the replication. `benchmarks/noise.md` has what they
+found: the machine `results.json` was measured on was about 8 times quieter
+than the one used since, and 8 of the 14 verdicts its intervals left
+unresolved went the other way on the second machine.
+
 Requirements: CMake 3.20+, a C++20 compiler, Python 3.9+ with PyYAML (used only
 to read candidate manifests). On four shared cores `run_all.py` took 37 minutes
 for the current population: 24 for the suite, 1 for the floor, 12 for the
@@ -269,7 +281,11 @@ and `benchmarks/scaling.json` and writes `benchmarks/predictions.md`: HELD,
 FALSIFIED, or UNTESTED when a point it needs was not measured. A point closer to
 its bound than the spread between repetitions of the measurements it came from
 is marked *within noise*, because a verdict resting on it is weak whichever way
-it went. The prediction is written before the candidate is measured and is never
+it went. Each point of a step percentile also gets a 95% bootstrap interval,
+from resampling the repetitions of every measurement it uses, and a verdict is
+*resolved* when the intervals lie on its side of the bound and *unresolved*
+when they cross it (`benchmarks/noise.md` has why resampling repetitions
+independently fits this machine). Neither mark changes the verdict. The prediction is written before the candidate is measured and is never
 edited to match a number.
 
 The first time the old prose predictions were judged this way, one verdict
@@ -296,7 +312,10 @@ The format is flat `key: value`; unknown keys are an error rather than being
 ignored, because a silently dropped field makes two different experiments look
 like the same one. `workloads/public/*.workload` and `workloads/hidden/*.workload`
 carry the current set, and each file's comment header states which hypothesis it
-is meant to break.
+is meant to break. `workloads/regression/` holds files that once reached a
+defect; they are verified with the suite and never measured, and
+`workloads/regression/rejected/` holds files outside the domain of a workload
+(NaN, infinity, a length above 1e18), which every binary must refuse.
 
 Held-out workloads are not merely unused during development. The report ranks
 every candidate on public and hidden workloads separately and prints the
@@ -394,7 +413,9 @@ reaches:
 It found two latent defects as well: `sparse_set`'s query of an empty mask, and
 undefined float-to-integer conversions in `spatial_hash` and `morton_sorted`.
 All of these are recorded there, and `workloads/port_review/` reproduces the
-first two.
+first two. They were fixed afterwards (`7e3f30b`): the parsers refuse NaN,
+infinity and lengths above 1e18, and both sparse-set candidates answer the
+empty mask.
 
 ## Current results
 

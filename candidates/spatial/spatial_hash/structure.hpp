@@ -127,8 +127,13 @@ class SpatialHash {
     EntityId head = kNoEntity;
   };
 
+  // Clamped to the 21 bits pack() keeps before the conversion: converting a
+  // float outside the range of int32 is undefined, and a query box with a
+  // radius far larger than the world reaches that. Inside the clamp nothing
+  // changes; outside it the cells already aliased in pack().
   std::int32_t axis_cell(float v, float lo) const {
-    return static_cast<std::int32_t>(std::floor((v - lo) * inv_cell_));
+    const float c = std::floor((v - lo) * inv_cell_);
+    return static_cast<std::int32_t>(std::clamp(c, -1048576.0f, 1048575.0f));
   }
 
   // Three signed cell coordinates biased into 21 unsigned bits each. The world

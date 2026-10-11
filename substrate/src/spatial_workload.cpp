@@ -96,8 +96,15 @@ bool parse_spatial_text(const std::string& text, SpatialSpec& out, std::string& 
       dst = static_cast<std::uint32_t>(u);
       return true;
     };
+    // NaN and infinity are numbers to strtod. Neither is a length or a rate,
+    // and a NaN radius made six candidates loop forever (workloads/port_review,
+    // dgr01_nan_typical_radius), so a file that writes one is rejected here.
     auto need_f = [&](float& dst) {
       if (!parse_double(val, d)) { error = key + ": expected a number"; return false; }
+      if (!std::isfinite(d) || !std::isfinite(static_cast<float>(d))) {
+        error = key + ": expected a finite number that fits a float";
+        return false;
+      }
       dst = static_cast<float>(d);
       return true;
     };
@@ -151,6 +158,25 @@ bool parse_spatial_text(const std::string& text, SpatialSpec& out, std::string& 
     error = "set move_fraction or moves_per_tick, not both: they are two ways of "
             "saying the same thing and a file that sets both does not say which it means";
     return false;
+  }
+  // The domain of a spatial workload. Every structure compares squared
+  // distances in float, and FLT_MAX is about 3.4e38: with every length at most
+  // 1e18 the largest squared distance, corner to corner, is 3e36, and a squared
+  // radius is at most 1e36, so no comparison meets infinity. A world 3e38
+  // across (workloads/port_review/xb4_overflow_world) put nine of the ten
+  // non-oracle candidates outside what they were written for; such a world is
+  // not something this suite asks about, so it is refused instead of measured.
+  constexpr float kMaxLength = 1e18f;
+  const struct { const char* name; float v; } lengths[] = {
+      {"world_size", out.world_size}, {"world_height", out.world_height},
+      {"speed_min", out.speed_min}, {"speed_max", out.speed_max},
+      {"flock_speed", out.flock_speed}, {"cluster_radius", out.cluster_radius},
+      {"query_radius_min", out.query_radius_min}, {"query_radius_max", out.query_radius_max}};
+  for (const auto& l : lengths) {
+    if (l.v < 0.0f || l.v > kMaxLength) {
+      error = std::string(l.name) + ": must be between 0 and 1e18";
+      return false;
+    }
   }
   if (out.rewind_every > 0 && out.history_ticks < out.rewind_depth) {
     out.history_ticks = out.rewind_depth;

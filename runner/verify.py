@@ -6,7 +6,9 @@ every manifest in the tree and checks each candidate against its own
 `expect_verify`. That is the wrong tool while a candidate is being written,
 because one malformed manifest anywhere stops it. This one reads no manifests:
 it takes binary names, infers the track from the name, and runs `--mode verify`
-on every workload of that track, plus any extra workload files given.
+on every workload of that track in `workloads/public`, `hidden` and
+`regression`, plus any extra workload files given. It also checks that every
+file of the track in `workloads/regression/rejected` is refused by the parser.
 
     python3 runner/verify.py gds_spatial_uniform_grid --build-dir build
     python3 runner/verify.py gds_spatial_mine --extra /tmp/adversarial/*.workload
@@ -44,6 +46,8 @@ def main():
     ap.add_argument("--build-dir", default=str(ROOT / "build"))
     ap.add_argument("--extra", nargs="*", default=[], help="additional workload files")
     ap.add_argument("--timeout", type=int, default=900)
+    ap.add_argument("--dirs", nargs="*", default=["public", "hidden", "regression"],
+                    help="directories under workloads/ to verify against")
     args = ap.parse_args()
 
     failures = 0
@@ -54,7 +58,9 @@ def main():
             failures += 1
             continue
         track = track_of(name)
-        paths = [p for vis in ("public", "hidden")
+        # regression/ holds workloads that reached a defect once; they are
+        # verified with the suite and never measured.
+        paths = [p for vis in args.dirs
                  for p in sorted((ROOT / "workloads" / vis).glob("*.workload"))
                  if workload_track(p) == track]
         paths += [Path(p) for p in args.extra]
@@ -71,6 +77,25 @@ def main():
             if status != "passed":
                 failures += 1
             print(f"{name:32s} {p.name:36s} {status} {r.get('failure', '')}")
+        # Files outside the domain of a workload: the binary must refuse each one
+        # before running anything.
+        for p in sorted((ROOT / "workloads" / "regression" / "rejected").glob("*.workload")):
+            if workload_track(p) != track:
+                continue
+            try:
+                proc = subprocess.run([str(binary), "--workload", str(p), "--mode", "verify"],
+                                      capture_output=True, text=True, timeout=60)
+                r = json.loads(proc.stdout)
+            except subprocess.TimeoutExpired:
+                r = {"status": "timeout"}
+            except json.JSONDecodeError:
+                r = {"status": "crashed"}
+            status = r.get("status")
+            refused = status == "workload_error"
+            if not refused:
+                failures += 1
+            print(f"{name:32s} {p.name:36s} {'refused' if refused else 'NOT REFUSED: ' + str(status)} "
+                  f"{r.get('error', '')}")
     sys.exit(1 if failures else 0)
 
 

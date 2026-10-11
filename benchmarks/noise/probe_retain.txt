@@ -1,0 +1,13 @@
+round 1/8 done
+round 2/8 done
+round 3/8 done
+round 4/8 done
+round 5/8 done
+round 6/8 done
+round 7/8 done
+round 8/8 done
+binary                       workload               condition      total within  between    iqr   p50 within  between    iqr  steal    faults    sys
+gds_ecs_aos                  w01_steady_uniform     plain                 32.7%    41.1%  11.0%        37.1%    50.0%   9.4%     28     10210   1.0%
+gds_ecs_aos                  w01_steady_uniform     retain                22.7%    43.7%  15.8%        25.1%    41.2%  11.7%     25      8491   0.9%
+gds_spatial_uniform_grid     s01_steady_uniform     plain                 26.9%    24.1%  17.8%        31.3%    36.4%  17.4%     15     63344   8.7%
+gds_spatial_uniform_grid     s01_steady_uniform     retain                20.8%    47.6%  19.3%        23.7%    49.5%  24.0%     23     62896  34.8%

@@ -50,6 +50,7 @@ verdict: it says how much weight the verdict can carry.
 
 import argparse
 import json
+import random
 import statistics
 import sys
 from pathlib import Path
@@ -150,6 +151,15 @@ class Data:
             return float(statistics.median(reps)), spread(reps)
         return float(m[metric]), spread(reps)
 
+    def suite_reps(self, candidate, workload, metric):
+        """Per-repetition values of a step percentile, or None."""
+        m = self.results.get("measurements", {}).get(candidate, {}).get(workload)
+        if not m or m.get("status") != "ok":
+            return None
+        reps = {"step_ns_p50": m.get("repetition_step_ns_p50"),
+                "step_ns_p99": m.get("repetition_step_ns_p99")}.get(metric)
+        return [float(x) for x in reps] if reps else None
+
     def sweep_regimes(self, family):
         # A family that varies a workload key has no regimes; its one curve is
         # addressed with the regime None.
@@ -180,6 +190,47 @@ class Data:
         if want not in xs or key not in row:
             return None
         return float(row[key][xs.index(want)]), None
+
+
+BOOT_DRAWS = 2000
+
+
+def bootstrap_interval(fn, rep_lists, seed):
+    """95% interval of fn(medians) when every list of repetitions is resampled.
+
+    runner/noise_stats.py found consecutive repetitions uncorrelated (lag-1
+    autocorrelation between -0.18 and 0.05 on ten candidate-workload cells),
+    so resampling repetitions independently is the model the data supports.
+    """
+    rng = random.Random(seed)
+    vals = []
+    for _ in range(BOOT_DRAWS):
+        meds = [statistics.median(rng.choices(r, k=len(r))) for r in rep_lists]
+        try:
+            vals.append(fn(*meds))
+        except ZeroDivisionError:
+            continue
+    if len(vals) < BOOT_DRAWS // 2:
+        return None
+    vals.sort()
+    return vals[int(0.025 * len(vals))], vals[int(0.975 * len(vals)) - 1]
+
+
+def interval_side(lo, hi, p):
+    """'held' or 'falsified' if the whole interval falls on one side of the bound, else None."""
+    if "within" in p:
+        w = float(p["within"])
+        if 1 - w <= lo and hi <= 1 + w:
+            return "held"
+        if hi < 1 - w or lo > 1 + w:
+            return "falsified"
+        return None
+    a, b = check_bound(lo, p)[0], check_bound(hi, p)[0]
+    if a and b:
+        return "held"
+    if not a and not b:
+        return "falsified"
+    return None
 
 
 def check_bound(x, p):
@@ -245,8 +296,14 @@ def evaluate(candidate, p, data):
         poor_fit = (p["metric"] in ("time_exponent", "memory_exponent")
                     and mine_aux is not None and mine_aux < 0.9)
 
-        ratios = []  # (x, description, extra noise)
+        ratios = []  # (x, description, extra noise, (fn, repetition lists) or None)
         missing = None
+        metric = p["metric"]
+
+        def boot(fn, *cands_and_workloads):
+            lists = [data.suite_reps(c, w, metric) if kind == "suite" else None
+                     for c, w in cands_and_workloads]
+            return (fn, lists) if all(lists) else None
         if "against" in p:
             others = p["against"] if isinstance(p["against"], list) else [p["against"]]
             for o in others:
@@ -257,10 +314,11 @@ def evaluate(candidate, p, data):
                 if p["metric"] in ("time_exponent", "memory_exponent"):
                     # An exponent near zero makes a ratio meaningless, so two
                     # exponents are compared by their difference.
-                    ratios.append((value - t[0], f"- {o}", 0.0))
+                    ratios.append((value - t[0], f"- {o}", 0.0, None))
                 else:
                     ratios.append((value / t[0], f"/ {o}",
-                                   t[1] if isinstance(t[1], float) else 0.0))
+                                   t[1] if isinstance(t[1], float) else 0.0,
+                                   boot(lambda a, b: a / b, (candidate, where), (o, where))))
         elif "against_min" in p:
             ts = [(o, fetch(o)) for o in p["against_min"]]
             lacking = [o for o, t in ts if t is None]
@@ -269,13 +327,17 @@ def evaluate(candidate, p, data):
             else:
                 o, t = min(ts, key=lambda ot: ot[1][0])
                 ratios.append((value / t[0], f"/ min = {o}",
-                               t[1] if isinstance(t[1], float) else 0.0))
+                               t[1] if isinstance(t[1], float) else 0.0,
+                               boot(lambda a, *bs: a / min(bs), (candidate, where),
+                                    *[(c, where) for c in p["against_min"]])))
         elif "against_workload" in p:
             t = data.suite(candidate, p["against_workload"], p["metric"])
             if t is None:
                 missing = f"{candidate} on {p['against_workload']}"
             else:
-                ratios.append((value / t[0], f"/ own {p['against_workload']}", t[1]))
+                ratios.append((value / t[0], f"/ own {p['against_workload']}", t[1],
+                               boot(lambda a, b: a / b, (candidate, where),
+                                    (candidate, p["against_workload"]))))
         elif "gap_closed" in p:
             a, b = p["gap_closed"]["from"], p["gap_closed"]["to"]
             ta, tb = fetch(a), fetch(b)
@@ -285,24 +347,38 @@ def evaluate(candidate, p, data):
                 missing = f"no gap between {a} and {b}"
             else:
                 ratios.append(((ta[0] - value) / (ta[0] - tb[0]), f"gap {a} to {b} closed",
-                               max(ta[1] or 0.0, tb[1] or 0.0)))
+                               max(ta[1] or 0.0, tb[1] or 0.0),
+                               boot(lambda v, x, y: (x - v) / (x - y), (candidate, where),
+                                    (a, where), (b, where))))
         else:
-            ratios.append((value, "", 0.0))
+            ratios.append((value, "", 0.0, boot(lambda v: v, (candidate, where))))
 
         if missing is not None:
             instances.append({"point": label, "status": "untested",
                               "reason": f"{missing} not measured here"})
             continue
-        for x, desc, other_noise in ratios:
+        for x, desc, other_noise, bootspec in ratios:
             ok, ref = check_bound(x, p)
             band = noise + other_noise
             near = ref is not None and ref != 0 and band > 0 and abs(x - ref) / abs(ref) <= band
-            instances.append({
+            inst = {
                 "point": label, "status": "held" if ok else "falsified",
                 "value": round(x, 4), "compared": desc, "bound": bound_text(p),
                 "within_noise": bool(near), "noise_band": round(band, 4),
                 "poor_fit": bool(poor_fit),
-            })
+            }
+            # The 95% interval of the same quantity when the repetitions are
+            # resampled, and whether all of it is on the side of the bound the
+            # point estimate is on. Like the marks above, it does not change the
+            # verdict, which is the preregistered rule applied to the medians.
+            if bootspec is not None:
+                ci = bootstrap_interval(bootspec[0], bootspec[1],
+                                        f"{candidate}|{p['id']}|{label}|{desc}")
+                if ci is not None:
+                    side = interval_side(ci[0], ci[1], p)
+                    inst["ci95"] = [round(ci[0], 4), round(ci[1], 4)]
+                    inst["ci_resolved"] = side == inst["status"]
+            instances.append(inst)
 
     statuses = {i["status"] for i in instances}
     if not instances:
@@ -316,7 +392,30 @@ def evaluate(candidate, p, data):
     return {"id": p["id"], "claim": p["claim"], "verdict": verdict, "instances": instances,
             "decided_within_noise": any(i.get("within_noise") for i in instances
                                         if i["status"] == ("falsified" if verdict == "FALSIFIED"
-                                                           else "held"))}
+                                                           else "held")),
+            "ci": ci_summary(verdict, instances)}
+
+
+def ci_summary(verdict, instances):
+    """Whether the 95% intervals carry the verdict.
+
+    A HELD verdict needs every point; it is *resolved* when every point's
+    interval lies inside its bound. A FALSIFIED verdict needs one point; it is
+    resolved when at least one falsified point's interval lies outside. Points
+    without repetitions (sweeps, memory) count as resolved: they are either
+    deterministic or not resampled here, and the label says which.
+    """
+    if verdict == "HELD":
+        pts = [i for i in instances if i["status"] == "held"]
+        if any("ci95" in i and not i["ci_resolved"] for i in pts):
+            return "unresolved"
+    elif verdict == "FALSIFIED":
+        pts = [i for i in instances if i["status"] == "falsified"]
+        if not any(("ci95" not in i) or i["ci_resolved"] for i in pts):
+            return "unresolved"
+    else:
+        return ""
+    return "resolved" if any("ci95" in i for i in pts) else "no interval"
 
 
 def load_yaml(path):
@@ -350,12 +449,31 @@ def write_markdown(out, path):
     lines.append(f"**{total['HELD']} held, {total['FALSIFIED']} falsified, "
                  f"{total['UNTESTED']} untested.**")
     lines.append("")
-    lines.append("| candidate | prediction | verdict | weak |")
-    lines.append("|---|---|---|---|")
+    ci_counts = {}
+    for c in out["candidates"].values():
+        for p in c:
+            if p["verdict"] in ("HELD", "FALSIFIED"):
+                key = (p["verdict"], p.get("ci", ""))
+                ci_counts[key] = ci_counts.get(key, 0) + 1
+    lines.append(
+        "*95% interval*: each point's quantity recomputed on {} bootstrap resamples of "
+        "the repetitions of every measurement it uses. A verdict is *resolved* when the "
+        "intervals carry it (every point of a HELD prediction inside its bound, one point "
+        "of a FALSIFIED one outside), *unresolved* when the repetitions measured do not "
+        "settle it, and *no interval* when its points have no repetitions to resample "
+        "(sweeps, memory). The verdict itself is still the preregistered rule applied to "
+        "the medians.".format(BOOT_DRAWS))
+    lines.append("")
+    lines.append("; ".join(f"{v.lower()} {k or 'n/a'}: {n}"
+                           for (v, k), n in sorted(ci_counts.items())) + ".")
+    lines.append("")
+    lines.append("| candidate | prediction | verdict | weak | 95% interval |")
+    lines.append("|---|---|---|---|---|")
     for cand, preds in sorted(out["candidates"].items()):
         for p in preds:
             weak = "within noise" if p["decided_within_noise"] else ""
-            lines.append(f"| `{cand}` | {p['id']}: {p['claim']} | **{p['verdict']}** | {weak} |")
+            lines.append(f"| `{cand}` | {p['id']}: {p['claim']} | **{p['verdict']}** | {weak} "
+                         f"| {p.get('ci', '')} |")
     for cand, preds in sorted(out["candidates"].items()):
         lines.append("")
         lines.append(f"## `{cand}`")
@@ -363,18 +481,21 @@ def write_markdown(out, path):
             lines.append("")
             lines.append(f"**{p['id']} — {p['verdict']}.** {p['claim']}")
             lines.append("")
-            lines.append("| point | value | compared | bound | result | note |")
-            lines.append("|---|---:|---|---|---|---|")
+            lines.append("| point | value | 95% interval | compared | bound | result | note |")
+            lines.append("|---|---:|---|---|---|---|---|")
             for i in p["instances"]:
                 if i["status"] == "untested":
-                    lines.append(f"| {i['point']} | | | | untested | {i['reason']} |")
+                    lines.append(f"| {i['point']} | | | | | untested | {i['reason']} |")
                     continue
                 note = []
                 if i.get("within_noise"):
                     note.append(f"within noise (band {i['noise_band']:.1%})")
                 if i.get("poor_fit"):
                     note.append("poor fit")
-                lines.append(f"| {i['point']} | {i['value']} | {i['compared']} | {i['bound']} "
+                if "ci95" in i and not i["ci_resolved"]:
+                    note.append("interval crosses the bound")
+                ci = f"{i['ci95'][0]}–{i['ci95'][1]}" if "ci95" in i else ""
+                lines.append(f"| {i['point']} | {i['value']} | {ci} | {i['compared']} | {i['bound']} "
                              f"| {i['status']} | {', '.join(note)} |")
     path.write_text("\n".join(lines) + "\n")
 
@@ -412,7 +533,7 @@ def main():
     write_markdown(out, Path(args.report))
     for cand, preds in sorted(out["candidates"].items()):
         for p in preds:
-            print(f"[judge]  {cand:20s} {p['id']:4s} {p['verdict']:9s} "
+            print(f"[judge]  {cand:20s} {p['id']:4s} {p['verdict']:9s} {p.get('ci', ''):12s} "
                   f"{'(within noise) ' if p['decided_within_noise'] else ''}{p['claim']}")
     print(f"\npredictions: {args.out}\nreport:      {args.report}")
 

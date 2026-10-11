@@ -1,0 +1,12 @@
+binary                     workload             lag1 rep lag1 inv  cv all  cv in  skew  median CI95 +-:     n=1     n=5    n=15    n=45   min CI95 +-:     n=1     n=5    n=15    n=45
+noise_control              compute                 -0.12    -0.26    7.0%   2.0%  0.33                    12.4%    3.8%    2.0%    1.1%                  13.1%    2.5%    1.4%    1.0%
+noise_control              cache                    0.06    -0.43    8.4%   6.7%  0.16                    17.7%    8.7%    4.1%    2.7%                  16.8%    6.9%    3.3%    1.4%
+noise_control              memory                   0.02    -0.27    7.2%   4.9%  0.02                    13.9%    8.5%    3.8%    2.7%                  15.6%    7.7%    4.0%    1.3%
+gds_ecs_aos                w01_steady_uniform      -0.06     0.19   16.8%  13.4% -0.02                    29.9%   17.3%   12.7%    4.3%                  40.1%   17.1%    6.1%    1.6%
+gds_ecs_aos                w04_random_access       -0.18     0.46   13.5%   8.9% -0.33                    21.0%   15.4%    9.5%    3.2%                  33.2%   23.3%    8.2%    3.4%
+gds_ecs_archetype          w01_steady_uniform       0.05    -0.39   14.2%  15.6% -0.19                    20.5%   16.1%   13.3%    5.2%                  31.3%   23.7%    7.8%    5.3%
+gds_ecs_archetype          w04_random_access        0.05    -0.32   18.3%  13.8% -0.44                    28.0%   19.3%   14.9%    8.6%                  39.4%   25.3%    3.9%    1.7%
+gds_spatial_uniform_grid   s01_steady_uniform       0.05     0.50   14.6%  12.6% -0.26                    21.5%   17.1%   11.2%    7.2%                  30.5%   21.3%    9.4%    2.4%
+gds_spatial_uniform_grid   hs03_knn_heavy          -0.02    -0.16   13.8%  11.5%  0.12                    32.8%   16.1%    6.3%    4.4%                  34.4%   16.4%    7.9%    2.4%
+gds_spatial_morton_lbvh    s01_steady_uniform      -0.06     0.31   17.0%  13.3% -0.25                    24.1%   18.2%   16.3%   10.6%                  33.9%   21.9%    4.9%    3.1%
+gds_spatial_morton_lbvh    hs03_knn_heavy          -0.05     0.04   16.0%  10.2%  0.12                    34.1%   20.5%    6.6%    4.5%                  52.3%   24.0%   18.7%   10.8%
