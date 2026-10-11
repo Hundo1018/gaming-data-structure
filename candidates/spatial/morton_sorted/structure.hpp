@@ -132,11 +132,13 @@ class MortonSorted {
     return spread(x) | (spread(y) << 1) | (spread(z) << 2);
   }
 
+  // Clamped as a float, before the conversion: converting a float outside the
+  // range of long long is undefined, and a query box with a radius far larger
+  // than the world reaches that. The result is the clamp this did after the
+  // conversion before.
   std::uint32_t axis_cell(float v, float lo) const {
-    const long long i = static_cast<long long>(std::floor((v - lo) * inv_cell_));
-    if (i < 0) return 0;
-    if (i > 0x1FFFFF) return 0x1FFFFF;
-    return static_cast<std::uint32_t>(i);
+    const float c = std::floor((v - lo) * inv_cell_);
+    return static_cast<std::uint32_t>(std::clamp(c, 0.0f, 2097151.0f));
   }
 
   std::uint64_t code_of(Vec3 p) const {

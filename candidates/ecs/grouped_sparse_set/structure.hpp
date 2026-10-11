@@ -119,7 +119,15 @@ class GroupedSparseSet {
   // both is never driven from Position's or Velocity's set. Only the required
   // components the driver does not already supply are probed.
   std::uint64_t query(ComponentMask required, std::uint64_t salt) const {
-    if (required == 0) return 0;
+    if (required == 0) {
+      // Every live entity matches the empty mask, and none is in a set to
+      // drive from. The workload parser does not produce this query; the
+      // contract still asks for it.
+      const std::uint64_t d = digest_entity(0, nullptr, salt);
+      std::uint64_t acc = 0;
+      for (std::uint8_t a : alive_) acc += a ? d : 0;
+      return acc;
+    }
     const bool from_group = (required & kPair) == kPair;
     int driver = -1;
     std::size_t best = from_group ? group_size_ : ~std::size_t(0);

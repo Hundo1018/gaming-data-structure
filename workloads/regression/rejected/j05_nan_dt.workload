@@ -1,0 +1,24 @@
+# An ECS time step of nan: integrate would write NaN positions, whose digests
+# depend on which NaN each structure's arithmetic produced. Refused.
+id: j05_nan_dt
+visibility: public
+track: ecs
+seed: 7101
+initial_entities: 3000
+max_entities: 5000
+frames: 120
+ops_per_frame: 600
+w_create: 1.0
+w_destroy: 1.2
+w_add: 1.0
+w_remove: 1.0
+w_get: 1.0
+w_set: 1.0
+access: uniform
+integrate_per_frame: true
+dt: nan
+query_masks: any, position+velocity, tag, any
+p_position: 0.5
+p_velocity: 0.5
+p_health: 0.3
+p_tag: 0.3

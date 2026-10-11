@@ -147,8 +147,14 @@ bool parse_workload_text(const std::string& text, WorkloadSpec& out, std::string
       dst = static_cast<std::uint32_t>(u);
       return true;
     };
+    // As in the spatial parser: NaN and infinity parse as numbers but are no
+    // probability, weight or time step.
     auto need_f = [&](float& dst) {
       if (!parse_double(val, d)) { error = key + ": expected a number"; return false; }
+      if (!std::isfinite(d) || !std::isfinite(static_cast<float>(d))) {
+        error = key + ": expected a finite number that fits a float";
+        return false;
+      }
       dst = static_cast<float>(d);
       return true;
     };
@@ -199,6 +205,13 @@ bool parse_workload_text(const std::string& text, WorkloadSpec& out, std::string
         tok = trim(tok);
         if (tok.empty()) continue;
         ComponentMask m = 0;
+        // `any` is the empty mask: every live entity matches it. Contract
+        // rule 5 covers it, and before it could be written no workload
+        // reached a structure's handling of it.
+        if (tok == "any") {
+          out.query_masks.push_back(0);
+          continue;
+        }
         if (!parse_mask_token(tok, m)) {
           error = "query_masks: unknown component set '" + tok + "'";
           return false;

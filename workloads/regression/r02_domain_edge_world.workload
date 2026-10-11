@@ -1,0 +1,33 @@
+# The edge of the spatial domain: every length at its 1e18 limit or near it.
+# Corner to corner the squared distance is 3e36 and the largest squared radius
+# 1e36, both below FLT_MAX, so the claim that the limit keeps every structure
+# away from overflow is tested here and not only asserted. Teleports and wraps
+# across the whole world, k-nearest with k = 300 among 700, rewinds.
+id: r02_domain_edge_world
+visibility: public
+track: spatial
+seed: 7102
+world_size: 1e18
+world_height: 1e18
+initial_entities: 700
+ticks: 40
+inserts_per_tick: 10
+removes_per_tick: 10
+move_fraction: 0.3
+speed_min: 1e15
+speed_max: 1e17
+teleport_ratio: 0.3
+placement: clustered
+clusters: 5
+cluster_radius: 1e17
+radius_queries_per_tick: 16
+entity_radius_queries_per_tick: 16
+knn_queries_per_tick: 16
+query_radius_min: 1e15
+query_radius_max: 1e18
+knn_k: 300
+query_focus: clustered
+rewind_every: 9
+rewind_depth: 2
+history_ticks: 3
+verify_sweep_ticks: 1

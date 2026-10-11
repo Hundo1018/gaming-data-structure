@@ -96,7 +96,15 @@ class SparseSet {
   // of driving set is what makes the cost proportional to the rarest component
   // rather than to the entity count.
   std::uint64_t query(ComponentMask required, std::uint64_t salt) const {
-    if (required == 0) return 0;
+    if (required == 0) {
+      // Every live entity matches the empty mask, and none is in a set to
+      // drive from. The workload parser does not produce this query; the
+      // contract still asks for it.
+      const std::uint64_t d = digest_entity(0, nullptr, salt);
+      std::uint64_t acc = 0;
+      for (std::uint8_t a : alive_) acc += a ? d : 0;
+      return acc;
+    }
     int driver = -1;
     std::size_t best = ~std::size_t(0);
     for (int c = 0; c < kComponentCount; ++c) {
