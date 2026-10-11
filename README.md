@@ -111,7 +111,12 @@ one workload many times under several conditions (pinned to a CPU, without
 ASLR, with glibc keeping freed memory) next to `runner/noise_control.cpp`, a
 control with no candidate in it, and `runner/noise_stats.py` says from that
 data whether the noise is slow or fast and how many repetitions a claim of a
-given size needs. `benchmarks/noise.md` has what they found.
+given size needs. `runner/replication_compare.py` compares two judgments of
+the same predictions, e.g. an original run and a replication, against a
+forecast written before the replication. `benchmarks/noise.md` has what they
+found: the machine `results.json` was measured on was about 8 times quieter
+than the one used since, and 8 of the 14 verdicts its intervals left
+unresolved went the other way on the second machine.
 
 Requirements: CMake 3.20+, a C++20 compiler, Python 3.9+ with PyYAML (used only
 to read candidate manifests). On four shared cores `run_all.py` took 37 minutes

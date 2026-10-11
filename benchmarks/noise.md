@@ -10,6 +10,13 @@ Machine: 4 vCPU, Intel Xeon @ 2.80GHz, a cloud guest. `perf_event_open`
 returns `ENOENT`, so there are no hardware counters. Raw data is in
 `benchmarks/noise/`.
 
+**This is not the machine `results.json` was measured on.** That run reports
+an Intel Xeon @ 2.10GHz. On the 163 candidate-workload cells both runs
+measured, the coefficient of variation of `step_ns_p50` across repetitions has
+a median of 2.0% in `results.json` and 15.5% here, about 8 times higher. The
+noise figures below describe this machine. The section *Replication* shows
+what that means for `results.json`.
+
 ## Question and competing explanations
 
 Why does the same binary on the same workload vary by 20–35%? Each explanation
@@ -125,8 +132,8 @@ From the bootstrap 95% interval of the median, as ± a fraction of the median
 These come from 40 repetitions per cell. The n = 45 row resamples more values
 than were measured, so it is optimistic.
 
-The suite measures with 5 repetitions. With 5, a median is known to roughly
-±15%, and the ratio of two medians, which carries the noise of both, to roughly ±20%
+The suite measures with 5 repetitions. On this machine, a median of 5 is known
+to roughly ±15%, and the ratio of two medians, which carries the noise of both, to roughly ±20%
 (√2 × 15%, if the two are independent). Most bounds in the
 predictions are 0.9x, 1.05x, 1.1x or 1.2x, which is closer than that.
 
@@ -162,6 +169,106 @@ predictions are 0.9x, 1.05x, 1.1x or 1.2x, which is closer than that.
 2. **A replication with 30 repetitions** of every point the 14 unresolved
    verdicts use. See below.
 
+`predictions.py` and the noise marks report the noise of the run they are
+given, so they stay correct on either machine.
+
 ## Replication of the unresolved verdicts
 
-Pending: the run was in progress when this was committed.
+### Forecast, written before the run
+
+`noise/replication_prediction.json` was written before the run started. For
+each of the 14 unresolved verdicts it records the distance of the deciding
+point from its bound. It forecasts "resolves" when that distance exceeds 6%,
+the interval half-width expected at n = 30 from the table above, and "stays
+unresolved" otherwise: 7 of each.
+
+### Run
+
+```
+python3 runner/orchestrate.py --skip-build --repeats 30 --only archetype,bitset_soa,\
+  cell_rows,cell_sorted,delta_grid,fused_archetype,grid_ring_knn,grid_undo_log,\
+  grouped_sparse_set,soa,sparse_set,spatial_hash,uniform_grid \
+  --results benchmarks/noise/replication_results.json
+python3 runner/predictions.py --results benchmarks/noise/replication_results.json \
+  --out benchmarks/noise/replication_predictions.json \
+  --report benchmarks/noise/replication_predictions.md
+python3 runner/replication_compare.py benchmarks/predictions.json \
+  benchmarks/noise/replication_predictions.json \
+  --forecast benchmarks/noise/replication_prediction.json \
+  --md benchmarks/noise/replication_compare.md
+```
+
+The run covered every workload of the 13 candidates that the 14 predictions
+compare, at 30 repetitions after 1 warmup, serially. Timing took 57 minutes, after the verify gate. The build was this
+branch's `7e3f30b`. Of the candidates involved, three changed in that commit:
+- `spatial_hash`, in an integer conversion whose results are the same inside
+  the clamp;
+- `sparse_set` and `grouped_sparse_set`, in the branch for an empty query
+  mask, which no measured workload takes.
+
+Every cell passed verify.
+
+### Result
+
+The full table is in `noise/replication_compare.md`.
+
+- **6 of 14 verdicts replicated.** The 8 that did not all went from HELD to
+  FALSIFIED: `bitset_soa` P1, `cell_rows` P1, `cell_sorted` P2 and P5,
+  `delta_grid` P2b and P3, `fused_archetype` P3, and `grid_ring_knn` P3.
+- **6 of 14 are resolved in the replication.** The 6 are:
+  - `delta_grid` P1b, P2a and P3;
+  - `cell_rows` P1;
+  - `grouped_sparse_set` P1;
+  - `spatial_hash` P1.
+- **The forecast came true for 5 of 14.** It assumed the intervals would shrink
+  to about ±6%. They did not: across the replication's cells the CV of a
+  repetition is 13–18% (p25 to p75), and the deciding intervals at n = 30 still reach 3–21% from the
+  median on one side or the other. Example: `bitset_soa` P1 on
+  h05_sparse_component, at most 0.6, measured 0.679 [0.583, 0.824]. The
+  forecast took the n = 30 width from a table built on 40 pooled repetitions
+  of 8 cells, and the pooled bootstrap understated the spread of the ratio of
+  two medians.
+
+### Why the replication cannot overturn the original
+
+The replication changed two things at once: the noise and the machine.
+
+- **Noise:** CV 2.0% → 15.5% (median over the 163 shared cells).
+- **Machine:** the median `step_ns_p50` of a cell is 0.98 to 4.81 times its
+  value in `results.json`, with a median of 1.59. The factor differs by
+  candidate and workload. For example, `archetype`'s cells range from 1.38 to
+  4.78, and `grid_undo_log`'s from 1.00 to 1.88.
+
+A slowdown that differs by candidate changes the ratios that the predictions
+bound. `delta_grid` P3 bounds its time at 1.2x `cell_sorted`'s on
+s03_wide_radius. The replication measured 1.535, with an interval of
+[1.33, 1.69]. That is not noise around a ratio below 1.2: on this machine the
+ratio is higher. So a flipped verdict here says that the verdict depends on the
+machine. It does not say that the original was wrong on its own machine.
+
+What the data supports:
+
+1. On the 2.10GHz machine the noise was low (CV 2%). Its 14 unresolved verdicts
+   are those whose deciding points sit within a few percent of the bound.
+2. On this machine the noise is 8 times higher. Five repetitions cannot settle
+   a bound closer than about 20%, and 30 repetitions about 10–20%.
+3. The ratios between candidates move between the two machines by more than
+   either machine's noise. A prediction that bounds a ratio at 1.05x or 1.2x is
+   therefore a claim about one machine. Of the 53 decided verdicts, the
+   replication tested 14, and 8 of those changed.
+
+## What this changes in practice
+
+- Report the machine with every verdict. `results.json` already records the
+  CPU string; `predictions.md` now carries the intervals.
+- Do not compare a measurement on this machine with `results.json`. Measure
+  every candidate a comparison needs in the same run, as `orchestrate.py`
+  already does.
+- On this machine, timing predictions need margins of 20% or more, or 30+
+  repetitions and margins of 10–20%. Tighter claims need a quieter machine or
+  a deterministic metric. With `perf_event_open` unavailable, the
+  deterministic option here is instruction counts under cachegrind, which
+  measure work, not time. The C port evidence used them, in
+  `language_port.md`.
+- Whether the machine dependence found here is general is the open question.
+  It would take a third machine, measuring the same 13 candidates in one run.
